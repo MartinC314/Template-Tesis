@@ -8,7 +8,7 @@ Por el momento, suponiendo que se nos da un modelo que incluye una representaci�
 
 Para enfocar la discusión, consideraremos la configuración estándar de realimentación mostrada en la Figura 5.1. Esta consiste en la interconexión de la planta $P$ y el controlador $K$, excitada por la referencia $r$, el ruido del sensor $n$, la perturbación de entrada de planta $d_{i}$ y la perturbación de salida de planta $d$. En general, todas las señales se suponen multivariables y todas las matrices de transferencia se suponen de dimensiones apropiadas.
 
-\insertimage[\label{img:configuracion-estandar-retroalimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-080_293_879_1363_604}{width=0.35\textwidth}{Configuración estándar de realimentación.}
+\insertimage[\label{img:configuracion-estandar-retroalimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-080_293_879_1363_604}{width=0.55\textwidth}{Configuración estándar de realimentación.}
 
 \section{Bien posicionamiento del lazo de retroalimentación}
 Suponga que la planta $P$ y el controlador $K$ de la Figura 5.1 son matrices de transferencia racionales reales propias y fijas. Entonces, la primera pregunta natural es si la interconexión en realimentación tiene sentido o es físicamente realizable. Para ser más específicos, considere el siguiente ejemplo simple donde
@@ -39,7 +39,7 @@ Para ser consistentes con la notación usada en el resto del libro, denotaremos
 
 y reagruparamos las señales de entrada externas en el lazo de realimentación como $w_{1}$ y $w_{2}$, y reagruparamos las señales de entrada de la planta y del controlador como $e_{1}$ y $e_{2}$. Entonces el lazo de realimentación con la planta y el controlador puede representarse de manera simple como en la Figura 5.2, y el sistema está bien planteado si y solo si la matriz de transferencia desde $\left[\begin{array}{l}w_{1} \\ w_{2}\end{array}\right]$ hacia $e_{1}$ existe y es propia.
 
-\insertimage[\label{img:diagrama-analisis-estabilidad-interna}]{2024_06_29_ce7c73b22613114bd4d6g-081_262_680_1601_709}{width=0.35\textwidth}{Diagrama para análisis de estabilidad interna.}
+\insertimage[\label{img:diagrama-analisis-estabilidad-interna}]{2024_06_29_ce7c73b22613114bd4d6g-081_262_680_1601_709}{width=0.45\textwidth}{Diagrama para análisis de estabilidad interna.}
 
 Lema 5.1 El sistema de realimentación de la Figura 5.2 está bien planteado si y solo si
 
@@ -648,7 +648,7 @@ La presentación de este capítulo se basa principalmente en Doyle [1984]. La di
 \section{Problemas}
 Problema 5.1 Recuerde que un sistema de realimentación se dice internamente estable si todas las funciones de transferencia en lazo cerrado son estables. Describa las condiciones de estabilidad interna del siguiente sistema de realimentación:
 
-\insertimage[\label{img:problema-5-1-esquema-realimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-091_268_605_1151_760}{width=0.35\textwidth}{Esquema del sistema de realimentación para el Problema 5.1.}
+\insertimage[\label{img:problema-5-1-esquema-realimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-091_268_605_1151_760}{width=0.45\textwidth}{Esquema del sistema de realimentación para el Problema 5.1.}
 
 ¿Cómo pueden simplificarse las condiciones de estabilidad si $H(s)$ y $G_{1}(s)$ son ambos estables?
 

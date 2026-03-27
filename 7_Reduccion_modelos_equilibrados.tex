@@ -1,1 +1,1413 @@
-7. Reducción de modelos equilibrados 
+\chapter{Reducción de Modelos Balanceados}
+Los modelos/controladores lineales simples normalmente se prefieren sobre los complejos en el diseño de sistemas de control por razones evidentes: son mucho más fáciles para análisis y síntesis. Además, los controladores simples son más fáciles de implementar y más confiables, porque hay menos posibilidades de fallas en hardware o errores en software. En el caso de sistemas de dimensión infinita, la aproximación del modelo/controlador se vuelve esencial. En este capítulo consideramos el problema de reducir el orden de un sistema dinámico lineal multivariable. Existen muchas formas de reducir el orden de un sistema dinámico; sin embargo, estudiaremos solo una: el método de truncamiento balanceado. La principal ventaja de este método es su simplicidad y su buen desempeño práctico.
+
+Un problema de reducción de orden de modelos puede plantearse, en general, de la siguiente forma: dado un modelo de orden completo $G(s)$, encontrar un modelo de menor orden (por ejemplo, un modelo de orden $r$, $G_{r}$) tal que $G$ y $G_{r}$ sean cercanos en algún sentido. Desde luego, hay muchas maneras de definir la cercanía de una aproximación. Por ejemplo, puede desearse que el modelo reducido cumpla
+
+$$
+G=G_{r}+\Delta_{a}
+$$
+
+y que $\Delta_{a}$ sea pequeño en alguna norma. Esta reducción de modelo suele llamarse problema de reducción aditiva. En este libro solo nos interesará la aproximación en norma $\mathcal{L}_{\infty}$. Una vez elegida la norma, el problema de reducción aditiva puede formularse como
+
+$$
+\inf _{\operatorname{deg}\left(G_{r}\right) \leq r}\left\|G-G_{r}\right\|_{\infty}
+$$
+
+En general, un problema práctico de reducción de modelos es intrínsecamente ponderado en frecuencia (es decir, el requisito de precisión de aproximación en un rango de frecuencias puede ser muy distinto al de otro rango). Estos problemas, en general, pueden formularse como problemas de reducción de modelos ponderados en frecuencia:
+
+$$
+\inf _{\operatorname{deg}\left(G_{r}\right) \leq r}\left\|W_{o}\left(G-G_{r}\right) W_{i}\right\|_{\infty}
+$$
+
+con una elección apropiada de $W_{i}$ y $W_{o}$. En este capítulo veremos cómo la realización balanceada puede ofrecer un enfoque efectivo para los problemas de reducción de modelo antes mencionados.
+
+\section{Ecuaciones de Lyapunov}
+Probar estabilidad, controlabilidad y observabilidad de un sistema es muy importante en el análisis y la síntesis de sistemas lineales. Sin embargo, estas pruebas a menudo deben hacerse de manera indirecta. En ese sentido, la teoría de Lyapunov resulta útil. Considere la siguiente ecuación de Lyapunov:
+
+
+\begin{equation*}
+A^{*} Q+Q A+H=0 \tag{7.1}
+\end{equation*}
+
+
+con matrices reales dadas $A$ y $H$. Es bien sabido que esta ecuación tiene solución única si y solo si $\lambda_{i}(A)+\bar{\lambda}_{j}(A) \neq 0, \forall i, j$. En esta sección estudiaremos la relación entre la solución $Q$ y la estabilidad de $A$. Los siguientes resultados son estándar.
+
+Lema 7.1 Suponga que A es estable, entonces se cumplen los siguientes enunciados:
+
+(i) $Q=\int_{0}^{\infty} e^{A^{*} t} H e^{A t} d t$.
+
+(ii) $Q>0$ si $H>0$ y $Q \geq 0$ si $H \geq 0$.
+
+(iii) Si $H \geq 0$, entonces $(H, A)$ es observable si y solo si $Q>0$.
+
+Una consecuencia inmediata de (iii) es que, dada una matriz estable $A$, el par $(C, A)$ es observable si y solo si la solución de la siguiente ecuación de Lyapunov
+
+$$
+A^{*} Q+Q A+C^{*} C=0
+$$
+
+es definida positiva, donde $Q$ es el gramiano de observabilidad. De manera similar, un par $(A, B)$ es controlable si y solo si la solución de
+
+$$
+A P+P A^{*}+B B^{*}=0
+$$
+
+es definida positiva, donde $P$ es el gramiano de controlabilidad.
+
+En muchas aplicaciones, se conoce la solución de la ecuación de Lyapunov y se requiere concluir la estabilidad de la matriz $A$.
+
+Lema 7.2 Suponga que $Q$ es la solución de la ecuación de Lyapunov (7.1), entonces
+
+(i) $\operatorname{Re} \lambda_{i}(A) \leq 0$ si $Q>0$ y $H \geq 0$.
+
+(ii) $A$ es estable si $Q>0$ y $H>0$.
+
+(iii) $A$ es estable si $Q \geq 0, H \geq 0$, y $(H, A)$ es detectable.
+
+Demostración. Sea $\lambda$ un autovalor de $A$ y $v \neq 0$ un autovector correspondiente, entonces $A v=\lambda v$. Premultiplique la ecuación (7.1) por $v^{*}$ y postmultiplique la ecuación (7.1) por $v$ para obtener
+
+$$
+2 \operatorname{Re} \lambda\left(v^{*} Q v\right)+v^{*} H v=0
+$$
+
+Ahora bien, si $Q>0$, entonces $v^{*} Q v>0$, y es claro que $\operatorname{Re} \lambda \leq 0$ si $H \geq 0$ y $\operatorname{Re} \lambda<0$ si $H>0$. Por lo tanto, se cumplen (i) y (ii). Para ver (iii), suponga $\operatorname{Re}\lambda \geq 0$. Entonces debe cumplirse $v^{*} H v=0$ (es decir, $H v=0$). Esto implica que $\lambda$ es un modo inestable y no observable, lo cual contradice la hipótesis de que $(H, A)$ es detectable.
+
+\section{Realizaciones equilibradas}
+Aunque existen infinitas realizaciones en espacio de estados para una matriz de transferencia dada, algunas realizaciones particulares han mostrado gran utilidad en ingeniería de control y procesamiento de señales. Aquí introduciremos solo una clase de realizaciones para matrices de transferencia estables que es especialmente útil en aplicaciones de control. Para motivar esta clase de realizaciones, primero consideremos algunos hechos simples.
+
+Lema 7.3 Sea $\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ una realización en espacio de estados de una matriz de transferencia $G(s)$ (no necesariamente estable). Suponga que existe una matriz simétrica
+
+$$
+P=P^{*}=\left[\begin{array}{cc}
+P_{1} & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+con $P_{1}$ no singular tal que
+
+$$
+A P+P A^{*}+B B^{*}=0
+$$
+
+Ahora particione la realización $(A, B, C, D)$ en forma compatible con $P$ como
+
+$$
+\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]
+$$
+
+Entonces $\left[\begin{array}{c|c}A_{11} & B_{1} \\ \hline C_{1} & D\end{array}\right]$ también es una realización de $G$. Además, $\left(A_{11}, B_{1}\right)$ es controlable si $A_{11}$ es estable.
+
+Demostración. Use la partición de $P$ y $(A, B, C)$ para obtener
+
+$$
+0=A P+P A^{*}+B B^{*}=\left[\begin{array}{cc}
+A_{11} P_{1}+P_{1} A_{11}^{*}+B_{1} B_{1}^{*} & P_{1} A_{21}^{*}+B_{1} B_{2}^{*} \\
+A_{21} P_{1}+B_{2} B_{1}^{*} & B_{2} B_{2}^{*}
+\end{array}\right]
+$$
+
+lo cual da $B_{2}=0$ y $A_{21}=0$ ya que $P_{1}$ es no singular. Por lo tanto, una parte de la realización no es controlable:
+
+$$
+\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+0 & A_{22} & 0 \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]=\left[\begin{array}{c|c}
+A_{11} & B_{1} \\
+\hline C_{1} & D
+\end{array}\right]
+$$
+
+Finalmente, se sigue del Lema 7.1 que $\left(A_{11}, B_{1}\right)$ es controlable si $A_{11}$ es estable.
+
+También se tiene lo siguiente:
+
+Lema 7.4 Sea $\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ una realización en espacio de estados de una matriz de transferencia $G(s)$ (no necesariamente estable). Suponga que existe una matriz simétrica
+
+$$
+Q=Q^{*}=\left[\begin{array}{cc}
+Q_{1} & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+con $Q_{1}$ no singular tal que
+
+$$
+Q A+A^{*} Q+C^{*} C=0
+$$
+
+Ahora particione la realización $(A, B, C, D)$ en forma compatible con $Q$ como
+
+$$
+\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]
+$$
+
+Entonces $\left[\begin{array}{c|c}A_{11} & B_{1} \\ \hline C_{1} & D\end{array}\right]$ también es una realización de $G$. Además, $\left(C_{1}, A_{11}\right)$ es observable si $A_{11}$ es estable.
+
+Los dos lemas anteriores sugieren que, para obtener una realización mínima a partir de una realización estable no mínima, solo es necesario eliminar todos los estados correspondientes al bloque diagonal nulo del gramiano de controlabilidad $P$ y del gramiano de observabilidad $Q$. En el caso en que $P$ no sea bloque diagonal, puede usarse el siguiente procedimiento para eliminar subsistemas no controlables:
+
+\begin{enumerate}
+  \item Sea $G(s)=\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ una realización estable.
+  \item Calcule el gramiano de controlabilidad $P \geq 0$ a partir de
+\end{enumerate}
+
+$$
+A P+P A^{*}+B B^{*}=0
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item Diagonalice $P$ para obtener $P=\left[\begin{array}{ll}U_{1} & U_{2}\end{array}\right]\left[\begin{array}{cc}\Lambda_{1} & 0 \\ 0 & 0\end{array}\right]\left[\begin{array}{ll}U_{1} & U_{2}\end{array}\right]^{*}$ con $\Lambda_{1}>0$ y $\left[\begin{array}{ll}U_{1} & U_{2}\end{array}\right]$ unitaria.
+  \item Entonces $G(s)=\left[\begin{array}{c|c}U_{1}^{*} A U_{1} & U_{1}^{*} B \\ \hline C U_{1} & D\end{array}\right]$ es una realización controlable.
+\end{enumerate}
+
+También puede aplicarse un procedimiento dual para eliminar subsistemas no observables.
+
+Ahora suponga que $\Lambda_{1}>0$ es diagonal y se particiona como $\Lambda_{1}=\operatorname{diag}\left(\Lambda_{11}, \Lambda_{12}\right)$ de modo que $\lambda_{\max }\left(\Lambda_{12}\right) \ll \lambda_{\min }\left(\Lambda_{11}\right)$; entonces resulta tentador concluir que también pueden descartarse los estados correspondientes a $\Lambda_{12}$ sin introducir mucho error. Sin embargo, esto no es necesariamente cierto, como se muestra en el ejemplo siguiente.
+
+Ejemplo 7.1 Considere una función de transferencia estable
+
+$$
+G(s)=\frac{3 s+18}{s^{2}+3 s+18}
+$$
+
+Entonces $G(s)$ tiene una realización en espacio de estados dada por
+
+$$
+G(s)=\left[\begin{array}{cc|c}
+-1 & -4 / \alpha & 1 \\
+4 \alpha & -2 & 2 \alpha \\
+\hline-1 & 2 / \alpha & 0
+\end{array}\right]
+$$
+
+donde $\alpha$ es cualquier número no nulo. Es fácil verificar que el gramiano de controlabilidad de la realización está dado por
+
+$$
+P=\left[\begin{array}{ll}
+0.5 & \\
+& \alpha^{2}
+\end{array}\right]
+$$
+
+Como el último término diagonal de $P$ puede hacerse arbitrariamente pequeño tomando $\alpha$ pequeño, la controlabilidad del estado correspondiente puede hacerse arbitrariamente débil. Si se elimina el estado correspondiente al último término diagonal de $P$, se obtiene una función de transferencia
+
+$$
+\hat{G}=\left[\begin{array}{c|c}
+-1 & 1 \\
+\hline-1 & 0
+\end{array}\right]=\frac{-1}{s+1}
+$$
+
+que no es cercana a la función de transferencia original en ningún sentido. El problema puede detectarse fácilmente si se revisa el gramiano de observabilidad $Q$, que es
+
+$$
+Q=\left[\begin{array}{ll}
+0.5 & \\
+& 1 / \alpha^{2}
+\end{array}\right]
+$$
+
+Como $1 / \alpha^{2}$ es muy grande cuando $\alpha$ es pequeño, esto muestra que el estado correspondiente al último término diagonal es fuertemente observable.
+
+Este ejemplo muestra que el gramiano de controlabilidad (u observabilidad) por sí solo no puede dar una indicación precisa de la dominancia de los estados del sistema en el comportamiento de entrada/salida. Esto motiva la introducción de una realización balanceada que produzca gramianos balanceados de controlabilidad y observabilidad.
+
+Suponga que $G=\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ es estable (es decir, $A$ es estable). Sean $P$ y $Q$ el gramiano de controlabilidad y el gramiano de observabilidad, respectivamente. Entonces, por el Lema 7.1, $P$ y $Q$ satisfacen las siguientes ecuaciones de Lyapunov:
+
+
+\begin{align*}
+& A P+P A^{*}+B B^{*}=0  \tag{7.2}\\
+& A^{*} Q+Q A+C^{*} C=0 \tag{7.3}
+\end{align*}
+
+
+y $P \geq 0, Q \geq 0$. Además, el par $(A, B)$ es controlable si y solo si $P>0$, y $(C, A)$ es observable si y solo si $Q>0$.
+
+Suponga que el estado se transforma mediante una matriz no singular $T$ a $\hat{x}=T x$, obteniendo la realización
+
+$$
+G=\left[\begin{array}{c|c}
+\hat{A} & \hat{B} \\
+\hline \hat{C} & \hat{D}
+\end{array}\right]=\left[\begin{array}{c|c}
+T A T^{-1} & T B \\
+\hline C T^{-1} & D
+\end{array}\right]
+$$
+
+Entonces los gramianos se transforman en $\hat{P}=T P T^{*}$ y $\hat{Q}=\left(T^{-1}\right)^{*} Q T^{-1}$. Nótese que $\hat{P} \hat{Q}=T P Q T^{-1}$ y, por lo tanto, los autovalores del producto de gramianos son invariantes ante transformaciones de estado.
+
+Considere la transformación de similitud $T$, que produce la descomposición en autovectores
+
+$$
+P Q=T^{-1} \Lambda T, \quad \Lambda=\operatorname{diag}\left(\lambda_{1} I_{s_{1}}, \ldots, \lambda_{N} I_{s_{N}}\right)
+$$
+
+Entonces las columnas de $T^{-1}$ son autovectores de $P Q$ correspondientes a los autovalores $\left\{\lambda_{i}\right\}$. Más adelante se mostrará que $P Q$ tiene una forma de Jordan diagonal real y que $\Lambda \geq 0$, como consecuencia de $P \geq 0$ y $Q \geq 0$.
+
+Aunque los autovectores no son únicos, en el caso de una realización mínima siempre pueden elegirse de modo que
+
+$$
+\begin{gathered}
+\hat{P}=T P T^{*}=\Sigma \\
+\hat{Q}=\left(T^{-1}\right)^{*} Q T^{-1}=\Sigma
+\end{gathered}
+$$
+
+donde $\Sigma=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{N} I_{s_{N}}\right)$ y $\Sigma^{2}=\Lambda$. A esta nueva realización con gramianos de controlabilidad y observabilidad $\hat{P}=\hat{Q}=\Sigma$ la llamaremos realización balanceada (también llamada realización internamente balanceada). Los números ordenados de forma decreciente, $\sigma_{1}>\sigma_{2}>\ldots>\sigma_{N} \geq 0$, se denominan valores singulares de Hankel del sistema.
+
+Más generalmente, si una realización de un sistema estable no es mínima, entonces existe una transformación tal que los gramianos de controlabilidad y observabilidad de la realización transformada son diagonales y el subsistema controlable y observable queda balanceado. Esto es consecuencia del siguiente hecho matricial.
+
+Teorema 7.5 Sean $P$ y $Q$ dos matrices semidefinidas positivas. Entonces existe una matriz no singular $T$ tal que
+
+$$
+T P T^{*}=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& \Sigma_{2} & & \\
+& & 0 & \\
+& & & 0
+\end{array}\right], \quad\left(T^{-1}\right)^{*} Q T^{-1}=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& 0 & & \\
+& & \Sigma_{3} & \\
+& & & 0
+\end{array}\right]
+$$
+
+respectivamente, con $\Sigma_{1}, \Sigma_{2}, \Sigma_{3}$ diagonales y definidas positivas.
+
+Demostración. Como $P$ es una matriz semidefinida positiva, existe una transformación $T_{1}$ tal que
+
+$$
+T_{1} P T_{1}^{*}=\left[\begin{array}{ll}
+I & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+Ahora sea
+
+$$
+\left(T_{1}^{*}\right)^{-1} Q T_{1}^{-1}=\left[\begin{array}{ll}
+Q_{11} & Q_{12} \\
+Q_{12}^{*} & Q_{22}
+\end{array}\right]
+$$
+
+y existe una matriz unitaria $U_{1}$ tal que
+
+$$
+U_{1} Q_{11} U_{1}^{*}=\left[\begin{array}{cc}
+\Sigma_{1}^{2} & 0 \\
+0 & 0
+\end{array}\right], \quad \Sigma_{1}>0
+$$
+
+Sea
+
+$$
+\left(T_{2}^{*}\right)^{-1}=\left[\begin{array}{cc}
+U_{1} & 0 \\
+0 & I
+\end{array}\right]
+$$
+
+y entonces
+
+$$
+\left(T_{2}^{*}\right)^{-1}\left(T_{1}^{*}\right)^{-1} Q T_{1}^{-1}\left(T_{2}\right)^{-1}=\left[\begin{array}{ccc}
+\Sigma_{1}^{2} & 0 & \hat{Q}_{121} \\
+0 & 0 & \hat{Q}_{122} \\
+\hat{Q}_{121}^{*} & \hat{Q}_{122}^{*} & Q_{22}
+\end{array}\right]
+$$
+
+Pero $Q \geq 0$ implica $\hat{Q}_{122}=0$. Así, ahora sea
+
+$$
+\left(T_{3}^{*}\right)^{-1}=\left[\begin{array}{ccc}
+I & 0 & 0 \\
+0 & I & 0 \\
+-\hat{Q}_{121}^{*} \Sigma_{1}^{-2} & 0 & I
+\end{array}\right]
+$$
+
+dando
+
+$$
+\left(T_{3}^{*}\right)^{-1}\left(T_{2}^{*}\right)^{-1}\left(T_{1}^{*}\right)^{-1} Q T_{1}^{-1}\left(T_{2}\right)^{-1}\left(T_{3}\right)^{-1}=\left[\begin{array}{ccc}
+\Sigma_{1}^{2} & 0 & 0 \\
+0 & 0 & 0 \\
+0 & 0 & Q_{22}-\hat{Q}_{121}^{*} \Sigma_{1}^{-2} \hat{Q}_{121}
+\end{array}\right]
+$$
+
+A continuación, encuentre una matriz unitaria $U_{2}$ tal que
+
+$$
+U_{2}\left(Q_{22}-\hat{Q}_{121}^{*} \Sigma_{1}^{-2} \hat{Q}_{121}\right) U_{2}^{*}=\left[\begin{array}{cc}
+\Sigma_{3} & 0 \\
+0 & 0
+\end{array}\right], \quad \Sigma_{3}>0
+$$
+
+Defina
+
+$$
+\left(T_{4}^{*}\right)^{-1}=\left[\begin{array}{ccc}
+\Sigma_{1}^{-1 / 2} & 0 & 0 \\
+0 & I & 0 \\
+0 & 0 & U_{2}
+\end{array}\right]
+$$
+
+y sea
+
+$$
+T=T_{4} T_{3} T_{2} T_{1}
+$$
+
+Entonces
+
+$$
+T P T^{*}=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& \Sigma_{2} & & \\
+& & 0 & \\
+& & & 0
+\end{array}\right], \quad\left(T^{*}\right)^{-1} Q T^{-1}=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& 0 & & \\
+& & \Sigma_{3} & \\
+& & & 0
+\end{array}\right]
+$$
+
+con $\Sigma_{2}=I$.
+
+Corolario 7.6 El producto de dos matrices semidefinidas positivas es similar a una matriz semidefinida positiva.
+
+Demostración. Sean $P$ y $Q$ matrices semidefinidas positivas arbitrarias. Entonces es fácil ver que, con la transformación dada previamente
+
+$$
+T P Q T^{-1}=\left[\begin{array}{cc}
+\Sigma_{1}^{2} & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+Corolario 7.7 Para cualquier sistema estable $G=\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$, existe una transformación no singular $T$ tal que $G=\left[\begin{array}{c|c}T A T^{-1} & T B \\ \hline C T^{-1} & D\end{array}\right]$ tiene gramiano de controlabilidad $P$ y gramiano de observabilidad $Q$ dados por
+
+$$
+P=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& \Sigma_{2} & & \\
+& & 0 & \\
+& & & 0
+\end{array}\right], \quad Q=\left[\begin{array}{cccc}
+\Sigma_{1} & & & \\
+& 0 & & \\
+& & \Sigma_{3} & \\
+& & & 0
+\end{array}\right]
+$$
+
+respectivamente, con $\Sigma_{1}, \Sigma_{2}, \Sigma_{3}$ diagonales y definidas positivas.
+
+En el caso especial en que $\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ es una realización mínima, una realización balanceada puede obtenerse mediante el siguiente procedimiento simplificado:
+
+\begin{enumerate}
+  \item Calcule los gramianos de controlabilidad y observabilidad $P>0, Q>0$.
+  \item Encuentre una matriz $R$ tal que $P=R^{*} R$.
+  \item Diagonalice $R Q R^{*}$ para obtener $R Q R^{*}=U \Sigma^{2} U^{*}$.
+  \item Sea $T^{-1}=R^{*} U \Sigma^{-1 / 2}$. Entonces $T P T^{*}=\left(T^{*}\right)^{-1} Q T^{-1}=\Sigma$ y $\left[\begin{array}{c|c}T A T^{-1} & T B \\ \hline C T^{-1} & D\end{array}\right]$ queda balanceada.
+\end{enumerate}
+
+Suponga que los valores singulares de Hankel del sistema están ordenados en forma decreciente, de modo que $\Sigma=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{N} I_{s_{N}}\right)$ con $\sigma_{1}>\sigma_{2}>\ldots>\sigma_{N}$, y suponga que $\sigma_{r} \gg \sigma_{r+1}$ para algún $r$. Entonces, la realización balanceada implica que los estados correspondientes a los valores singulares $\sigma_{r+1}, \ldots, \sigma_{N}$ son menos controlables y menos observables que los estados correspondientes a $\sigma_{1}, \ldots, \sigma_{r}$. Por lo tanto, truncar esos estados menos controlables y menos observables no perderá mucha información del sistema.
+
+Otras dos realizaciones estrechamente relacionadas se llaman realización normal de entrada con $P=I$ y $Q=\Sigma^{2}$, y realización normal de salida con $P=\Sigma^{2}$ y $Q=I$. Ambas realizaciones pueden obtenerse fácilmente a partir de la realización balanceada mediante un escalamiento adecuado de los estados.
+
+A continuación derivaremos algunas cotas simples y útiles para la norma $\mathcal{H}_{\infty}$ y la norma $\mathcal{L}_{1}$ de un sistema estable.
+
+Teorema 7.8 Suponga
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline C & 0
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+es una realización balanceada; es decir, existe
+
+$$
+\Sigma=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{N} I_{s_{N}}\right) \geq 0
+$$
+
+con $\sigma_{1}>\sigma_{2}>\ldots>\sigma_{N} \geq 0$, tal que
+
+$$
+A \Sigma+\Sigma A^{*}+B B^{*}=0 \quad A^{*} \Sigma+\Sigma A+C^{*} C=0
+$$
+
+Entonces
+
+$$
+\sigma_{1} \leq\|G\|_{\infty} \leq \int_{0}^{\infty}\|g(t)\| d t \leq 2 \sum_{i=1}^{N} \sigma_{i}
+$$
+
+donde $g(t)=C e^{A t} B$.
+
+Observación 7.1 Debe ser claro que las desigualdades establecidas en el teorema no dependen de una realización particular en espacio de estados de $G(s)$. Sin embargo, el uso de la realización balanceada sí hace que la demostración sea simple.
+
+Demostración. Sea $G(s)$ con la siguiente realización en espacio de estados:
+
+
+\begin{align*}
+\dot{x} & =A x+B w \\
+z & =C x \tag{7.4}
+\end{align*}
+
+
+Suponga, sin pérdida de generalidad, que $(A, B)$ es controlable y $(C, A)$ es observable. Entonces $\Sigma$ es no singular. A continuación, derive $x(t)^{*} \Sigma^{-1} x(t)$ a lo largo de la solución de la ecuación (7.4), para cualquier entrada dada $w$, como sigue:
+
+$$
+\frac{d}{d t}\left(x^{*} \Sigma^{-1} x\right)=\dot{x}^{*} \Sigma^{-1} x+x^{*} \Sigma^{-1} \dot{x}=x^{*}\left(A^{*} \Sigma^{-1}+\Sigma^{-1} A\right) x+2\left\langle w, B^{*} \Sigma^{-1} x\right\rangle
+$$
+
+Usando la ecuación asociada al gramiano de controlabilidad para sustituir $A^{*} \Sigma^{-1}+\Sigma^{-1} A$, y completando cuadrados, se obtiene
+
+$$
+\frac{d}{d t}\left(x^{*} \Sigma^{-1} x\right)=\|w\|^{2}-\left\|w-B^{*} \Sigma^{-1} x\right\|^{2}
+$$
+
+La integración desde $t=-\infty$ hasta $t=0$, con $x(-\infty)=0$ y $x(0)=x_{0}$, da
+
+$$
+x_{0}^{*} \Sigma^{-1} x_{0}=\|w\|_{2}^{2}-\left\|w-B^{*} \Sigma^{-1} x\right\|_{2}^{2} \leq\|w\|_{2}^{2}
+$$
+
+Sea $w=B^{*} \Sigma^{-1} x$; entonces $\dot{x}=\left(A+B B^{*} \Sigma^{-1}\right) x=-\Sigma A^{*} \Sigma^{-1} x \Rightarrow x \in \mathcal{L}_{2}(-\infty, 0]$ $\Longrightarrow w \in \mathcal{L}_{2}(-\infty, 0]$ y
+
+$$
+\inf _{w \in \mathcal{L}_{2}(-\infty, 0]}\left\{\|w\|_{2}^{2} \mid x(0)=x_{0}\right\}=x_{0}^{*} \Sigma^{-1} x_{0}
+$$
+
+Dado $x(0)=x_{0}$ y $w=0$ para $t \geq 0$, la norma de $z(t)=C e^{A t} x_{0}$ puede obtenerse de
+
+$$
+\int_{0}^{\infty}\|z(t)\|^{2} d t=\int_{0}^{\infty} x_{0}^{*} e^{A^{*} t} C^{*} C e^{A t} x_{0} d t=x_{0}^{*} \Sigma x_{0}
+$$
+
+Para mostrar que $\sigma_{1} \leq\|G\|_{\infty}$, nótese que
+
+$$
+\begin{aligned}
+& \|G\|_{\infty}=\sup _{w \in \mathcal{L}_{2}(-\infty, \infty)} \frac{\|g * w\|_{2}}{\|w\|_{2}}=\sup _{w \in \mathcal{L}_{2}(-\infty, \infty)} \frac{\sqrt{\int_{-\infty}^{\infty}\|z(t)\|^{2} d t}}{\sqrt{\int_{-\infty}^{\infty}\|w(t)\|^{2} d t}} \\
+& \quad \geq \sup _{w \in \mathcal{L}_{2}(-\infty, 0]} \frac{\sqrt{\int_{0}^{\infty}\|z(t)\|^{2} d t}}{\sqrt{\int_{-\infty}^{0}\|w(t)\|^{2} d t}}=\sup _{x_{0} \neq 0} \sqrt{\frac{x_{0}^{*} \Sigma x_{0}}{x_{0}^{*} \Sigma^{-1} x_{0}}}=\sigma_{1}
+\end{aligned}
+$$
+
+Mostraremos ahora las otras desigualdades. Como
+
+$$
+G(s):=\int_{0}^{\infty} g(t) e^{-s t} d t, \operatorname{Re}(s)>0
+$$
+
+por definición de la norma $\mathcal{H}_{\infty}$, se tiene
+
+$$
+\begin{aligned}
+\|G\|_{\infty} & =\sup _{\operatorname{Re}(s)>0}\left\|\int_{0}^{\infty} g(t) e^{-s t} d t\right\| \\
+& \leq \sup _{\operatorname{Re}(s)>0} \int_{0}^{\infty}\left\|g(t) e^{-s t}\right\| d t \\
+& \leq \int_{0}^{\infty}\|g(t)\| d t
+\end{aligned}
+$$
+
+Para probar la última desigualdad, sea $e_{i}$ el vector unitario $i$-ésimo y defina
+
+$$
+\begin{aligned}
+& E_{1}=\left[\begin{array}{lll}
+e_{1} & \cdots & e_{s_{1}}
+\end{array}\right], \quad E_{2}=\left[\begin{array}{lll}
+e_{s_{1}+1} & \cdots & e_{s_{1}+s_{2}}
+\end{array}\right], \quad \cdots \\
+& E_{N}=\left[\begin{array}{lll}
+e_{s_{1}+\cdots+s_{N-1}+1} & \cdots & e_{s_{1}+\cdots+s_{N}}
+\end{array}\right]
+\end{aligned}
+$$
+
+Entonces $\sum_{i=1}^{N} E_{i} E_{i}^{*}=I$ y
+
+$$
+\begin{aligned}
+\int_{0}^{\infty}\|g(t)\| d t & =\int_{0}^{\infty}\left\|C e^{A t / 2} \sum_{i=1}^{N} E_{i} E_{i}^{*} e^{A t / 2} B\right\| d t \\
+& \leq \sum_{i=1}^{N} \int_{0}^{\infty}\left\|C e^{A t / 2} E_{i} E_{i}^{*} e^{A t / 2} B\right\| d t \\
+& \leq \sum_{i=1}^{N} \int_{0}^{\infty}\left\|C e^{A t / 2} E_{i}\right\|\left\|E_{i}^{*} e^{A t / 2} B\right\| d t \\
+& \leq \sum_{i=1}^{N} \sqrt{\int_{0}^{\infty}\left\|C e^{A t / 2} E_{i}\right\|^{2} d t} \sqrt{\int_{0}^{\infty}\left\|E_{i}^{*} e^{A t / 2} B\right\|^{2} d t} \leq 2 \sum_{i=1}^{N} \sigma_{i}
+\end{aligned}
+$$
+
+donde hemos usado la desigualdad de Cauchy-Schwarz y las siguientes relaciones:
+
+$$
+\begin{aligned}
+& \int_{0}^{\infty}\left\|C e^{A t / 2} E_{i}\right\|^{2} d t=\int_{0}^{\infty} \lambda_{\max }\left(E_{i}^{*} e^{A^{*} t / 2} C^{*} C e^{A t / 2} E_{i}\right) d t=2 \lambda_{\max }\left(E_{i}^{*} \Sigma E_{i}\right)=2 \sigma_{i} \\
+& \int_{0}^{\infty}\left\|E_{i}^{*} e^{A t / 2} B\right\|^{2} d t=\int_{0}^{\infty} \lambda_{\max }\left(E_{i}^{*} e^{A t / 2} B B^{*} e^{A^{*} t / 2} E_{i}\right) d t=2 \lambda_{\max }\left(E_{i}^{*} \Sigma E_{i}\right)=2 \sigma_{i}
+\end{aligned}
+$$
+
+Ejemplo 7.2 Considere un sistema
+
+$$
+G(s)=\left[\begin{array}{cc|c}
+-1 & -2 & 1 \\
+1 & 0 & 0 \\
+\hline 2 & 3 & 0
+\end{array}\right]
+$$
+
+Es fácil mostrar que los valores singulares de Hankel de $G$ son $\sigma_{1}=1.6061$ y $\sigma_{2}=0.8561$. La norma $\mathcal{H}_{\infty}$ de $G$ es $\|G\|_{\infty}=2.972$ y la norma $\mathcal{L}_{1}$ de $g(t)$ puede calcularse como
+
+$$
+\int_{0}^{\infty}|g(t)| d t=h_{1}+h_{2}+h_{3}+h_{4}+\ldots
+$$
+
+donde $h_{i}, i=1,2, \ldots$ son las variaciones de la respuesta al escalón de $G$ mostrada en la Figura 7.1, lo que da $\int_{0}^{\infty}|g(t)| d t \approx 3.5$. (Véase el Problema 7.2.)
+
+\insertimage[\label{img:estimacion-norma-l1-g}]{2024_06_29_ce7c73b22613114bd4d6g-130_631_1247_774_428}{width=0.75\textwidth}{Estimación de la norma $\mathcal{L}_{1}$ de $g(t)$.}
+
+Así, se tiene
+
+$$
+1.6061=\sigma_{1} \leq\|G\|_{\infty}=2.972 \leq \int_{0}^{\infty}|g(t)| d t=3.5 \leq 2\left(\sigma_{1}+\sigma_{2}\right)=4.9244
+$$
+
+\textbf{Comandos MATLAB ilustrativos:}
+$\gg[\mathbf{A b}, \mathbf{B b}, \mathbf{C b}$, sig, Tinv $]=$ balreal( $\mathbf{A}, \mathbf{B}, \mathbf{C}) ; \quad \%$ sig es un vector de valores singulares de Hankel y Tinv $=T^{-1}$;
+
+$\gg\left[\mathbf{G}_{\mathbf{b}}, \mathbf{s i g}\right]=\operatorname{sysbal}(\mathbf{G})$;
+
+Comandos MATLAB relacionados: ssdelete, ssselect, modred, strunc
+
+\section{Reducción de modelos por truncamiento equilibrado}
+Considere un sistema estable $G \in \mathcal{R} \mathcal{H}_{\infty}$ y suponga que $G=\left[\begin{array}{c|c}A & B \\ \hline C & D\end{array}\right]$ es una realización balanceada (es decir, sus gramianos de controlabilidad y observabilidad son iguales y diagonales). Denotemos los gramianos balanceados por $\Sigma$; entonces
+
+
+\begin{align*}
+& A \Sigma+\Sigma A^{*}+B B^{*}=0  \tag{7.5}\\
+& A^{*} \Sigma+\Sigma A+C^{*} C=0 \tag{7.6}
+\end{align*}
+
+
+Ahora particione el gramiano balanceado como $\Sigma=\left[\begin{array}{cc}\Sigma_{1} & 0 \\ 0 & \Sigma_{2}\end{array}\right]$ y particione el sistema en consecuencia como
+
+$$
+G=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]
+$$
+
+El siguiente teorema caracteriza las propiedades de estos subsistemas.
+
+Teorema 7.9 Suponga que $\Sigma_{1}$ y $\Sigma_{2}$ no tienen entradas diagonales en común. Entonces ambos subsistemas $\left(A_{i i}, B_{i}, C_{i}\right), i=1,2$ son asintóticamente estables.
+
+Demostración. Es claramente suficiente mostrar que $A_{11}$ es asintóticamente estable. La demostración para la estabilidad de $A_{22}$ es similar. Nótese que las ecuaciones (7.5) y (7.6) pueden escribirse en términos de sus matrices particionadas como
+
+
+\begin{align*}
+& A_{11} \Sigma_{1}+\Sigma_{1} A_{11}^{*}+B_{1} B_{1}^{*}=0  \tag{7.7}\\
+& \Sigma_{1} A_{11}+A_{11}^{*} \Sigma_{1}+C_{1}^{*} C_{1}=0  \tag{7.8}\\
+& A_{21} \Sigma_{1}+\Sigma_{2} A_{12}^{*}+B_{2} B_{1}^{*}=0  \tag{7.9}\\
+& \Sigma_{2} A_{21}+A_{12}^{*} \Sigma_{1}+C_{2}^{*} C_{1}=0  \tag{7.10}\\
+& A_{22} \Sigma_{2}+\Sigma_{2} A_{22}^{*}+B_{2} B_{2}^{*}=0  \tag{7.11}\\
+& \Sigma_{2} A_{22}+A_{22}^{*} \Sigma_{2}+C_{2}^{*} C_{2}=0 \tag{7.12}
+\end{align*}
+
+
+Por el Lema 7.3 o el Lema 7.4, puede suponerse que $\Sigma_{1}$ es definida positiva sin pérdida de generalidad. Entonces es obvio que $\operatorname{Re} \lambda_{i}\left(A_{11}\right) \leq 0$ por el Lema 7.2. Suponga que $A_{11}$ no es asintóticamente estable; entonces existe un autovalor en $j \omega$ para algún $\omega$. Sea $V$ una matriz base de $\operatorname{Ker}\left(A_{11}-j \omega I\right)$. Entonces tenemos
+
+
+\begin{equation*}
+\left(A_{11}-j \omega I\right) V=0 \tag{7.13}
+\end{equation*}
+
+
+lo que da
+
+$$
+V^{*}\left(A_{11}^{*}+j \omega I\right)=0
+$$
+
+Las ecuaciones (7.7) y (7.8) pueden reescribirse como
+
+
+\begin{gather*}
+\left(A_{11}-j \omega I\right) \Sigma_{1}+\Sigma_{1}\left(A_{11}^{*}+j \omega I\right)+B_{1} B_{1}^{*}=0  \tag{7.14}\\
+\Sigma_{1}\left(A_{11}-j \omega I\right)+\left(A_{11}^{*}+j \omega I\right) \Sigma_{1}+C_{1}^{*} C_{1}=0 \tag{7.15}
+\end{gather*}
+
+
+La multiplicación de la ecuación (7.15) por la derecha por $V$ y por la izquierda por $V^{*}$ da $V^{*} C_{1}^{*} C_{1} V=0$, lo cual equivale a
+
+$$
+C_{1} V=0
+$$
+
+La multiplicación de la ecuación (7.15) por la derecha por $V$ ahora da
+
+$$
+\left(A_{11}^{*}+j \omega I\right) \Sigma_{1} V=0
+$$
+
+Análogamente, primero multiplique la ecuación (7.14) por la derecha por $\Sigma_{1} V$ y por la izquierda por $V^{*} \Sigma_{1}$ para obtener
+
+$$
+B_{1}^{*} \Sigma_{1} V=0
+$$
+
+Luego multiplique la ecuación (7.14) por la derecha por $\Sigma_{1} V$ para obtener
+
+$$
+\left(A_{11}-j \omega I\right) \Sigma_{1}^{2} V=0
+$$
+
+Se sigue que las columnas de $\Sigma_{1}^{2} V$ están en $\operatorname{Ker}\left(A_{11}-j \omega I\right)$. Por lo tanto, existe una matriz $\bar{\Sigma}_{1}$ tal que
+
+$$
+\Sigma_{1}^{2} V=V \bar{\Sigma}_{1}^{2}
+$$
+
+Como $\bar{\Sigma}_{1}^{2}$ es la restricción de $\Sigma_{1}^{2}$ al espacio generado por $V$, se sigue que es posible elegir $V$ de modo que $\bar{\Sigma}_{1}^{2}$ sea diagonal. Entonces también es posible elegir $\bar{\Sigma}_{1}$ diagonal y de modo que sus entradas diagonales sean un subconjunto de las entradas diagonales de $\Sigma_{1}$.
+
+Multiplique la ecuación (7.9) por la derecha por $\Sigma_{1} V$ y la ecuación (7.10) por $V$ para obtener
+
+$$
+\begin{aligned}
+A_{21} \Sigma_{1}^{2} V+\Sigma_{2} A_{12}^{*} \Sigma_{1} V & =0 \\
+\Sigma_{2} A_{21} V+A_{12}^{*} \Sigma_{1} V & =0
+\end{aligned}
+$$
+
+lo que da
+
+$$
+\left(A_{21} V\right) \bar{\Sigma}_{1}^{2}=\Sigma_{2}^{2}\left(A_{21} V\right)
+$$
+
+Esta es una ecuación de Sylvester en $\left(A_{21} V\right)$. Como $\bar{\Sigma}_{1}^{2}$ y $\Sigma_{2}^{2}$ no tienen entradas diagonales en común, se sigue que
+
+
+\begin{equation*}
+A_{21} V=0 \tag{7.16}
+\end{equation*}
+
+
+es la solución única. Ahora, las ecuaciones (7.16) y (7.13) implican que
+
+$$
+\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]\left[\begin{array}{l}
+V \\
+0
+\end{array}\right]=j \omega\left[\begin{array}{l}
+V \\
+0
+\end{array}\right]
+$$
+
+lo cual significa que la matriz $A$ del sistema original tiene un autovalor en $j \omega$. Esto contradice el hecho de que el sistema original es asintóticamente estable. Por lo tanto, $A_{11}$ debe ser asintóticamente estable.
+
+Corolario 7.10 Si $\Sigma$ tiene valores singulares distintos, entonces todo subsistema es asintóticamente estable.
+
+La condición de estabilidad del Teorema 7.9 es solo suficiente, como se muestra en el ejemplo siguiente.
+
+Ejemplo 7.3 Nótese que
+
+$$
+\frac{(s-1)(s-2)}{(s+1)(s+2)}=\left[\begin{array}{cc|c}
+-2 & -2.8284 & -2 \\
+0 & -1 & -1.4142 \\
+\hline 2 & 1.4142 & 1
+\end{array}\right]
+$$
+
+es una realización balanceada con $\Sigma=I$, y todo subsistema de la realización es estable. Por otro lado,
+
+$$
+\frac{s^{2}-s+2}{s^{2}+s+2}=\left[\begin{array}{cc|c}
+-1 & 1.4142 & 1.4142 \\
+-1.4142 & 0 & 0 \\
+\hline-1.4142 & 0 & 1
+\end{array}\right]
+$$
+
+también es una realización balanceada con $\Sigma=I$, pero uno de los subsistemas no es estable.
+
+Teorema 7.11 Suponga que $G(s) \in \mathcal{R} \mathcal{H}_{\infty}$ y
+
+$$
+G(s)=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]
+$$
+
+es una realización balanceada con gramiano $\Sigma=\operatorname{diag}\left(\Sigma_{1}, \Sigma_{2}\right)$
+
+$$
+\begin{aligned}
+& \Sigma_{1}=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{r} I_{s_{r}}\right) \\
+& \Sigma_{2}=\operatorname{diag}\left(\sigma_{r+1} I_{s_{r+1}}, \sigma_{r+2} I_{s_{r+2}}, \ldots, \sigma_{N} I_{s_{N}}\right)
+\end{aligned}
+$$
+
+y
+
+$$
+\sigma_{1}>\sigma_{2}>\cdots>\sigma_{r}>\sigma_{r+1}>\sigma_{r+2}>\cdots>\sigma_{N}
+$$
+
+donde $\sigma_{i}$ tiene multiplicidad $s_{i}, i=1,2, \ldots, N$, y $s_{1}+s_{2}+\cdots+s_{N}=n$. Entonces el sistema truncado
+
+$$
+G_{r}(s)=\left[\begin{array}{c|c}
+A_{11} & B_{1} \\
+\hline C_{1} & D
+\end{array}\right]
+$$
+
+es balanceado y asintóticamente estable. Además,
+
+$$
+\left\|G(s)-G_{r}(s)\right\|_{\infty} \leq 2\left(\sigma_{r+1}+\sigma_{r+2}+\cdots+\sigma_{N}\right)
+$$
+
+Demostración. La estabilidad de $G_{r}$ se sigue del Teorema 7.9. Primero mostraremos la reducción de orden en un paso. Por ello, supondremos $\Sigma_{2}=\sigma_{N} I_{s_{N}}$. Defina el error de aproximación
+
+$$
+\begin{aligned}
+E_{11} & :=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]-\left[\begin{array}{cc|c}
+A_{11} & B_{1} \\
+\hline C_{1} & D
+\end{array}\right] \\
+& =\left[\begin{array}{ccc|c}
+A_{11} & 0 & 0 & B_{1} \\
+0 & A_{11} & A_{12} & B_{1} \\
+0 & A_{21} & A_{22} & B_{2} \\
+\hline-C_{1} & C_{1} & C_{2} & 0
+\end{array}\right]
+\end{aligned}
+$$
+
+Aplique una transformación de similitud $T$ a la realización en espacio de estados precedente con
+
+$$
+T=\left[\begin{array}{ccc}
+I / 2 & I / 2 & 0 \\
+I / 2 & -I / 2 & 0 \\
+0 & 0 & I
+\end{array}\right], \quad T^{-1}=\left[\begin{array}{ccc}
+I & I & 0 \\
+I & -I & 0 \\
+0 & 0 & I
+\end{array}\right]
+$$
+
+para obtener
+
+$$
+E_{11}=\left[\begin{array}{ccc|c}
+A_{11} & 0 & A_{12} / 2 & B_{1} \\
+0 & A_{11} & -A_{12} / 2 & 0 \\
+A_{21} & -A_{21} & A_{22} & B_{2} \\
+\hline 0 & -2 C_{1} & C_{2} & 0
+\end{array}\right]
+$$
+
+Considere una dilatación de $E_{11}(s)$:
+
+$$
+\begin{aligned}
+& E(s)=\left[\begin{array}{ll}
+E_{11}(s) & E_{12}(s) \\
+E_{21}(s) & E_{22}(s)
+\end{array}\right] \\
+& =\left[\begin{array}{ccc|cc}
+A_{11} & 0 & A_{12} / 2 & B_{1} & 0 \\
+0 & A_{11} & -A_{12} / 2 & 0 & \sigma_{N} \Sigma_{1}^{-1} C_{1}^{*} \\
+A_{21} & -A_{21} & A_{22} & B_{2} & -C_{2}^{*} \\
+\hline 0 & -2 C_{1} & C_{2} & 0 & 2 \sigma_{N} I \\
+-2 \sigma_{N} B_{1}^{*} \Sigma_{1}^{-1} & 0 & -B_{2}^{*} & 2 \sigma_{N} I & 0
+\end{array}\right] \\
+& =:\left[\begin{array}{c|c}
+\tilde{A} & \tilde{B} \\
+\hline \tilde{C} & \tilde{D}
+\end{array}\right]
+\end{aligned}
+$$
+
+Entonces es fácil verificar que
+
+$$
+\tilde{P}=\left[\begin{array}{ccc}
+\Sigma_{1} & 0 & \\
+0 & \sigma_{N}^{2} \Sigma_{1}^{-1} & 0 \\
+0 & 0 & 2 \sigma_{N} I_{s_{N}}
+\end{array}\right]
+$$
+
+satisface
+
+$$
+\begin{aligned}
+\tilde{A} \tilde{P}+\tilde{P} \tilde{A}^{*}+\tilde{B} \tilde{B}^{*} & =0 \\
+\tilde{P} \tilde{C}^{*}+\tilde{B} \tilde{D}^{*} & =0
+\end{aligned}
+$$
+
+Usando estas dos ecuaciones, tenemos
+
+$$
+\begin{aligned}
+E(s) E^{\sim}(s) & =\left[\begin{array}{cc|c}
+\tilde{A} & -\tilde{B} \tilde{B}^{*} & \tilde{B} \tilde{D}^{*} \\
+0 & -\tilde{A}^{*} & \tilde{C}^{*} \\
+\hline \tilde{C} & -\tilde{D} \tilde{B}^{*} & \tilde{D} \tilde{D}^{*}
+\end{array}\right] \\
+& =\left[\right] \\
+& =\left[\begin{array}{cc|c}
+A & 0 \\
+0 & -\tilde{A}^{*} & \tilde{C}^{*} \\
+\hline \tilde{C} & 0 & \tilde{D} \tilde{D}^{*}
+\end{array}\right] \\
+& =\tilde{D} \tilde{D}^{*}=4 \sigma_{N}^{2} I
+\end{aligned}
+$$
+
+donde la segunda igualdad se obtiene aplicando una transformación de similitud
+
+$$
+T=\left[\begin{array}{cc}
+I & \tilde{P} \\
+0 & I
+\end{array}\right]
+$$
+
+Por lo tanto, $\left\|E_{11}\right\|_{\infty} \leq\|E\|_{\infty}=2 \sigma_{N}$, que es el resultado deseado.
+
+El resto de la demostración se obtiene usando los resultados de reducción de orden por un paso y notando que $G_{k}(s)=\left[\begin{array}{c|c}A_{11} & B_{1} \\ \hline C_{1} & D\end{array}\right]$, obtenido por la partición de orden "$k$", está internamente balanceado con gramiano balanceado dado por
+
+$$
+\Sigma_{1}=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{k} I_{s_{k}}\right)
+$$
+
+Sea $E_{k}(s)=G_{k+1}(s)-G_{k}(s)$ para $k=1,2, \ldots, N-1$, y sea $G_{N}(s)=G(s)$. Entonces
+
+$$
+\bar{\sigma}\left[E_{k}(j \omega)\right] \leq 2 \sigma_{k+1}
+$$
+
+ya que $G_{k}(s)$ es un modelo de orden reducido obtenido de la realización internamente balanceada de $G_{k+1}(s)$ y se cumple la cota para reducción de orden en un paso.
+
+Notando que
+
+$$
+G(s)-G_{r}(s)=\sum_{k=r}^{N-1} E_{k}(s)
+$$
+
+por la definición de $E_{k}(s)$, se tiene
+
+$$
+\bar{\sigma}\left[G(j \omega)-G_{r}(j \omega)\right] \leq \sum_{k=r}^{N-1} \bar{\sigma}\left[E_{k}(j \omega)\right] \leq 2 \sum_{k=r}^{N-1} \sigma_{k+1}
+$$
+
+Esta es la cota superior deseada.
+
+Una consecuencia útil del teorema anterior es el siguiente corolario.
+
+Corolario 7.12 Sea $\sigma_{i}, i=1, \ldots, N$ los valores singulares de Hankel de $G(s) \in \mathcal{R} \mathcal{H}_{\infty}$. Entonces
+
+$$
+\|G(s)-G(\infty)\|_{\infty} \leq 2\left(\sigma_{1}+\ldots+\sigma_{N}\right)
+$$
+
+La cota anterior puede ser ajustada para algunos sistemas.
+
+Ejemplo 7.4 Considere una función de transferencia de orden $n$
+
+$$
+G(s)=\sum_{i=1}^{n} \frac{b_{i}}{s+a_{i}}
+$$
+
+con $a_{i}>0$ y $b_{i}>0$. Entonces $\|G(s)\|_{\infty}=G(0)=\sum_{i=1}^{n} b_{i} / a_{i}$ y $G(s)$ tiene la siguiente realización en espacio de estados:
+
+$$
+G=\left[\begin{array}{cccc|c}
+-a_{1} & & & & \sqrt{b_{1}} \\
+& -a_{2} & & & \sqrt{b_{2}} \\
+& & \ddots & & \vdots \\
+& & & -a_{n} & \sqrt{b_{n}} \\
+\hline \sqrt{b_{1}} & \sqrt{b_{2}} & \cdots & \sqrt{b_{n}} & 0
+\end{array}\right]
+$$
+
+y los gramianos de controlabilidad y observabilidad de la realización están dados por
+
+$$
+P=Q=\left[\frac{\sqrt{b_{i} b_{j}}}{a_{i}+a_{j}}\right]
+$$
+
+Es fácil ver que $\sigma_{i}=\lambda_{i}(P)=\lambda_{i}(Q)$ y
+
+$$
+\sum_{i=1}^{n} \sigma_{i}=\sum_{i=1}^{n} \lambda_{i}(P)=\operatorname{trace}(P)=\sum_{i=1}^{n} \frac{b_{i}}{2 a_{i}}=\frac{1}{2} G(0)=\frac{1}{2}\|G\|_{\infty}
+$$
+
+En particular, sea $a_{i}=b_{i}=\alpha^{2 i}$; entonces $P=Q \rightarrow \frac{1}{2} I_{n}$ (es decir, $\sigma_{j} \rightarrow \frac{1}{2}$ cuando $\alpha \rightarrow \infty$). Este ejemplo también muestra que, incluso cuando los valores singulares de Hankel son extremadamente cercanos, no necesariamente deben considerarse valores singulares repetidos.
+
+La cota de reducción de modelo también puede ser conservadora para sistemas con valores singulares de Hankel cercanos entre sí.
+
+Ejemplo 7.5 Considere la realización balanceada de un sistema de cuarto orden:
+
+$$
+\begin{gathered}
+G(s)=\frac{(s-0.99)(s-2)(s-3)(s-4)}{(s+1)(s+2)(s+3)(s+4)} \\
+=\left[\begin{array}{cccc|c}
+-9.2 e+00 & -5.7 e+00 & -2.7 e+00 & 1.3 e+00 & -4.3 e+00 \\
+5.7 e+00 & -8.1 e-07 & -6.4 e-01 & 1.5 e-06 & 1.3 e-03 \\
+-2.7 e+00 & 6.4 e-01 & -7.9 e-01 & 7.1 e-01 & -1.3 e+00 \\
+-1.3 e+00 & 1.5 e-06 & -7.1 e-01 & -2.7 e-06 & -2.3 e-03 \\
+\hline 4.3 e+00 & 1.3 e-03 & 1.3 e+00 & -2.3 e-03 & 1.0 e+00
+\end{array}\right]
+\end{gathered}
+$$
+
+con valores singulares de Hankel dados por
+
+$$
+\sigma_{1}=0.9998, \quad \sigma_{2}=0.9988, \quad \sigma_{3}=0.9963, \sigma_{4}=0.9923
+$$
+
+Los errores de aproximación y las cotas estimadas se listan en la siguiente tabla. La tabla muestra que el error real para una aproximación de orden $r$ es casi el mismo que $2 \sigma_{r+1}$, que sería la cota estimada si consideráramos $\sigma_{r+1}=\sigma_{r+2}=\cdots=\sigma_{4}$. En general, no es difícil construir un sistema de orden $n$ de modo que el error de reducción balanceada de orden $r$ sea aproximadamente $2 \sigma_{r+1}$, pero la cota del error sea arbitrariamente cercana a $2(n-r) \sigma_{r+1}$. Un método para construir tal sistema es el siguiente: sea $G(s)$ una función pasa-todo estable, es decir, $G^{\sim}(s) G(s)=I$. Entonces existe una realización balanceada para $G$ tal que los gramianos de controlabilidad y observabilidad son $P=Q=I$. Después, haga una perturbación muy pequeña a la realización balanceada; entonces el sistema perturbado tiene una realización balanceada con valores singulares distintos y $P=Q \approx I$. Este sistema perturbado tendrá las propiedades deseadas.
+
+% \begin{table}[h]
+% \begin{center}
+% \begin{tabular}{|c|c|c|c|c|}
+% \hline
+% $r$ & 0 & 1 & 2 & 3\\
+% \hline
+% \$\textbackslash left\textbackslash  & G-G\_\{r\}\textbackslash right\textbackslash  & \_\{\textbackslash infty\}\$ & 1.9997 & 1.9983 \\
+% \hline
+% Cotas: $2 \sum_{i=r+1}^{4} \sigma_{i}$ & 7.9744 & 5.9748 & 3.9772 & 1.9845 \\
+% \hline
+% $2 \sigma_{r+1}$ & 1.9996 & 1.9976 & 1.9926 & 1.9845 \\
+% \hline
+% \end{tabular}
+% \end{center}
+% \end{table}
+
+$$
+\begin{array}{|c|c|c|c|c|}
+\hline r & 0 & 1 & 2 & 3 \\
+\hline\left\|G-G_r\right\|_{\infty} & 1.9997 & 1.9983 & 1.9933 & 1.9845 \\
+\hline \text { Cotas: } 2 \sum_{i=r+1}^4 \sigma_i & 7.9744 & 5.9748 & 3.9772 & 1.9845 \\
+\hline 2 \sigma_{r+1} & 1.9996 & 1.9976 & 1.9926 & 1.9845 \\
+\hline
+\end{array}
+$$
+
+La realización balanceada y el truncamiento pueden realizarse usando los siguientes comandos de MATLAB:
+
+$\gg\left[\mathbf{G}_{\mathbf{b}}, \mathbf{s i g}\right]=\operatorname{sysbal}(\mathbf{G}) ; \%$ encuentra una realización balanceada $G_{b}$ y los valores singulares de Hankel sig.
+
+$\gg \mathbf{G}_{\mathbf{r}}=\operatorname{strunc}\left(\mathbf{G}_{\mathbf{b}}, \mathbf{2}\right) ; \%$ trunca a segundo orden.
+
+Comandos MATLAB relacionados: reordsys, resid, Hankmr
+
+\section{Reducción de modelos equilibrados ponderada en frecuencia}
+Esta sección considera la extensión del método de truncamiento balanceado al caso ponderado en frecuencia. Dado el modelo original de orden completo $G \in \mathcal{R} \mathcal{H}_{\infty}$, la matriz de ponderación de entrada $W_{i} \in \mathcal{R} \mathcal{H}_{\infty}$ y la matriz de ponderación de salida $W_{o} \in \mathcal{R} \mathcal{H}_{\infty}$, nuestro objetivo es encontrar un modelo de menor orden $G_{r}$ tal que
+
+$$
+\left\|W_{o}\left(G-G_{r}\right) W_{i}\right\|_{\infty}
+$$
+
+se haga tan pequeño como sea posible. Suponga que $G$, $W_{i}$ y $W_{o}$ tienen las siguientes realizaciones en espacio de estados:
+
+$$
+G=\left[\begin{array}{c|c}
+A & B \\
+\hline C & 0
+\end{array}\right], \quad W_{i}=\left[\begin{array}{c|c}
+A_{i} & B_{i} \\
+\hline C_{i} & D_{i}
+\end{array}\right], \quad W_{o}=\left[\begin{array}{c|c}
+A_{o} & B_{o} \\
+\hline C_{o} & D_{o}
+\end{array}\right]
+$$
+
+con $A \in \mathbb{R}^{n \times n}$. Nótese que no hay pérdida de generalidad al suponer $D=G(\infty)=0$, ya que de otra forma puede eliminarse reemplazando $G_{r}$ por $D+G_{r}$.
+
+Ahora la realización en espacio de estados para la matriz de transferencia ponderada está dada por
+
+$$
+W_{o} G W_{i}=\left[\begin{array}{ccc|c}
+A & 0 & B C_{i} & B D_{i} \\
+B_{o} C & A_{o} & 0 & 0 \\
+0 & 0 & A_{i} & B_{i} \\
+\hline D_{o} C & C_{o} & 0 & 0
+\end{array}\right]=:\left[\begin{array}{c|c}
+\bar{A} & \bar{B} \\
+\hline \bar{C} & 0
+\end{array}\right]
+$$
+
+Sean $\bar{P}$ y $\bar{Q}$ las soluciones de las siguientes ecuaciones de Lyapunov:
+
+
+\begin{align*}
+\bar{A} \bar{P}+\bar{P} \bar{A}^{*}+\bar{B} \bar{B}^{*} & =0  \tag{7.17}\\
+\bar{Q} \bar{A}+\bar{A}^{*} \bar{Q}+\bar{C}^{*} \bar{C} & =0 \tag{7.18}
+\end{align*}
+
+
+Entonces el gramiano ponderado de entrada $P$ y el gramiano ponderado de salida $Q$ se definen por
+
+$$
+P:=\left[\begin{array}{ll}
+I_{n} & 0
+\end{array}\right] \bar{P}\left[\begin{array}{c}
+I_{n} \\
+0
+\end{array}\right], Q:=\left[\begin{array}{ll}
+I_{n} & 0
+\end{array}\right] \bar{Q}\left[\begin{array}{c}
+I_{n} \\
+0
+\end{array}\right]
+$$
+
+Puede mostrarse fácilmente que $P$ y $Q$ satisfacen las siguientes ecuaciones de orden reducido:
+
+
+\begin{gather*}
+{\left[\begin{array}{cc}
+A & B C_{i} \\
+0 & A_{i}
+\end{array}\right]\left[\begin{array}{cc}
+P & P_{12} \\
+P_{12}^{*} & P_{22}
+\end{array}\right]+\left[\begin{array}{cc}
+P & P_{12} \\
+P_{12}^{*} & P_{22}
+\end{array}\right]\left[\begin{array}{cc}
+A & B C_{i} \\
+0 & A_{i}
+\end{array}\right]^{*}+\left[\begin{array}{c}
+B D_{i} \\
+B_{i}
+\end{array}\right]\left[\begin{array}{c}
+B D_{i} \\
+B_{i}
+\end{array}\right]^{*}=0}  \tag{7.19}\\
+{\left[\begin{array}{cc}
+Q & Q_{12} \\
+Q_{12}^{*} & Q_{22}
+\end{array}\right]\left[\begin{array}{cc}
+A & 0 \\
+B_{o} C & A_{o}
+\end{array}\right]+\left[\begin{array}{cc}
+A & 0 \\
+B_{o} C & A_{o}
+\end{array}\right]^{*}\left[\begin{array}{cc}
+Q & Q_{12} \\
+Q_{12}^{*} & Q_{22}
+\end{array}\right]+\left[\begin{array}{c}
+C^{*} D_{o}^{*} \\
+C_{o}^{*}
+\end{array}\right]\left[\begin{array}{c}
+C^{*} D_{o}^{*} \\
+C_{o}^{*}
+\end{array}\right]^{*}=0} \tag{7.20}
+\end{gather*}
+
+
+El cálculo puede reducirse aún más si $W_{i}=I$ o $W_{o}=I$. En el caso $W_{i}=I$, $P$ puede obtenerse de
+
+
+\begin{equation*}
+P A^{*}+A P+B B^{*}=0 \tag{7.21}
+\end{equation*}
+
+
+mientras que en el caso $W_{o}=I$, $Q$ puede obtenerse de
+
+
+\begin{equation*}
+Q A+A^{*} Q+C^{*} C=0 \tag{7.22}
+\end{equation*}
+
+
+Ahora sea $T$ una matriz no singular tal que
+
+$$
+T P T^{*}=\left(T^{-1}\right)^{*} Q T^{-1}=\left[\begin{array}{ll}
+\Sigma_{1} & \\
+& \Sigma_{2}
+\end{array}\right]
+$$
+
+(es decir, balanceada) con $\Sigma_{1}=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \ldots, \sigma_{r} I_{s_{r}}\right)$ y $\Sigma_{2}=\operatorname{diag}\left(\sigma_{r+1} I_{s_{r+1}}, \ldots, \sigma_{N} I_{s_{N}}\right)$, y particione el sistema en consecuencia como
+
+$$
+\left[\begin{array}{c|c}
+T A T^{-1} & T B \\
+\hline C T^{-1} & 0
+\end{array}\right]=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & 0
+\end{array}\right]
+$$
+
+Entonces un modelo de orden reducido $G_{r}$ se obtiene como
+
+$$
+G_{r}=\left[\begin{array}{c|c}
+A_{11} & B_{1} \\
+\hline C_{1} & 0
+\end{array}\right]
+$$
+
+Desafortunadamente, en general no se conoce una cota a priori del error de aproximación y tampoco se garantiza que el modelo de orden reducido $G_{r}$ sea estable.
+
+Un problema muy especial de reducción de modelos ponderada en frecuencia es el problema de reducción con error relativo, donde el objetivo es encontrar un modelo de orden reducido $G_{r}$ tal que
+
+$$
+G_{r}=G\left(I+\Delta_{\mathrm{rel}}\right)
+$$
+
+y $\left\|\Delta_{\text {rel }}\right\|_{\infty}$ se haga tan pequeño como sea posible. A $\Delta_{\text {rel }}$ usualmente se le llama error relativo. En el caso en que $G$ sea cuadrada e invertible, este problema puede formularse simplemente como
+
+$$
+\min _{\operatorname{deg} G_{r} \leq r}\left\|G^{-1}\left(G-G_{r}\right)\right\|_{\infty}
+$$
+
+Por supuesto, el problema dual de aproximación
+
+$$
+G_{r}=\left(I+\Delta_{\mathrm{rel}}\right) G
+$$
+
+puede obtenerse tomando la traspuesta de $G$. Resulta que la aproximación $G_{r}$ obtenida a continuación también sirve como aproximación multiplicativa:
+
+$$
+G=G_{r}\left(I+\Delta_{\mathrm{mul}}\right)
+$$
+
+donde $\Delta_{\text {mul }}$ suele llamarse error multiplicativo.
+
+Pueden derivarse cotas de error si el método de truncamiento balanceado ponderado en frecuencia se aplica a las aproximaciones relativa y multiplicativa.
+
+Teorema 7.13 Sean $G, G^{-1} \in \mathcal{R H}_{\infty}$ una matriz de transferencia cuadrada de orden $n$ con una realización en espacio de estados
+
+$$
+G(s)=\left[\begin{array}{l|l}
+A & B \\
+\hline C & D
+\end{array}\right]
+$$
+
+Sean $P$ y $Q$ las soluciones de
+
+
+\begin{gather*}
+P A^{*}+A P+B B^{*}=0  \tag{7.23}\\
+Q\left(A-B D^{-1} C\right)+\left(A-B D^{-1} C\right)^{*} Q+C^{*}\left(D^{-1}\right)^{*} D^{-1} C=0 \tag{7.24}
+\end{gather*}
+
+
+Suponga
+
+$$
+P=Q=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \ldots, \sigma_{r} I_{s_{r}}, \sigma_{r+1} I_{s_{r+1}}, \ldots, \sigma_{N} I_{s_{N}}\right)=\operatorname{diag}\left(\Sigma_{1}, \Sigma_{2}\right)
+$$
+
+con $\sigma_{1}>\sigma_{2}>\ldots>\sigma_{N} \geq 0$, y sea la realización de $G$ particionada en forma compatible con $\Sigma_{1}$ y $\Sigma_{2}$ como
+
+$$
+G(s)=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right]
+$$
+
+Entonces
+
+$$
+G_{r}(s)=\left[\begin{array}{c|c}
+A_{11} & B_{1} \\
+\hline C_{1} & D
+\end{array}\right]
+$$
+
+es estable y de fase mínima. Además,
+
+$$
+\begin{gathered}
+\left\|\Delta_{\mathrm{rel}}\right\|_{\infty} \leq \prod_{i=r+1}^{N}\left(1+2 \sigma_{i}\left(\sqrt{1+\sigma_{i}^{2}}+\sigma_{i}\right)\right)-1 \\
+\left\|\Delta_{\mathrm{mul}}\right\|_{\infty} \leq \prod_{i=r+1}^{N}\left(1+2 \sigma_{i}\left(\sqrt{1+\sigma_{i}^{2}}+\sigma_{i}\right)\right)-1
+\end{gathered}
+$$
+
+\textbf{Comandos MATLAB relacionados: srelbal, sfrwtbal}
+
+\section{Notas y referencias}
+La realización balanceada fue introducida por primera vez por Mullis y Roberts [1976] para estudiar el ruido de redondeo en filtros digitales. Moore [1981] propuso el método de truncamiento balanceado para reducción de modelos. Las propiedades de estabilidad del modelo de orden reducido fueron mostradas por Pernebo y Silverman [1982]. La cota de error para la reducción de modelo balanceada fue mostrada por Enns [1984a, 1984b], y posteriormente Glover [1984] dio una demostración independiente. El método de reducción de modelo balanceado ponderado en frecuencia también fue introducido por Enns [1984a, 1984b]. Las cotas de error para el error relativo se derivan en Zhou [1995]. Otros resultados relacionados se muestran en Green [1988]. Otros métodos de reducción de modelos ponderados pueden encontrarse en Al-Saggaf y Franklin [1988], Glover [1986b], Glover, Limebeer y Hung [1992], Green [1988], Hung y Glover [1986], Zhou [1995], y las referencias allí citadas. Resultados de reducción de modelos balanceados en tiempo discreto pueden encontrarse en Al-Saggaf y Franklin [1987], Hinrichsen y Pritchard [1990], y las referencias allí citadas.
+
+\section{Problemas}
+Problema 7.1 Use la siguiente relación
+
+$$
+\frac{d}{d t}\left(e^{A t} Q e^{A^{*} t}\right)=A e^{A t} Q e^{A^{*} t}+e^{A t} Q e^{A^{*} t} A
+$$
+
+para mostrar que $P=\int_{0}^{\infty} e^{A t} Q e^{A^{*} t} d t$ resuelve
+
+$$
+A P+P A^{*}+Q=0
+$$
+
+si $A$ es estable.
+
+Problema 7.2 Sea $G(s) \in \mathcal{H}_{\infty}$ y sea $g(t)$ la transformada inversa de Laplace de $G(s)$. Sea $h_{i}, i=1,2, \ldots$ las variaciones de la respuesta al escalón de $G$. Muestre que
+
+$$
+\int_{0}^{\infty}|g(t)| d t=h_{1}+h_{2}+h_{3}+h_{4}+\ldots
+$$
+
+Problema 7.3 Sea $Q \geq 0$ la solución de
+
+$$
+Q A+A^{*} Q+C^{*} C=0
+$$
+
+Suponga que $Q$ tiene $m$ autovalores nulos. Muestre que existe una matriz no singular $T$ tal que
+
+$$
+\left[\begin{array}{c|c}
+T A T^{-1} & T B \\
+\hline C T^{-1} & D
+\end{array}\right]=\left[\begin{array}{cc|c}
+A_{11} & 0 & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & 0 & D
+\end{array}\right], \quad A_{22} \in \mathbb{R}^{m \times m}
+$$
+
+Aplique el resultado anterior al siguiente modelo en espacio de estados:
+
+$$
+A=\left[\begin{array}{rrr}
+-4 & -7 & -2 \\
+1 & 0 & 0 \\
+-1 & 1 & 0
+\end{array}\right], \quad B=\left[\begin{array}{rr}
+1 & 2 \\
+0 & -1 \\
+0 & 2
+\end{array}\right], \quad C=\left[\begin{array}{lll}
+0 & 2 & 1 \\
+1 & 1 & 0
+\end{array}\right], \quad D=0
+$$
+
+Problema 7.4 Sea
+
+$$
+G(s)=\sum_{i=1}^{5} \frac{\alpha^{2 i}}{s+\alpha^{2 i}}
+$$
+
+Encuentre una realización balanceada para cada uno de los siguientes valores de $\alpha$:
+
+$$
+\alpha=2,4,20,100
+$$
+
+Discuta el comportamiento de los valores singulares de Hankel cuando $\alpha \rightarrow \infty$.
+
+Problema 7.5 Encuentre una transformación tal que $T P T^{*}=\Sigma^{2},\left(T^{*}\right)^{-1} Q T^{-1}=I$. (Esta realización se llama realización normalizada de salida.)
+
+Problema 7.6 Considere el error de reducción de modelo:
+
+$$
+E_{11}=\left[\begin{array}{ccc|c}
+A_{11} & 0 & A_{12} / 2 & B_{1} \\
+0 & A_{11} & -A_{12} / 2 & 0 \\
+A_{21} & -A_{21} & A_{22} & B_{2} \\
+\hline 0 & -2 C_{1} & C_{2} & 0
+\end{array}\right]=:\left[\begin{array}{c|c}
+A_{e} & B_{e} \\
+\hline C_{e} & 0
+\end{array}\right]
+$$
+
+Muestre que
+
+$$
+\tilde{P}=\left[\begin{array}{ccc}
+\Sigma_{1} & 0 & \\
+0 & \sigma_{N}^{2} \Sigma_{1}^{-1} & 0 \\
+0 & 0 & 2 \sigma_{N} I_{s_{N}}
+\end{array}\right]
+$$
+
+satisfies
+
+$$
+A_{e} \tilde{P}+\tilde{P} A_{e}^{*}+B_{e} B_{e}^{*}+\frac{1}{4 \sigma_{N}^{2}} \tilde{P} C_{e}^{*} C_{e} \tilde{P}=0
+$$
+
+Problema 7.7 Suponga que $P$ y $Q$ son los gramianos de controlabilidad y observabilidad de $G(s)=C(s I-A)^{-1} B \in \mathcal{R} \mathcal{H}_{\infty}$. Sea $G_{d}(z)=\left.G(s)\right|_{s=\frac{z+1}{z-1}}=C_{d}\left(z I-A_{d}\right)^{-1} B_{d}+D_{d}$. Calcule los gramianos de controlabilidad y observabilidad $P_{d}$ y $Q_{d}$ y compare $P Q$ y $P_{d} Q_{d}$.
+
+Problema 7.8 Nótese que un retardo puede aproximarse como
+
+$$
+e^{-\tau s} \approx\left(\frac{1-\frac{\tau}{2 n} s}{1+\frac{\tau}{2 n} s}\right)^{n}
+$$
+
+para un $n$ suficientemente grande. Sea un modelo de proceso $\frac{e^{-s}}{1+T s}$ aproximado por
+
+$$
+G(s)=\left(\frac{1-0.05 s}{1+0.05 s}\right)^{10} \frac{1}{1+s T}
+$$
+
+Para cada $T=0,0.01,0.1,1,10$, encuentre un modelo de orden reducido, si es posible, usando truncamiento balanceado, tal que el error de aproximación no sea mayor que 0.1.

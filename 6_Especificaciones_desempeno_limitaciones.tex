@@ -1,1 +1,734 @@
-6. Especificaciones de desempeño y limitaciones 
+\chapter{Especificaciones de desempeño y limitaciones}
+En este capítulo, consideramos con mayor profundidad las propiedades de los sistemas con realimentación y discutimos cómo lograr el desempeño deseado mediante control por realimentación. También consideramos las formulaciones matemáticas de los problemas de control óptimo $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$. Un paso clave en el diseño de control óptimo es la selección de funciones de ponderación. Daremos algunas guías para ese proceso de selección usando ejemplos SISO. También discutiremos con cierto detalle las limitaciones de diseño impuestas por las restricciones de ancho de banda, por los ceros en semiplano derecho del lazo abierto y por los polos en semiplano derecho del lazo abierto, usando la relación ganancia-fase de Bode, la relación integral de sensibilidad de Bode y la fórmula integral de Poisson.
+
+\section{Propiedades de retroalimentación}
+En esta sección, discutimos las propiedades de un sistema con realimentación. En particular, consideramos el beneficio de la estructura de realimentación y el concepto de compromisos de diseño para objetivos en conflicto, es decir, cómo lograr los beneficios de la realimentación en presencia de incertidumbres.
+
+\insertimage[\label{img:configuracion-estandar-realimentacion-cap6}]{2024_06_29_ce7c73b22613114bd4d6g-095_282_876_1816_608}{width=0.35\textwidth}{Configuración estándar de realimentación.}
+
+Considere de nuevo el sistema con realimentación mostrado en la Figura 5.1. Por conveniencia, el diagrama del sistema se muestra nuevamente en la Figura 6.1. Para continuar la discusión, es conveniente definir la matriz de transferencia de lazo en la entrada, $L_{i}$, y la matriz de transferencia de lazo en la salida, $L_{o}$, como
+
+$$
+L_{i}=K P, \quad L_{o}=P K
+$$
+
+respectivamente, donde $L_{i}$ se obtiene al abrir el lazo en la entrada $(u)$ de la planta, mientras que $L_{o}$ se obtiene al abrir el lazo en la salida $(y)$ de la planta. La matriz de sensibilidad de entrada se define como la matriz de transferencia desde $d_{i}$ hasta $u_{p}$:
+
+$$
+S_{i}=\left(I+L_{i}\right)^{-1}, \quad u_{p}=S_{i} d_{i}
+$$
+
+La matriz de sensibilidad de salida se define como la matriz de transferencia desde $d$ hasta $y$:
+
+$$
+S_{o}=\left(I+L_{o}\right)^{-1}, \quad y=S_{o} d
+$$
+
+Las matrices de sensibilidad complementaria de entrada y salida se definen como
+
+$$
+\begin{gathered}
+T_{i}=I-S_{i}=L_{i}\left(I+L_{i}\right)^{-1} \\
+T_{o}=I-S_{o}=L_{o}\left(I+L_{o}\right)^{-1}
+\end{gathered}
+$$
+
+respectivamente. (La palabra complementaria se usa para indicar que $T$ es el complemento de $S$, es decir, $T=I-S$.) La matriz $I+L_{i}$ se llama matriz de diferencia de retorno de entrada, y $I+L_{o}$ se llama matriz de diferencia de retorno de salida.
+
+Es fácil ver que el sistema en lazo cerrado, si es internamente estable, satisface las siguientes ecuaciones:
+
+
+\begin{align*}
+y & =T_{o}(r-n)+S_{o} P d_{i}+S_{o} d  \tag{6.1}\\
+r-y & =S_{o}(r-d)+T_{o} n-S_{o} P d_{i}  \tag{6.2}\\
+u & =K S_{o}(r-n)-K S_{o} d-T_{i} d_{i}  \tag{6.3}\\
+u_{p} & =K S_{o}(r-n)-K S_{o} d+S_{i} d_{i} \tag{6.4}
+\end{align*}
+
+
+Estas cuatro ecuaciones muestran los beneficios fundamentales y los objetivos de diseño inherentes en lazos de realimentación. Por ejemplo, la ecuación (6.1) muestra que los efectos de la perturbación $d$ sobre la salida de la planta pueden hacerse "pequeños" haciendo pequeña la función de sensibilidad de salida $S_{o}$. De forma similar, la ecuación (6.4) muestra que los efectos de la perturbación $d_{i}$ sobre la entrada de la planta pueden hacerse pequeños haciendo pequeña la función de sensibilidad de entrada $S_{i}$. La noción de pequeñez de una matriz de transferencia en cierto rango de frecuencias puede hacerse explícita usando valores singulares dependientes de la frecuencia; por ejemplo, $\bar{\sigma}\left(S_{o}\right)<1$ sobre un rango de frecuencias significaría que los efectos de la perturbación $d$ en la salida de la planta están efectivamente desensibilizados en ese rango de frecuencias.
+
+Por lo tanto, un buen rechazo de perturbaciones en la salida de la planta $(y)$ requeriría que
+
+$$
+\begin{aligned}
+\bar{\sigma}\left(S_{o}\right) & \left.=\bar{\sigma}\left((I+P K)^{-1}\right)=\frac{1}{\underline{\sigma}(I+P K)} \quad \text { (para perturbación en salida de planta, } d\right) \\
+\bar{\sigma}\left(S_{o} P\right) & \left.=\bar{\sigma}\left((I+P K)^{-1} P\right)=\bar{\sigma}\left(P S_{i}\right) \quad \text { (para perturbación en entrada de planta, } d_{i}\right)
+\end{aligned}
+$$
+
+sean pequeñas, y un buen rechazo de perturbaciones en la entrada de la planta $\left(u_{p}\right)$ requeriría que
+
+$$
+\begin{aligned}
+\bar{\sigma}\left(S_{i}\right) & \left.=\bar{\sigma}\left((I+K P)^{-1}\right)=\frac{1}{\underline{\sigma}(I+K P)} \quad \text { (para perturbación en entrada de planta, } d_{i}\right) \\
+\bar{\sigma}\left(S_{i} K\right) & \left.=\bar{\sigma}\left(K(I+P K)^{-1}\right)=\bar{\sigma}\left(K S_{o}\right) \quad \text { (para perturbación en salida de planta, } d\right)
+\end{aligned}
+$$
+
+sean pequeñas, particularmente en el rango de bajas frecuencias donde $d$ y $d_{i}$ suelen ser significativas.
+
+Nótese que
+
+$$
+\begin{aligned}
+& \underline{\sigma}(P K)-1 \leq \underline{\sigma}(I+P K) \leq \underline{\sigma}(P K)+1 \\
+& \underline{\sigma}(K P)-1 \leq \underline{\sigma}(I+K P) \leq \underline{\sigma}(K P)+1
+\end{aligned}
+$$
+
+entonces
+
+$$
+\begin{aligned}
+& \frac{1}{\underline{\sigma}(P K)+1} \leq \bar{\sigma}\left(S_{o}\right) \leq \frac{1}{\underline{\sigma}(P K)-1}, \quad \text { si } \quad \underline{\sigma}(P K)>1 \\
+& \frac{1}{\underline{\sigma}(K P)+1} \leq \bar{\sigma}\left(S_{i}\right) \leq \frac{1}{\underline{\sigma}(K P)-1}, \quad \text { si } \quad \underline{\sigma}(K P)>1
+\end{aligned}
+$$
+
+Estas ecuaciones implican que
+
+$$
+\begin{aligned}
+& \bar{\sigma}\left(S_{o}\right) \ll 1 \Longleftrightarrow \underline{\sigma}(P K) \gg 1 \\
+& \bar{\sigma}\left(S_{i}\right) \ll 1 \Longleftrightarrow \underline{\sigma}(K P) \gg 1
+\end{aligned}
+$$
+
+Ahora suponga que $P$ y $K$ son invertibles; entonces
+
+$$
+\begin{aligned}
+& \underline{\sigma}(P K) \gg 1 \text { o } \underline{\sigma}(K P) \gg 1 \Longleftrightarrow \bar{\sigma}\left(S_{o} P\right)=\bar{\sigma}\left((I+P K)^{-1} P\right) \approx \bar{\sigma}\left(K^{-1}\right)=\frac{1}{\underline{\sigma}(K)} \\
+& \underline{\sigma}(P K) \gg 1 \text { o } \underline{\sigma}(K P) \gg 1 \Longleftrightarrow \bar{\sigma}\left(K S_{o}\right)=\bar{\sigma}\left(K(I+P K)^{-1}\right) \approx \bar{\sigma}\left(P^{-1}\right)=\frac{1}{\underline{\sigma}(P)}
+\end{aligned}
+$$
+
+Por lo tanto, un buen desempeño en la salida de planta $(y)$ requiere, en general, una gran ganancia de lazo de salida $\underline{\sigma}\left(L_{o}\right)=\underline{\sigma}(P K) \gg 1$ en el rango de frecuencias donde $d$ es significativa para desensibilizar $d$, y una ganancia del controlador suficientemente grande $\underline{\sigma}(K) \gg 1$ en el rango de frecuencias donde $d_{i}$ es significativa para desensibilizar $d_{i}$. De forma similar, un buen desempeño en la entrada de planta $\left(u_{p}\right)$ requiere, en general, gran ganancia de lazo de entrada $\underline{\sigma}\left(L_{i}\right)=\underline{\sigma}(K P) \gg 1$ en el rango de frecuencias donde $d_{i}$ es significativa para desensibilizar $d_{i}$, y ganancia de planta suficientemente grande $\underline{\sigma}(P) \gg 1$ en el rango de frecuencias donde $d$ es significativa, la cual no puede cambiarse mediante diseño del controlador, para desensibilizar $d$. [En general, $S_{o} \neq S_{i}$ salvo que $K$ y $P$ sean cuadradas y diagonales, lo cual es cierto si $P$ es un sistema escalar. Por lo tanto, un $\bar{\sigma}\left(S_{o}\right)$ pequeño no implica necesariamente un $\bar{\sigma}\left(S_{i}\right)$ pequeño; en otras palabras, buen rechazo de perturbaciones en la salida no implica necesariamente buen rechazo de perturbaciones en la entrada de planta.]
+
+Así, el buen diseño de lazo de realimentación multivariable se reduce a lograr altas ganancias de lazo (y posiblemente del controlador) en el rango de frecuencia necesario.
+
+A pesar de la simplicidad de esta afirmación, el diseño por realimentación no es en absoluto trivial. Esto ocurre porque las ganancias de lazo no pueden hacerse arbitrariamente altas sobre rangos de frecuencia arbitrariamente amplios. Más bien, deben satisfacer ciertos compromisos de desempeño y limitaciones de diseño. Un compromiso importante de desempeño, por ejemplo, concierne la reducción de errores por referencia/perturbación frente a la estabilidad bajo incertidumbre de modelo. Suponga que el modelo de planta se perturba a $(I+\Delta) P$ con $\Delta$ estable, y suponga que el sistema nominal es estable (es decir, el sistema en lazo cerrado con $\Delta=0$ es estable). Entonces el sistema perturbado en lazo cerrado es estable si
+
+$$
+\operatorname{det}(I+(I+\Delta) P K)=\operatorname{det}(I+P K) \operatorname{det}\left(I+\Delta T_{o}\right)
+$$
+
+no tiene ceros en semiplano derecho. Esto, en general, equivale a requerir que $\left\|\Delta T_{o}\right\|$ sea pequeño o que $\bar{\sigma}\left(T_{o}\right)$ sea pequeño en aquellas frecuencias donde $\Delta$ es significativa, típicamente en alta frecuencia, lo cual a su vez implica que la ganancia de lazo, $\bar{\sigma}\left(L_{o}\right)$, debe ser pequeña en esas frecuencias.
+
+Otro compromiso adicional aparece con la reducción del error por ruido de sensor. El conflicto entre rechazo de perturbaciones y reducción de ruido de sensor es evidente en la ecuación (6.1). Valores grandes de $\underline{\sigma}\left(L_{o}(j \omega)\right)$ sobre un amplio rango de frecuencias hacen pequeño el error debido a $d$. Sin embargo, también hacen grande el error debido a $n$ porque ese ruido "pasa" en ese mismo rango de frecuencias, es decir,
+
+$$
+y=T_{o}(r-n)+S_{o} P d_{i}+S_{o} d \approx(r-n)
+$$
+
+Nótese que $n$ suele ser significativo en el rango de alta frecuencia. Peor aún, ganancias de lazo grandes fuera del ancho de banda de $P$, es decir, $\underline{\sigma}\left(L_{o}(j \omega)\right) \gg 1$ o $\underline{\sigma}\left(L_{i}(j \omega)\right) \gg 1$ mientras $\bar{\sigma}(P(j \omega)) \ll 1$, pueden hacer que la actividad de control $(u)$ sea inaceptable, lo que puede provocar saturación de actuadores. Esto se sigue de
+
+$$
+u=K S_{o}(r-n-d)-T_{i} d_{i}=S_{i} K(r-n-d)-T_{i} d_{i} \approx P^{-1}(r-n-d)-d_{i}
+$$
+
+Aquí hemos supuesto, por conveniencia, que $P$ es cuadrada e invertible. La ecuación resultante muestra que las perturbaciones y el ruido de sensor en realidad se amplifican en $u$ cuando el rango de frecuencia excede significativamente el ancho de banda de $P$, ya que para $\omega$ tal que $\bar{\sigma}(P(j \omega)) \ll 1$ se tiene
+
+$$
+\underline{\sigma}\left[P^{-1}(j \omega)\right]=\frac{1}{\bar{\sigma}[P(j \omega)]} \gg 1
+$$
+
+De forma similar, la ganancia del controlador, $\bar{\sigma}(K)$, también debe mantenerse no demasiado grande en el rango de frecuencias donde la ganancia de lazo es pequeña, para no saturar los actuadores. Esto se debe a que, para ganancia de lazo pequeña $\bar{\sigma}\left(L_{o}(j \omega)\right) \ll 1$ o $\bar{\sigma}\left(L_{i}(j \omega)\right) \ll 1$,
+
+$$
+u=K S_{o}(r-n-d)-T_{i} d_{i} \approx K(r-n-d)
+$$
+
+Por lo tanto, es deseable mantener $\bar{\sigma}(K)$ no demasiado grande cuando la ganancia de lazo es pequeña.
+
+Para resumir la discusión anterior, observamos que un buen desempeño requiere, en cierto rango de frecuencias, típicamente un rango de bajas frecuencias $\left(0, \omega_{l}\right)$,
+
+$$
+\underline{\sigma}(P K) \gg 1, \quad \underline{\sigma}(K P) \gg 1, \quad \underline{\sigma}(K) \gg 1
+$$
+
+y una buena robustez y buen rechazo de ruido de sensor requieren, en cierto rango de frecuencias, típicamente un rango de altas frecuencias $\left(\omega_{h}, \infty\right)$,
+
+$$
+\bar{\sigma}(P K) \ll 1, \quad \bar{\sigma}(K P) \ll 1, \quad \bar{\sigma}(K) \leq M
+$$
+
+donde $M$ no es demasiado grande. Estos requerimientos de diseño se muestran gráficamente en la Figura 6.2. Las frecuencias específicas $\omega_{l}$ y $\omega_{h}$ dependen de la aplicación particular y del conocimiento que se tenga sobre las características de perturbación, las incertidumbres de modelado y los niveles de ruido de sensor.
+
+\insertimage[\label{img:ganancia-lazo-deseada}]{2024_06_29_ce7c73b22613114bd4d6g-099_681_1021_817_541}{width=0.35\textwidth}{Ganancia de lazo deseada.}
+
+\section{Desempeño ponderado $\mathcal{H}_2$ y $\mathcal{H}_{\infty}$}
+En esta sección, consideramos cómo formular algunos objetivos de desempeño en problemas matemáticamente tratables. Como se mostró en la Sección 6.1, los objetivos de desempeño de un sistema con realimentación suelen especificarse en términos de requisitos sobre funciones de sensibilidad y/o sensibilidad complementaria, o en términos de otras funciones de transferencia en lazo cerrado. Por ejemplo, para un sistema escalar, los criterios de desempeño pueden especificarse exigiendo
+
+$$
+\begin{cases}|S(j \omega)| \leq \varepsilon, & \forall \omega \leq \omega_{0} \\ |S(j \omega)| \leq M, & \forall \omega>\omega_{0}\end{cases}
+$$
+
+donde $S(j \omega)=1 /(1+P(j \omega) K(j \omega))$. Sin embargo, es mucho más conveniente reflejar los objetivos de desempeño del sistema eligiendo funciones de ponderación apropiadas. Por ejemplo, el objetivo de desempeño anterior puede escribirse como
+
+$$
+\left|W_{e}(j \omega) S(j \omega)\right| \leq 1, \quad \forall \omega
+$$
+
+con
+
+$$
+\left|W_{e}(j \omega)\right|=\left\{\begin{array}{cc}
+1 / \varepsilon, & \forall \omega \leq \omega_{0} \\
+1 / M, & \forall \omega>\omega_{0}
+\end{array}\right.
+$$
+
+Para usar $W_{e}$ en el diseño de control, normalmente se emplea una función de transferencia racional $W_{e}(s)$ que aproxime la respuesta en frecuencia anterior.
+
+La ventaja de usar especificaciones de desempeño ponderadas es evidente en el diseño multivariable. Primero, algunos componentes de una señal vectorial suelen ser más importantes que otros. Segundo, cada componente de la señal puede no medirse en las mismas unidades; por ejemplo, algunos componentes de la señal de error de salida pueden medirse en términos de longitud y otros en términos de voltaje. Por tanto, las funciones de ponderación son esenciales para hacer comparables estos componentes. Además, puede interesarnos principalmente rechazar errores en cierto rango de frecuencias (por ejemplo, bajas frecuencias); por ello deben elegirse ponderaciones dependientes de la frecuencia.
+
+\insertimage[\label{img:configuracion-realimentacion-con-ponderaciones}]{2024_06_29_ce7c73b22613114bd4d6g-100_486_1182_1123_466}{width=0.35\textwidth}{Configuración estándar de realimentación con ponderaciones.}
+
+En general, modificaremos el diagrama estándar de la Figura 6.1 al de la Figura 6.3. Las funciones de ponderación en la Figura 6.3 se eligen para reflejar los objetivos de diseño y el conocimiento de perturbaciones y ruido de sensor. Por ejemplo, $W_{d}$ y $W_{i}$ pueden elegirse para reflejar el contenido en frecuencia de las perturbaciones $d$ y $d_{i}$, o pueden usarse para modelar el espectro de potencia de perturbación según la naturaleza de las señales involucradas en los sistemas prácticos. La matriz de ponderación $W_{n}$ se usa para modelar el contenido en frecuencia del ruido de sensor, mientras que $W_{e}$ puede usarse para reflejar requisitos sobre la forma de ciertas funciones de transferencia en lazo cerrado (por ejemplo, la forma de la función de sensibilidad de salida). De forma similar, $W_{u}$ puede usarse para reflejar restricciones sobre señales de control o de actuador, y el precompensador punteado $W_{r}$ es un elemento opcional usado para imponer una forma deliberada al comando o para representar un sistema con realimentación no unitaria en forma equivalente de realimentación unitaria.
+
+De hecho, es esencial usar matrices de ponderación apropiadas para poder utilizar la teoría de control óptimo discutida en este libro (es decir, teoría $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$). Por ello, un paso muy importante en el proceso de diseño del controlador es elegir adecuadamente los pesos $W_{e}, W_{d}, W_{u}$ y posiblemente $W_{n}, W_{i}, W_{r}$. La elección adecuada de pesos para un problema práctico particular no es trivial. En muchas ocasiones, como en el caso escalar, los pesos se eligen puramente como parámetro de diseño sin base física directa; por tanto, pueden tratarse como parámetros de ajuste escogidos por el diseñador para lograr el mejor compromiso entre objetivos en conflicto. La selección de las matrices de ponderación debe guiarse por las entradas esperadas del sistema y la importancia relativa de las salidas.
+
+Así, el diseño de control puede verse como el proceso de elegir un controlador $K$ tal que ciertas señales ponderadas se hagan pequeñas en algún sentido. Existen muchas formas de definir la pequeñez de una señal o de una matriz de transferencia, como discutimos en el capítulo anterior. Distintas definiciones conducen a distintos métodos de síntesis de control, y algunos son mucho más difíciles que otros. Un ingeniero de control debe juzgar la complejidad matemática frente a los requerimientos de ingeniería.
+
+A continuación introducimos dos clases de formulaciones de desempeño: criterios $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$. Para simplificar la presentación, supondremos que $d_{i}=0$ y $n=0$.
+
+\subsection*{Desempeño $\mathcal{H}_{2}$}
+Suponga, por ejemplo, que la perturbación $\tilde{d}$ puede modelarse aproximadamente como un impulso con dirección de entrada aleatoria; es decir,
+
+$$
+\tilde{d}(t)=\eta \delta(t)
+$$
+
+y
+
+$$
+E\left(\eta \eta^{*}\right)=I
+$$
+
+donde $E$ denota la esperanza. Podemos elegir minimizar la energía esperada del error $e$ debida a la perturbación $\tilde{d}$:
+
+$$
+E\left\{\|e\|_{2}^{2}\right\}=E\left\{\int_{0}^{\infty}\|e\|^{2} d t\right\}=\left\|W_{e} S_{o} W_{d}\right\|_{2}^{2}
+$$
+
+En general, un controlador que minimice solo el criterio anterior puede llevar a una señal de control $u$ muy grande, lo que podría causar saturación de actuadores y muchos otros problemas indeseables. Por ello, para un diseño realista, es necesario incluir la señal de control $u$ en la función de costo. Así, nuestro criterio de diseño usualmente sería algo como
+
+$$
+E\left\{\|e\|_{2}^{2}+\rho^{2}\|\tilde{u}\|_{2}^{2}\right\}=\left\|\left[\begin{array}{c}
+W_{e} S_{o} W_{d} \\
+\rho W_{u} K S_{o} W_{d}
+\end{array}\right]\right\|_{2}^{2}
+$$
+
+con alguna elección apropiada de matriz de ponderación $W_{u}$ y escalar $\rho$. El parámetro $\rho$ define claramente el compromiso discutido antes entre buen rechazo de perturbaciones en la salida y esfuerzo de control (o rechazo de perturbación y ruido de sensor en los actuadores). Nótese que puede fijarse $\rho=1$ mediante una elección apropiada de $W_{u}$. Este problema puede verse como minimizar la energía consumida por el sistema para rechazar la perturbación $d$.
+
+Este tipo de problema fue el paradigma dominante en las décadas de 1960 y 1970 y suele denominarse control lineal cuadrático gaussiano, o simplemente LQG. (También nos referiremos a estos problemas como problemas de sensibilidad mixta $\mathcal{H}_{2}$ para mantener consistencia con los problemas $\mathcal{H}_{\infty}$ discutidos después.) El desarrollo de este paradigma estimuló amplios esfuerzos de investigación y es responsable de importantes innovaciones tecnológicas, particularmente en el área de estimación. Las contribuciones teóricas incluyen una comprensión más profunda de sistemas lineales y mejores métodos computacionales para sistemas complejos mediante técnicas en espacio de estados. La principal limitación de esta teoría es la ausencia de un tratamiento formal de la incertidumbre en la planta misma. Al permitir solo ruido aditivo como incertidumbre, la teoría estocástica ignoró este importante asunto práctico. La incertidumbre de planta es particularmente crítica en sistemas con realimentación. (Véase Paganini $[1995,1996]$ para algunos resultados recientes sobre teoría de control robusto $\mathcal{H}_{2}$.)
+
+\subsection*{Desempeño $\mathcal{H}_{\infty}$}
+Aunque la norma $\mathcal{H}_{2}$ (o norma $\mathcal{L}_{2}$) puede ser una medida de desempeño significativa y aunque la teoría LQG puede brindar compromisos de diseño eficientes bajo ciertas hipótesis de perturbación y planta, la norma $\mathcal{H}_{2}$ sufre una deficiencia mayor. Esta deficiencia se debe a que el compromiso entre reducción de error por perturbación y reducción de error por ruido de sensor no es la única restricción del diseño por realimentación. El problema es que estos compromisos de desempeño suelen quedar eclipsados por una segunda limitación sobre ganancias altas de lazo: el requisito de tolerancia a incertidumbres. Aunque un controlador pueda diseñarse usando modelos FDLTI, el diseño debe implementarse y operar con una planta física real. Las propiedades de sistemas físicos (en particular, las formas en que se desvían de modelos lineales de dimensión finita) imponen limitaciones estrictas sobre el rango de frecuencias en el cual las ganancias de lazo pueden ser grandes.
+
+Una solución a este problema sería imponer restricciones explícitas a la ganancia de lazo en la función de costo. Por ejemplo, puede elegirse minimizar
+
+$$
+\sup _{\|\tilde{d}\|_{2} \leq 1}\|e\|_{2}=\left\|W_{e} S_{o} W_{d}\right\|_{\infty}
+$$
+
+sujeto a algunas restricciones sobre energía de control o ancho de banda de control:
+
+$$
+\sup _{\|\tilde{d}\|_{2} \leq 1}\|\tilde{u}\|_{2}=\left\|W_{u} K S_{o} W_{d}\right\|_{\infty}
+$$
+
+O, con mayor frecuencia, puede introducirse un parámetro $\rho$ y un criterio mixto
+
+$$
+\sup _{\|\tilde{d}\|_{2} \leq 1}\left\{\|e\|_{2}^{2}+\rho^{2}\|\tilde{u}\|_{2}^{2}\right\}=\left\|\left[\begin{array}{c}
+W_{e} S_{o} W_{d} \\
+\rho W_{u} K S_{o} W_{d}
+\end{array}\right]\right\|_{\infty}^{2}
+$$
+
+Alternativamente, si el margen de estabilidad robusta del sistema es la principal preocupación, debe limitarse la sensibilidad complementaria ponderada. Así, toda la función de costo puede ser
+
+$$
+\left\|\left[\begin{array}{c}
+W_{e} S_{o} W_{d} \\
+\rho W_{1} T_{o} W_{2}
+\end{array}\right]\right\|_{\infty}
+$$
+
+donde $W_{1}$ y $W_{2}$ son matrices de escalamiento de incertidumbre dependientes de la frecuencia. Estos problemas de diseño suelen llamarse problemas de sensibilidad mixta $\mathcal{H}_{\infty}$. Para un sistema escalar, un problema de minimización en norma $\mathcal{H}_{\infty}$ también puede verse como minimizar la magnitud máxima de la respuesta en régimen permanente del sistema con respecto a entradas sinusoidales de peor caso.
+
+\section{Selección de funciones de ponderación}
+La selección de funciones de ponderación para un problema de diseño específico suele involucrar ajustes ad hoc, muchas iteraciones y afinación fina. Es muy difícil dar una fórmula general de ponderaciones que funcione en todos los casos. No obstante, intentaremos dar algunas guías en esta sección observando un problema SISO típico.
+
+Considere un sistema SISO con realimentación como en la Figura 6.1. Entonces el error de seguimiento es $e=r-y=S(r-d)+T n-S P d_{i}$. Por tanto, como hemos discutido antes, debemos mantener $|S|$ pequeño sobre un rango de frecuencias, típicamente bajas frecuencias donde $r$ y $d$ son significativas. Para motivar la elección de la ponderación de desempeño $W_{e}$, sea $L=P K$ un sistema estándar de segundo orden
+
+$$
+L=\frac{\omega_{n}^{2}}{s\left(s+2 \xi \omega_{n}\right)}
+$$
+
+Es bien conocido en control clásico que la calidad de la respuesta temporal (al escalón) puede cuantificarse por tiempo de subida $t_{r}$, tiempo de establecimiento $t_{s}$ y sobreimpulso porcentual $100 M_{p} \%$. Además, estos índices de desempeño pueden calcularse aproximadamente como
+
+$$
+t_{r} \approx \frac{0.6+2.16 \xi}{\omega_{n}}, 0.3 \leq \xi \leq 0.8 ; t_{s} \approx \frac{4}{\xi \omega_{n}} ; M_{p}=e^{-\frac{\pi \xi}{\sqrt{1-\xi^{2}}}}, 0<\xi<1
+$$
+
+Los puntos clave a notar son que (1) la rapidez de respuesta del sistema es proporcional a $\omega_{n}$ y (2) el sobreimpulso de la respuesta del sistema está determinado solo por la razón de amortiguamiento $\xi$. Es bien conocido que la frecuencia $\omega_{n}$ y la razón de amortiguamiento $\xi$ pueden capturarse esencialmente en el dominio de la frecuencia mediante la frecuencia de cruce de lazo abierto y el margen de fase, o bien mediante el ancho de banda y el pico resonante de la función de sensibilidad complementaria en lazo cerrado $T$.
+
+Dado que nuestros objetivos de desempeño están estrechamente relacionados con la función de sensibilidad, consideraremos con cierto detalle cómo estos índices temporales o, equivalentemente, $\omega_{n}$ y $\xi$, se relacionan con la respuesta en frecuencia de la función de sensibilidad
+
+$$
+S=\frac{1}{1+L}=\frac{s\left(s+2 \xi \omega_{n}\right)}{s^{2}+2 \xi \omega_{n} s+\omega_{n}^{2}}
+$$
+
+\insertimage[\label{img:funcion-sensibilidad-s-xi}]{2024_06_29_ce7c73b22613114bd4d6g-104_761_1147_411_478}{width=0.35\textwidth}{Función de sensibilidad $S$ para $\xi=0.05,0.1,0.2,0.5,0.8$, y 1 con frecuencia normalizada $\left(\omega / \omega_{n}\right)$.}
+
+La respuesta en frecuencia de la función de sensibilidad $S$ se muestra en la Figura 6.4. Nótese que $\left|S\left(j \omega_{n} / \sqrt{2}\right)\right|=1$. Podemos considerar el ancho de banda en lazo cerrado como $\omega_{b} \approx \omega_{n} / \sqrt{2}$, ya que más allá de esa frecuencia el sistema en lazo cerrado no podrá seguir la referencia y la perturbación en realidad será amplificada.
+
+Luego, nótese que
+
+$$
+M_{s}:=\|S\|_{\infty}=\left|S\left(j \omega_{\max }\right)\right|=\frac{\alpha \sqrt{\alpha^{2}+4 \xi^{2}}}{\sqrt{\left(1-\alpha^{2}\right)^{2}+4 \xi^{2} \alpha^{2}}}
+$$
+
+donde $\alpha=\sqrt{0.5+0.5 \sqrt{1+8 \xi^{2}}}$ y $\omega_{\max }=\alpha \omega_{n}$. Por ejemplo, $M_{s}=5.123$ cuando $\xi=0.1$. La relación entre $\xi$ y $M_{s}$ se muestra en la Figura 6.5. Es claro que el sobreimpulso puede ser excesivo si $M_{s}$ es grande. Por lo tanto, un buen diseño de control no debería tener un $M_{s}$ muy grande.
+
+Ahora suponga que se nos dan especificaciones de desempeño en dominio del tiempo; entonces podemos determinar los requisitos correspondientes en dominio de la frecuencia en términos del ancho de banda $\omega_{b}$ y la sensibilidad pico $M_{s}$. Por lo tanto, un buen diseño de control debe producir una función de sensibilidad $S$ que satisfaga simultáneamente los requisitos de $\omega_{b}$ y $M_{s}$, como se muestra en la Figura 6.6. Estos requisitos pueden representarse aproximadamente como
+
+$$
+|S(s)| \leq\left|\frac{s}{s / M_{s}+\omega_{b}}\right|, s=j \omega, \forall \omega
+$$
+
+\insertimage[\label{img:sensibilidad-pico-vs-amortiguamiento}]{2024_06_29_ce7c73b22613114bd4d6g-105_634_1133_545_491}{width=0.35\textwidth}{Sensibilidad pico $M_{s}$ versus razón de amortiguamiento $\xi$.}
+
+\insertimage[\label{img:ponderacion-desempeno-we-s-deseada}]{2024_06_29_ce7c73b22613114bd4d6g-105_626_1155_1389_474}{width=0.35\textwidth}{Ponderación de desempeño $W_{e}$ y $S$ deseada.}
+
+O, equivalentemente, $\left|W_{e} S\right| \leq 1$ con
+
+
+\begin{equation*}
+W_{e}=\frac{s / M_{s}+\omega_{b}}{s} \tag{6.5}
+\end{equation*}
+
+
+La discusión anterior aplica en principio a la mayoría de diseños de control y, por tanto, la ponderación anterior puede usarse como candidata en un diseño inicial. Dado que el error en estado estacionario respecto a una entrada escalón está dado por $|S(0)|$, es claro que $|S(0)|=0$ si el sistema en lazo cerrado es estable y $\left\|W_{e} S\right\|_{\infty}<\infty$.
+
+Desafortunadamente, las técnicas de control óptimo descritas en este libro no pueden usarse directamente para problemas con tales ponderaciones, ya que esas técnicas suponen que todos los polos inestables del sistema (incluyendo planta y todas las ponderaciones de desempeño y control) son estabilizables por el control y detectables desde las salidas de medición, lo cual claramente no se satisface si $W_{e}$ tiene un polo sobre el eje imaginario, pues $W_{e}$ no es detectable desde la medición. Discutiremos en el Capítulo 14 cómo reformular estos problemas para que las técnicas descritas en este libro puedan aplicarse. Existe una teoría que trata directamente estos problemas, pero es mucho más complicada, tanto teórica como computacionalmente, y no parece ofrecer mucha ventaja.
+
+\insertimage[\label{img:ponderacion-practica-we-s-deseada}]{2024_06_29_ce7c73b22613114bd4d6g-106_626_1152_1178_476}{width=0.35\textwidth}{Ponderación práctica de desempeño $W_{e}$ y $S$ deseada.}
+
+Ahora, en lugar de seguimiento perfecto para entrada escalón, suponga que solo necesitamos que el error en estado estacionario respecto a escalón no sea mayor que $\epsilon$ (es decir, $|S(0)| \leq \epsilon$); entonces basta elegir una ponderación $W_{e}$ que satisfaga $\left|W_{e}(0)\right| \geq 1 / \varepsilon$ de modo que pueda lograrse $\left\|W_{e} S\right\|_{\infty} \leq 1$. Una elección posible de $W_{e}$ puede obtenerse modificando la ponderación de la ecuación (6.5):
+
+
+\begin{equation*}
+W_{e}=\frac{s / M_{s}+\omega_{b}}{s+\omega_{b} \varepsilon} \tag{6.6}
+\end{equation*}
+
+
+Por tanto, para fines prácticos, usualmente puede elegirse un $\varepsilon$ apropiado, como se muestra en la Figura 6.7, para satisfacer las especificaciones de desempeño. Si se desea una transición más abrupta entre baja y alta frecuencia, la ponderación $W_{e}$ puede modificarse como sigue:
+
+
+\begin{equation*}
+W_{e}=\left(\frac{s / \sqrt[k]{M_{s}}+\omega_{b}}{s+\omega_{b} \sqrt[k]{\varepsilon}}\right)^{k} \tag{6.7}
+\end{equation*}
+
+
+para algún entero $k \geq 1$.
+
+La selección de la ponderación de control $W_{u}$ se obtiene de forma similar a partir de la discusión anterior considerando la ecuación de señal de control
+
+$$
+u=K S(r-n-d)-T d_{i}
+$$
+
+La magnitud de $|K S|$ en el rango de baja frecuencia está esencialmente limitada por el costo permitido de esfuerzo de control y por el límite de saturación de los actuadores; por tanto, en general, la ganancia máxima $M_{u}$ de $K S$ puede ser bastante grande, mientras que la ganancia en alta frecuencia está esencialmente limitada por el ancho de banda del controlador $\left(\omega_{b c}\right)$ y por las frecuencias de ruido (de sensor). Idealmente, se desea atenuar tan rápido como sea posible más allá del ancho de banda de control deseado para que el ruido de alta frecuencia se atenúe lo más posible. Así, una ponderación candidata $W_{u}$ sería
+
+
+\begin{equation*}
+W_{u}=\frac{s+\omega_{b c} / M_{u}}{\omega_{b c}} \tag{6.8}
+\end{equation*}
+
+
+\insertimage[\label{img:ponderacion-control-wu-ks-deseada}]{2024_06_29_ce7c73b22613114bd4d6g-107_646_1152_1390_476}{width=0.35\textwidth}{Ponderación de control $W_{u}$ y $K S$ deseada.}
+
+Sin embargo, nuevamente, las técnicas de diseño óptimo desarrolladas en este libro no pueden aplicarse directamente a un problema con una ponderación de control impropia. Por ello, introduciremos un polo alejado para hacer $W_{u}$ propia:
+
+
+\begin{equation*}
+W_{u}=\frac{s+\omega_{b c} / M_{u}}{\varepsilon_{1} s+\omega_{b c}} \tag{6.9}
+\end{equation*}
+
+
+para un $\varepsilon_{1}>0$ pequeño, como se muestra en la Figura 6.8. De forma similar, si se desea una atenuación más rápida, puede elegirse
+
+
+\begin{equation*}
+W_{u}=\left(\frac{s+\omega_{b c} / \sqrt[k]{M_{u}}}{\sqrt[k]{\varepsilon_{1}} s+\omega_{b c}}\right)^{k} \tag{6.10}
+\end{equation*}
+
+
+para algún entero $k \geq 1$.
+
+Las ponderaciones para problemas MIMO pueden elegirse inicialmente como matrices diagonales, con cada término diagonal escogido en la forma anterior.
+
+\section{Relación de ganancia y fase de Bode}
+Un problema importante que surge frecuentemente es el nivel de desempeño que puede lograrse en diseño por realimentación. En la Sección 6.1 se mostró que los objetivos de diseño por realimentación son inherentemente conflictivos y que debe hacerse un compromiso entre distintos objetivos. También se sabe que requisitos fundamentales, como estabilidad y robustez, imponen limitaciones inherentes a las propiedades de realimentación independientemente del método de diseño, y esas limitaciones se vuelven más severas en presencia de ceros y polos en semiplano derecho en la función de transferencia de lazo abierto.
+
+En teoría clásica de realimentación, la relación integral ganancia-fase de Bode (véase Bode [1945]) se ha usado como herramienta importante para expresar restricciones de diseño en sistemas escalares. Esta relación integral dice que la fase de una función de transferencia estable y de fase mínima está determinada de manera única por su magnitud. Más precisamente, sea $L(s)$ una función de transferencia estable y de fase mínima; entonces
+
+
+\begin{equation*}
+\angle L\left(j \omega_{0}\right)=\frac{1}{\pi} \int_{-\infty}^{\infty} \frac{d \ln |L|}{d \nu} \ln \operatorname{coth} \frac{|\nu|}{2} d \nu \tag{6.11}
+\end{equation*}
+
+
+donde $\nu:=\ln \left(\omega / \omega_{0}\right)$. La función $\ln \operatorname{coth} \frac{|\nu|}{2}=\ln \frac{e^{|\nu| / 2}+e^{-|\nu| / 2}}{e^{|\nu| / 2}-e^{-|\nu| / 2}}$ está graficada en la Figura 6.9.
+
+Nótese que $\ln \operatorname{coth} \frac{|\nu|}{2}$ decrece rápidamente conforme $\omega$ se aleja de $\omega_{0}$ y, por lo tanto, la integral depende principalmente del comportamiento de $\frac{d \ln |L(j \omega)|}{d \nu}$ cerca de la frecuencia $\omega_{0}$. Esto queda claro de la siguiente integración:
+
+$$
+\frac{1}{\pi} \int_{-\alpha}^{\alpha} \ln \operatorname{coth} \frac{|\nu|}{2} d \nu=\left\{\begin{array}{ll}
+1.1406(\mathrm{rad}), & \alpha=\ln 3 \\
+1.3146(\mathrm{rad}), & \alpha=\ln 5 \\
+1.443(\mathrm{rad}), & \alpha=\ln 10
+\end{array}= \begin{cases}65.3^{\circ}, & \alpha=\ln 3 \\
+75.3^{\circ}, & \alpha=\ln 5 \\
+82.7^{\circ}, & \alpha=\ln 10\end{cases}\right.
+$$
+
+\insertimage[\label{img:funcion-log-coth}]{2024_06_29_ce7c73b22613114bd4d6g-109_762_895_405_607}{width=0.35\textwidth}{Función $\ln \operatorname{coth}\frac{|\nu|}{2}$ usada en la relación ganancia-fase de Bode.}
+
+Nótese que $\frac{d \ln |L(j \omega)|}{d \nu}$ es la pendiente del diagrama de Bode, generalmente negativa para casi todas las frecuencias. Se sigue que $\angle L\left(j \omega_{0}\right)$ será grande si la ganancia $L$ se atenúa lentamente cerca de $\omega_{0}$, y pequeña si se atenúa rápidamente cerca de $\omega_{0}$. Por ejemplo, suponga que la pendiente $\frac{d \ln |L(j \omega)|}{d \nu}=-\ell$, es decir, $\left(-20 \ell \mathrm{dB}\right.$ por década), en la vecindad de $\omega_{0}$; entonces es razonable esperar
+
+$$
+\angle L\left(j \omega_{0}\right)< \begin{cases}-\ell \times 65.3^{\circ}, & \text { si la pendiente de } L=-\ell \text { para } \frac{1}{3} \leq \frac{\omega}{\omega_{0}} \leq 3 \\ -\ell \times 75.3^{\circ}, & \text { si la pendiente de } L=-\ell \text { para } \frac{1}{5} \leq \frac{\omega}{\omega_{0}} \leq 5 \\ -\ell \times 82.7^{\circ}, & \text { si la pendiente de } L=-\ell \text { para } \frac{1}{10} \leq \frac{\omega}{\omega_{0}} \leq 10 .\end{cases}
+$$
+
+El comportamiento de $\angle L(j \omega)$ es particularmente importante cerca de la frecuencia de cruce $\omega_{c}$, donde $\left|L\left(j \omega_{c}\right)\right|=1$, ya que $\pi+\angle L\left(j \omega_{c}\right)$ es el margen de fase del sistema con realimentación. Además, la diferencia de retorno está dada por
+
+$$
+\left|1+L\left(j \omega_{c}\right)\right|=\left|1+L^{-1}\left(j \omega_{c}\right)\right|=2\left|\sin \frac{\pi+\angle L\left(j \omega_{c}\right)}{2}\right|,
+$$
+
+la cual no debe ser demasiado pequeña para tener buena robustez de estabilidad. Si $\pi+\angle L\left(j \omega_{c}\right)$ se fuerza a ser muy pequeño por una atenuación rápida de ganancia, el sistema con realimentación amplificará perturbaciones y mostrará poca tolerancia a incertidumbre en y cerca de $\omega_{c}$. Dado que generalmente se requiere que la función de transferencia de lazo $L$ caiga lo más rápido posible en alta frecuencia, es razonable esperar que $\angle L\left(j \omega_{c}\right)$ sea como máximo $-\ell \times 90^{\circ}$ si la pendiente de $L(j \omega)$ es $-\ell$ cerca de $\omega_{c}$. Así, es importante mantener la pendiente de $L$ cerca de $\omega_{c}$ no mucho menor que -1 en un rango razonablemente amplio de frecuencias para garantizar un desempeño razonable. El conflicto entre tasa de atenuación y calidad de lazo cerca del cruce es, por tanto, claramente evidente.
+
+La relación ganancia-fase de Bode puede extenderse fácilmente a funciones de transferencia estables y de fase no mínima. Sean $z_{1}, z_{2}, \ldots, z_{k}$ los ceros en semiplano derecho de $L(s)$, entonces $L$ puede factorizarse como
+
+$$
+L(s)=\frac{-s+z_{1}}{s+z_{1}} \frac{-s+z_{2}}{s+z_{2}} \cdots \frac{-s+z_{k}}{s+z_{k}} L_{\mathrm{mp}}(s)
+$$
+
+donde $L_{\mathrm{mp}}$ es estable y de fase mínima, y $|L(j \omega)|=\left|L_{\mathrm{mp}}(j \omega)\right|$. Por lo tanto,
+
+$$
+\begin{gathered}
+\angle L\left(j \omega_{0}\right)=\angle L_{\mathrm{mp}}\left(j \omega_{0}\right)+\angle \prod_{i=1}^{k} \frac{-j \omega_{0}+z_{i}}{j \omega_{0}+z_{i}} \\
+=\frac{1}{\pi} \int_{-\infty}^{\infty} \frac{d \ln \left|L_{\mathrm{mp}}\right|}{d \nu} \ln \operatorname{coth} \frac{|\nu|}{2} d \nu+\sum_{i=1}^{k} \angle \frac{-j \omega_{0}+z_{i}}{j \omega_{0}+z_{i}}
+\end{gathered}
+$$
+
+lo cual da
+
+
+\begin{equation*}
+\angle L\left(j \omega_{0}\right)=\frac{1}{\pi} \int_{-\infty}^{\infty} \frac{d \ln |L|}{d \nu} \ln \operatorname{coth} \frac{|\nu|}{2} d \nu+\sum_{i=1}^{k} \angle \frac{-j \omega_{0}+z_{i}}{j \omega_{0}+z_{i}} \tag{6.12}
+\end{equation*}
+
+
+Como $\angle \frac{-j \omega_{0}+z_{i}}{j \omega_{0}+z_{i}} \leq 0$ para cada $i$, un cero de fase no mínima aporta retraso de fase adicional e impone limitaciones sobre la tasa de caída de la ganancia en lazo abierto. Por ejemplo, suponga que $L$ tiene un cero en $z>0$; entonces
+
+$$
+\phi_{1}\left(\omega_{0} / z\right):=\left.\angle \frac{-j \omega_{0}+z}{j \omega_{0}+z}\right|_{\omega_{0}=z, z / 2, z / 4}=-90^{\circ},-53.13^{\circ},-28^{\circ}
+$$
+
+como se muestra en la Figura 6.10. Dado que la pendiente de $|L|$ cerca de la frecuencia de cruce es, en general, no mayor que -1, lo que significa que la fase debida a la parte de fase mínima $L_{\mathrm{mp}}$ de $L$ será, en general, no mayor que $-90^{\circ}$, la frecuencia de cruce (o ancho de banda en lazo cerrado) debe satisfacer
+
+
+\begin{equation*}
+\omega_{c}<z / 2 \tag{6.13}
+\end{equation*}
+
+
+para garantizar la estabilidad en lazo cerrado y un desempeño razonable.
+
+Ahora suponga que $L$ tiene un par de ceros complejos en semiplano derecho en $z=x \pm j y$ con $x>0$; entonces
+
+$$
+\begin{aligned}
+& \phi_2\left(\omega_0 /|z|\right):=\left.\angle \frac{-j \omega_0+z}{j \omega_0+z} \frac{-j \omega_0+\bar{z}}{j \omega_0+\bar{z}}\right|_{\omega_0=|z|,|z| / 2,|z| / 3,|z| / 4} \\
+& \approx\left\{\begin{array}{rrrrl}
+-180^{\circ}, & -106.26^{\circ}, & -73.7^{\circ}, & -56^{\circ}, & \operatorname{Re}(z) \gg \Im(z) \\
+-180^{\circ}, & -86.7^{\circ}, & -55.9^{\circ}, & -41.3^{\circ}, & \operatorname{Re}(z) \approx \Im(z) \\
+-360^{\circ}, & 0^{\circ}, & 0^{\circ}, & 0^{\circ}, & \operatorname{Re}(z) \ll \Im(z)
+\end{array}\right.
+\end{aligned}
+$$
+
+\insertimage[\label{img:fase-cero-real-panel-2}]{2024_06_29_ce7c73b22613114bd4d6g-111_721_811_453_646}{width=0.35\textwidth}{Fase $\phi_{1}\left(\omega_{0} / z\right)$ debida a un cero real $z>0$.}
+
+\insertimage[\label{img:fase-cero-complejo}]{2024_06_29_ce7c73b22613114bd4d6g-111_726_811_1385_646}{width=0.35\textwidth}{Fase $\phi_{2}\left(\omega_{0} /|z|\right)$ debida a un par de ceros complejos: $z=x \pm j y$ y $x>0$.}
+
+como se muestra en la Figura 6.11. En este caso concluimos que la frecuencia de cruce debe satisfacer
+
+\[
+\omega_{c}< \begin{cases}|z| / 4, & \operatorname{Re}(z) \gg \Im(z)  \tag{6.14}\\ |z| / 3, & \operatorname{Re}(z) \approx \Im(z) \\ |z|, & \operatorname{Re}(z) \ll \Im(z)\end{cases}
+\]
+
+para garantizar estabilidad en lazo cerrado y desempeño razonable.
+
+\section{Integral de sensibilidad de Bode}
+En esta sección, consideramos las limitaciones de diseño impuestas por restricciones de ancho de banda y por polos y ceros en semiplano derecho usando la integral de sensibilidad de Bode y la integral de Poisson. Sea $L$ la función de transferencia de lazo abierto con al menos dos polos más que ceros, y sean $p_{1}, p_{2}, \ldots, p_{m}$ los polos en semiplano derecho abierto de $L$. Entonces se cumple la siguiente integral de sensibilidad de Bode:
+
+
+\begin{equation*}
+\int_{0}^{\infty} \ln |S(j \omega)| d \omega=\pi \sum_{i=1}^{m} \operatorname{Re}\left(p_{i}\right) \tag{6.15}
+\end{equation*}
+
+
+En el caso en que $L$ sea estable, la integral se simplifica a
+
+
+\begin{equation*}
+\int_{0}^{\infty} \ln |S(j \omega)| d \omega=0 \tag{6.16}
+\end{equation*}
+
+
+Estas integrales muestran que existirá un rango de frecuencias sobre el cual la magnitud de la función de sensibilidad excede uno si se la mantiene por debajo de uno en otras frecuencias, como se ilustra en la Figura 6.12. Este es el llamado efecto colchón de agua (water-bed effect).
+
+\insertimage[\label{img:efecto-colchon-agua-sensibilidad}]{2024_06_29_ce7c73b22613114bd4d6g-112_518_897_1633_603}{width=0.35\textwidth}{Efecto colchón de agua de la función de sensibilidad.}
+
+Suponga que el sistema con realimentación está diseñado de modo que el nivel de reducción de sensibilidad viene dado por
+
+$$
+|S(j \omega)| \leq \epsilon<1, \quad \forall \omega \in\left[0, \omega_{l}\right]
+$$
+
+donde $\epsilon>0$ es una constante dada.
+
+Las restricciones de ancho de banda en diseño por realimentación típicamente requieren que la función de transferencia de lazo abierto sea pequeña por encima de cierta frecuencia especificada y que decrezca con una tasa equivalente a más de un exceso polo-cero por encima de esa frecuencia. Estas restricciones suelen ser necesarias para garantizar robustez de estabilidad pese a incertidumbre de modelado en la planta, particularmente en alta frecuencia. Una forma de cuantificar tales restricciones de ancho de banda es exigir que la función de transferencia de lazo abierto satisfaga
+
+$$
+|L(j \omega)| \leq \frac{M_{h}}{\omega^{1+\beta}} \leq \tilde{\epsilon}<1, \quad \forall \omega \in\left[\omega_{h}, \infty\right)
+$$
+
+donde $\omega_{h}>\omega_{l}$, y $M_{h}>0, \beta>0$ son constantes dadas.
+
+Nótese que para $\omega \geq \omega_{h}$,
+
+$$
+|S(j \omega)| \leq \frac{1}{1-|L(j \omega)|} \leq \frac{1}{1-\frac{M_{h}}{\omega^{1+\beta}}}
+$$
+
+y
+
+$$
+\begin{aligned}
+-\int_{\omega_{h}}^{\infty} \ln \left(1-\frac{M_{h}}{\omega^{1+\beta}}\right) d \omega & =\sum_{i=1}^{\infty} \int_{\omega_{h}}^{\infty} \frac{1}{i}\left(\frac{M_{h}}{\omega^{1+\beta}}\right)^{i} d \omega \\
+& =\sum_{i=1}^{\infty} \frac{1}{i} \frac{\omega_{h}}{i(1+\beta)-1}\left(\frac{M_{h}}{\omega_{h}^{1+\beta}}\right)^{i} \\
+& \leq \frac{\omega_{h}}{\beta} \sum_{i=1}^{\infty} \frac{1}{i}\left(\frac{M_{h}}{\omega_{h}^{1+\beta}}\right)^{i}=-\frac{\omega_{h}}{\beta} \ln \left(1-\frac{M_{h}}{\omega_{h}^{1+\beta}}\right) \\
+& \leq-\frac{\omega_{h}}{\beta} \ln (1-\tilde{\epsilon})
+\end{aligned}
+$$
+
+Entonces
+
+$$
+\begin{gathered}
+\pi \sum_{i=1}^{m} \operatorname{Re}\left(p_{i}\right)=\int_{0}^{\infty} \ln |S(j \omega)| d \omega \\
+=\int_{0}^{\omega_{l}} \ln |S(j \omega)| d \omega+\int_{\omega_{l}}^{\omega_{h}} \ln |S(j \omega)| d \omega+\int_{\omega_{h}}^{\infty} \ln |S(j \omega)| d \omega \\
+\leq \omega_{l} \ln \epsilon+\left(\omega_{h}-\omega_{l}\right) \max _{\omega \in\left[\omega_{l}, \omega_{h}\right]} \ln |S(j \omega)|-\int_{\omega_{h}}^{\infty} \ln \left(1-\frac{M_{h}}{\omega^{1+\beta}}\right) d \omega \\
+\leq \omega_{l} \ln \epsilon+\left(\omega_{h}-\omega_{l}\right) \max _{\omega \in\left[\omega_{l}, \omega_{h}\right]} \ln |S(j \omega)|-\frac{\omega_{h}}{\beta} \ln (1-\tilde{\epsilon})
+\end{gathered}
+$$
+
+lo cual da
+
+$$
+\max _{\omega \in\left[\omega_{l}, \omega_{h}\right]}|S(j \omega)| \geq e^{\alpha}\left(\frac{1}{\epsilon}\right)^{\frac{\omega_{l}}{\omega_{h}-\omega_{l}}}(1-\tilde{\epsilon})^{\frac{\omega_{h}}{\beta\left(\omega_{h}-\omega_{l}\right)}}
+$$
+
+donde
+
+$$
+\alpha=\frac{\pi \sum_{i=1}^{m} \operatorname{Re}\left(p_{i}\right)}{\omega_{h}-\omega_{l}}
+$$
+
+La cota inferior anterior muestra que la sensibilidad puede ser muy significativa en la banda de transición.
+
+A continuación, usando la relación integral de Poisson, investigamos las restricciones de diseño sobre propiedades de sensibilidad impuestas por ceros de fase no mínima del lazo abierto. Suponga que $L$ tiene al menos un polo más que ceros y suponga que $z=x_{0}+j y_{0}$ con $x_{0}>0$ es un cero en semiplano derecho de $L$. Entonces
+
+
+\begin{equation*}
+\int_{-\infty}^{\infty} \ln |S(j \omega)| \frac{x_{0}}{x_{0}^{2}+\left(\omega-y_{0}\right)^{2}} d \omega=\pi \ln \prod_{i=1}^{m}\left|\frac{z+p_{i}}{z-p_{i}}\right| \tag{6.17}
+\end{equation*}
+
+
+Esta integral implica que la capacidad de reducción de sensibilidad del sistema puede estar severamente limitada por polos inestables de lazo abierto y ceros de fase no mínima, especialmente cuando estos polos y ceros están cercanos entre sí.
+
+Defina
+
+$$
+\theta(z):=\int_{-\omega_{l}}^{\omega_{l}} \frac{x_{0}}{x_{0}^{2}+\left(\omega-y_{0}\right)^{2}} d \omega
+$$
+
+Entonces
+
+$$
+\begin{gathered}
+\pi \ln \prod_{i=1}^{m}\left|\frac{z+p_{i}}{z-p_{i}}\right|=\int_{-\infty}^{\infty} \ln |S(j \omega)| \frac{x_{0}}{x_{0}^{2}+\left(\omega-y_{0}\right)^{2}} d \omega \\
+\leq(\pi-\theta(z)) \ln \|S(j \omega)\|_{\infty}+\theta(z) \ln (\epsilon)
+\end{gathered}
+$$
+
+lo cual da
+
+$$
+\|S(s)\|_{\infty} \geq\left(\frac{1}{\epsilon}\right)^{\frac{\theta(z)}{\pi-\theta(z)}}\left(\prod_{i=1}^{m}\left|\frac{z+p_{i}}{z-p_{i}}\right|\right)^{\frac{\pi}{\pi-\theta(z)}}
+$$
+
+Esta cota inferior sobre la sensibilidad máxima muestra que, para un sistema de fase no mínima, su sensibilidad debe incrementarse significativamente por encima de uno en ciertas frecuencias si se desea reducción de sensibilidad en otras frecuencias.
+
+\section{Restricciones de analitcidad}
+Sean $p_{1}, p_{2}, \ldots, p_{m}$ y $z_{1}, z_{2}, \ldots, z_{k}$ los polos y ceros en semiplano derecho abierto de $L$, respectivamente. Suponga que el sistema en lazo cerrado es estable. Entonces
+
+$$
+S\left(p_{i}\right)=0, \quad T\left(p_{i}\right)=1, i=1,2, \ldots, m
+$$
+
+y
+
+$$
+S\left(z_{j}\right)=1, \quad T\left(z_{j}\right)=0, j=1,2, \ldots, k
+$$
+
+La estabilidad interna del sistema con realimentación se garantiza al satisfacer estas condiciones de analiticidad (o interpolación). Por otro lado, estas condiciones también imponen limitaciones severas sobre el desempeño alcanzable del sistema con realimentación.
+
+Suponga que $S=(I+L)^{-1}$ y $T=L(I+L)^{-1}$ son estables. Entonces $p_{1}, p_{2}, \ldots, p_{m}$ son los ceros en semiplano derecho de $S$ y $z_{1}, z_{2}, \ldots, z_{k}$ son los ceros en semiplano derecho de $T$. Sea
+
+$$
+B_{p}(s)=\prod_{i=1}^{m} \frac{s-p_{i}}{s+p_{i}}, \quad B_{z}(s)=\prod_{j=1}^{k} \frac{s-z_{j}}{s+z_{j}}
+$$
+
+Entonces $\left|B_{p}(j \omega)\right|=1$ y $\left|B_{z}(j \omega)\right|=1$ para todas las frecuencias y, además,
+
+$$
+B_{p}^{-1}(s) S(s) \in \mathcal{H}_{\infty}, \quad B_{z}^{-1}(s) T(s) \in \mathcal{H}_{\infty}
+$$
+
+Por lo tanto, por el teorema del módulo máximo,
+
+$$
+\|S(s)\|_{\infty}=\left\|B_{p}^{-1}(s) S(s)\right\|_{\infty} \geq\left|B_{p}^{-1}(z) S(z)\right|
+$$
+
+para cualquier $z$ con $\operatorname{Re}(z)>0$. Sea $z$ un cero en semiplano derecho de $L$; entonces
+
+$$
+\|S(s)\|_{\infty} \geq\left|B_{p}^{-1}(z)\right|=\prod_{i=1}^{m}\left|\frac{z+p_{i}}{z-p_{i}}\right|
+$$
+
+De forma similar, puede obtenerse
+
+$$
+\|T(s)\|_{\infty} \geq\left|B_{z}^{-1}(p)\right|=\prod_{j=1}^{k}\left|\frac{p+z_{j}}{p-z_{j}}\right|
+$$
+
+donde $p$ es un polo en semiplano derecho de $L$.
+
+El problema ponderado puede tratarse de manera análoga. Sea $W_{e}$ un peso tal que $W_{e} S$ sea estable. Entonces
+
+$$
+\left\|W_{e}(s) S(s)\right\|_{\infty} \geq\left|W_{e}(z)\right| \prod_{i=1}^{m}\left|\frac{z+p_{i}}{z-p_{i}}\right|
+$$
+
+Ahora suponga $W_{e}(s)=\frac{s / M_{s}+\omega_{b}}{s+\omega_{b} \epsilon},\left\|W_{e} S\right\|_{\infty} \leq 1$, y que $z$ es un cero real en semiplano derecho. Entonces
+
+$$
+\frac{z / M_{s}+\omega_{b}}{z+\omega_{b} \epsilon} \leq \prod_{i=1}^{m}\left|\frac{z-p_{i}}{z+p_{i}}\right|=: \alpha
+$$
+
+lo cual da
+
+$$
+\omega_{b} \leq \frac{z}{1-\alpha \epsilon}\left(\alpha-\frac{1}{M_{s}}\right) \approx z\left(\alpha-\frac{1}{M_{s}}\right)
+$$
+
+donde $\alpha=1$ si $L$ no tiene polos en semiplano derecho. Esto muestra que el ancho de banda en lazo cerrado debe ser mucho menor que el cero en semiplano derecho. Conclusiones similares se obtienen para ceros complejos en semiplano derecho.
+
+\section{Notas y referencias}
+El diseño por conformación de lazo es bien conocido para sistemas SISO en teoría clásica de control. La idea fue extendida a sistemas MIMO por Doyle y Stein [1981] usando técnica de diseño LQG. Las limitaciones del diseño por conformación de lazo se discuten en detalle en Stein y Doyle [1991]. El Capítulo 16 presenta otro método de conformación de lazo usando teoría de control $\mathcal{H}_{\infty}$, con potencial para superar limitaciones del método LQG/LTR. Algunas discusiones adicionales sobre elección de funciones de ponderación pueden encontrarse en Skogestad y Postlethwaite [1996]. Los compromisos y limitaciones de diseño para sistemas SISO se discuten en detalle en Bode [1945], Horowitz [1963], y Doyle, Francis y Tannenbaum [1992]. La monografía de Freudenberg y Looze [1988] contiene muchas generalizaciones multivariables. La generalización multivariable de la relación integral de Bode puede encontrarse en Chen [1995], en la cual se basa la Sección 6.5. Algunos resultados relacionados pueden encontrarse en Boyd y Desoer [1985]. Resultados adicionales relacionados se encuentran en un libro más reciente de Seron, Braslavsky y Goodwin [1997].
+
+\section{Problemas}
+Problema 6.1 Sea $P$ una planta en lazo abierto. Se desea diseñar un controlador tal que el sobreimpulso sea $\leq 10 \%$ y el tiempo de establecimiento $\leq 10$ s. Estime la sensibilidad pico permitida $M_{s}$ y el ancho de banda en lazo cerrado.
+
+Problema 6.2 Sea $L_{1}=\frac{1}{s(s+1)^{2}}$ una función de transferencia de lazo abierto de un sistema de realimentación unitaria. Encuentre el margen de fase, sobreimpulso, tiempo de establecimiento y el correspondiente $M_{s}$.
+
+Problema 6.3 Repita el Problema 6.2 con
+
+$$
+L_{2}=\frac{100(s+10)}{(s+1)(s+2)(s+20)}
+$$
+
+Problema 6.4 Sea $P=\frac{10(1-s)}{s(s+10)}$. Use el método clásico de conformación de lazo para diseñar un controlador de adelanto o atraso de primer orden tal que el sistema tenga al menos $30^{\circ}$ de margen de fase y la mayor frecuencia de cruce posible.
+
+Problema 6.5 Use el método del lugar de las raíces para mostrar que un sistema de fase no mínima no puede estabilizarse con un controlador de ganancia muy alta.
+
+Problema 6.6 Sea $P=\frac{5}{(1-s)(s+2)}$. Diseñe un controlador de adelanto o atraso tal que el sistema tenga al menos $30^{\circ}$ de margen de fase con ganancia de lazo $\geq 2$ para cualquier frecuencia $\omega \leq 0.1$ y el menor ancho de banda posible (o frecuencia de cruce).
+
+Problema 6.7 Use el método del lugar de las raíces para mostrar que un sistema inestable no puede estabilizarse con un controlador de ganancia muy baja.
+
+Problema 6.8 Considere el lazo de realimentación unitaria con controlador propio $K(s)$ y planta estrictamente propia $P(s)$, ambos supuestos cuadrados. Suponga estabilidad interna.
+
+\begin{enumerate}
+  \item Sea $w(s)$ una función de ponderación escalar, supuesta en $\mathcal{R} \mathcal{H}_{\infty}$. Defina
+\end{enumerate}
+
+$$
+\epsilon=\left\|w(I+P K)^{-1}\right\|_{\infty}, \quad \delta=\left\|K(I+P K)^{-1}\right\|_{\infty}
+$$
+
+así, $\epsilon$ mide, por ejemplo, atenuación de perturbaciones y $\delta$ mide, por ejemplo, esfuerzo de control. Derive la siguiente desigualdad, que muestra que $\epsilon$ y $\delta$ no pueden ser ambos pequeños simultáneamente en general. Para todo $\operatorname{Re} s_{0} \geq 0$
+
+$$
+\left|w\left(s_{0}\right)\right| \leq \epsilon+\left|w\left(s_{0}\right)\right| \sigma_{\min }\left[P\left(s_{0}\right)\right] \delta
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item Si queremos muy buena atenuación de perturbaciones en una frecuencia particular, podría suponerse que necesitamos alta ganancia del controlador en esa frecuencia. Fije $\omega$ con $j \omega$ no polo de $P(s)$, y suponga
+\end{enumerate}
+
+$$
+\epsilon:=\sigma_{\max }\left[(I+P K)^{-1}(j \omega)\right]<1
+$$
+
+Derive una cota inferior para $\sigma_{\min }[K(j \omega)]$. Esta cota inferior debe divergir cuando $\epsilon \rightarrow 0$.
+
+Problema 6.9 Suponga que $P$ es propia y tiene un cero en semiplano derecho en $s=z>0$. Suponga que $y=\frac{w}{1+P K}$, donde $w$ es un escalón unitario en el tiempo $t=0$, y que nuestra especificación de desempeño es
+
+$$
+|y(t)| \leq \begin{cases}\alpha, & \text { si } \quad 0 \leq t \leq T \\ \beta, & \text { si } \quad T<t\end{cases}
+$$
+
+para algunos $\alpha>1>\beta>0$. Muestre que, para que exista un controlador LTI propio e internamente estabilizante $K$ que cumpla la especificación, debe cumplirse
+
+$$
+\ln \left(\frac{\alpha-\beta}{\alpha-1}\right) \leq z T
+$$
+
+¿Qué compromisos implica esto?
+
+Problema 6.10 Sea $K$ un controlador estabilizante para la planta
+
+$$
+\begin{gathered}
+P=\frac{s-\alpha}{(s-\beta)(s+\gamma)} \\
+\alpha>0, \beta>0, \gamma \geq 0 . \text { Suponga }|S(j \omega)| \leq \delta<1, \forall \omega \in\left[-\omega_{0}, \omega_{0}\right] \text { donde } \\
+S(s)=\frac{1}{1+P K}
+\end{gathered}
+$$
+
+Encuentre una cota inferior para $\|S\|_{\infty}$ y calcule dicha cota para $\alpha=1, \beta=2, \gamma=10$, $\delta=0.2$, y $\omega_{0}=1$.

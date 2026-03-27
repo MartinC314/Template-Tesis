@@ -1,1 +1,1306 @@
-8. Incertidumbre y robustez 
+﻿\chapter{Incertidumbre y robustez}
+
+En este capítulo describimos brevemente varios tipos de incertidumbre que pueden surgir en sistemas físicos, y destacamos las "incertidumbres no estructuradas" como errores genéricos asociados con todos los modelos de diseño. Obtenemos pruebas de estabilidad robusta para sistemas bajo distintos supuestos de incertidumbre del modelo mediante el uso del teorema de pequeña ganancia. También obtenemos algunas condiciones suficientes para desempeño robusto bajo incertidumbres no estructuradas. Se revela la dificultad asociada con el diseño de desempeño robusto MIMO y el papel de los números de condición de la planta para sistemas con especificaciones sesgadas de desempeño e incertidumbre. También se usa un ejemplo simple para indicar la diferencia fundamental entre la robustez de un sistema SISO y la de un sistema MIMO. En particular, mostramos que aplicar el método de análisis/diseño SISO a un sistema MIMO puede conducir a resultados erróneos.
+
+\section{Incertidumbre de modelos}
+La mayoría de los diseños de control se basan en el uso de un modelo de diseño. La relación entre los modelos y la realidad que representan es sutil y compleja. Un modelo matemático proporciona un mapeo de entradas a respuestas. La calidad de un modelo depende de qué tan de cerca coincidan sus respuestas con las de la planta real. Como ningún modelo fijo único puede responder exactamente igual que la planta real, necesitamos, como mínimo, un conjunto de mapeos. Sin embargo, el problema del modelado es mucho más profundo: el universo de modelos matemáticos del cual se elige un conjunto de modelos es distinto del universo de sistemas físicos. Por lo tanto, nunca se puede construir un conjunto de modelos que incluya a la planta física real. Es necesario que el ingeniero dé un salto de fe respecto a la aplicabilidad de un diseño particular basado en un modelo matemático. Para ser práctica, una técnica de diseño debe ayudar a que este salto sea pequeño al considerar la inevitable inadecuación de los modelos. Un buen modelo debe ser lo bastante simple para facilitar el diseño, pero lo bastante complejo para dar al ingeniero confianza en que los diseños basados en el modelo funcionarán en la planta real.
+
+El término incertidumbre se refiere a las diferencias o errores entre los modelos y la realidad,\\
+y cualquier mecanismo utilizado para expresar estos errores se llamará una representación de la incertidumbre. Las representaciones de incertidumbre varían principalmente en términos de la cantidad de estructura que contienen. Esto refleja tanto nuestro conocimiento de los mecanismos físicos que causan diferencias entre el modelo y la planta como nuestra capacidad para representar estos mecanismos de una manera que facilite su manipulación. Por ejemplo, considere el problema de acotar la magnitud del efecto de alguna incertidumbre en la salida de un sistema lineal nominalmente fijo. Una medida útil de incertidumbre en este contexto es proporcionar una cota del espectro de potencia de la desviación de la salida respecto de su respuesta nominal. En el caso más simple, se supone que este espectro de potencia es independiente de la entrada. Esto equivale a suponer que la incertidumbre es generada por una señal de ruido aditivo con espectro de potencia acotado; la incertidumbre se representa como ruido aditivo. Por supuesto, ningún sistema físico es lineal con ruido aditivo, pero algunos aspectos del comportamiento físico se aproximan bastante bien usando este modelo. Este tipo de incertidumbre recibió mucha atención en la literatura durante las décadas de 1960 y 1970, y se obtuvieron soluciones elegantes para muchos problemas interesantes (por ejemplo, propagación de ruido blanco en sistemas lineales, filtrado de Wiener y Kalman, y control óptimo LQG). Desafortunadamente, el control óptimo LQG no abordó adecuadamente la incertidumbre y, por ello, tuvo menos impacto práctico del que podría haberse esperado.
+
+En general, el espectro de potencia de la desviación de la salida real respecto de la nominal dependerá significativamente de la entrada. Por ejemplo, un modelo de ruido aditivo es totalmente inapropiado para capturar incertidumbre originada por variaciones en las propiedades de material de plantas físicas. La construcción real de conjuntos de modelos para incertidumbre más general puede ser bastante difícil. Por ejemplo, una declaración de pertenencia a conjunto para los parámetros de un modelo FDLTI por lo demás conocido es una representación de incertidumbre altamente estructurada. Típicamente surge del uso de modelos incrementales lineales en varios puntos de operación (por ejemplo, los coeficientes aerodinámicos en control de vuelo varían con el entorno de vuelo y las configuraciones de la aeronave, y los coeficientes de ecuaciones en control de plantas de potencia varían con envejecimiento, acumulación de escoria, composición del carbón, etc.). En cada caso, las cantidades de variación y cualquier relación conocida entre parámetros pueden expresarse confinando los parámetros a subconjuntos apropiadamente definidos del espacio de parámetros. Sin embargo, para ciertas clases de señales (por ejemplo, alta frecuencia), el modelo FDLTI parametrizado no logra describir la planta porque esta siempre tendrá dinámicas que no están representadas en el modelo de orden fijo.
+
+En general, nos vemos obligados a usar no solo un modelo parametrizado único, sino conjuntos de modelos que permitan dinámicas de planta que no están representadas explícitamente en la estructura del modelo. Un ejemplo simple de esto implica usar cotas en el dominio de la frecuencia sobre funciones de transferencia para describir un conjunto de modelos. Para usar dichos conjuntos para describir sistemas físicos, las cotas deben crecer aproximadamente con la frecuencia. En particular, a frecuencias suficientemente altas, la fase es completamente desconocida (es decir, incertidumbres de $\pm 180^{\circ}$). Esto es consecuencia de propiedades dinámicas que inevitablemente ocurren en sistemas físicos. Esto da una representación menos estructurada de la incertidumbre.
+
+Ejemplos de representaciones menos estructuradas de incertidumbre son declaraciones directas de pertenencia a conjunto para la matriz de función de transferencia del modelo. Por ejemplo, la declaración
+
+
+\begin{equation*}
+P_{\Delta}(s)=P(s)+W_{1}(s) \Delta(s) W_{2}(s), \quad \bar{\sigma}[\Delta(j \omega)]<1, \forall \omega \geq 0 \tag{8.1}
+\end{equation*}
+
+
+donde $W_{1}$ y $W_{2}$ son matrices de transferencia estables que caracterizan la estructura espacial y en frecuencia de la incertidumbre, confina la matriz $P_{\Delta}$ a una vecindad del modelo nominal $P$. En particular, si $W_{1}=I$ y $W_{2}=w(s) I$, donde $w(s)$ es una función escalar, entonces $P_{\Delta}$ describe un disco centrado en $P$ con radio $w(j \omega)$ en cada frecuencia, como se muestra en la Figura 8.1. La declaración no implica un mecanismo o estructura que dé origen a $\Delta$. La incertidumbre puede deberse a cambios de parámetros, como se mencionó antes, o a dinámicas no modeladas, o a una gran variedad de otros efectos no especificados. Una declaración alternativa a la ecuación (8.1) es la llamada forma multiplicativa:
+
+
+\begin{equation*}
+P_{\Delta}(s)=\left(I+W_{1}(s) \Delta(s) W_{2}(s)\right) P(s) \tag{8.2}
+\end{equation*}
+
+
+Esta declaración confina $P_{\Delta}$ a una vecindad normalizada del modelo nominal $P$. Una ventaja de la ecuación (8.2) sobre (8.1) es que, en la ecuación (8.2), las funciones de transferencia compensadas tienen la misma representación de incertidumbre que el modelo original (es decir, las funciones de ponderación se aplican tanto a $P K$ como a $P$). Más adelante se discutirán otras declaraciones alternativas de pertenencia a conjunto.
+
+\insertimage[\label{img:figura-8-1}]{2024_06_29_ce7c73b22613114bd4d6g-145_523_645_1254_729}{width=0.35\textwidth}{diagrama de Nyquist de un modelo incierto}
+
+La mejor elección de representación de incertidumbre para un modelo FDLTI específico depende, por supuesto, de los errores que comete el modelo. En la práctica, generalmente es posible representar algunos de estos errores en una forma parametrizada altamente estructurada. Estos suelen ser los componentes de error de baja frecuencia. Sin embargo, siempre quedan errores de mayor frecuencia que no pueden cubrirse de esta manera. Estos son causados por efectos como resonancia electromecánica de dimensión infinita, retardos de tiempo, procesos de difusión, etc. Afortunadamente, las representaciones menos estructuradas, como las ecuaciones (8.1) y (8.2), son adecuadas para representar esta última clase de errores. En consecuencia, las ecuaciones (8.1) y
+
+(8.2) se han convertido en representaciones de incertidumbre "genéricas" ampliamente usadas para modelos FDLTI. Un punto importante es que la construcción de las matrices de ponderación $W_{1}$ y $W_{2}$ para sistemas multivariables no es trivial.
+
+Motivados por estas observaciones, por el momento nos enfocaremos en la descripción multiplicativa de la incertidumbre. Supondremos que $P_{\Delta}$ en la ecuación (8.2) permanece como un sistema FDLTI estrictamente propio para toda $\Delta$. Perturbaciones más generales (por ejemplo, variantes en el tiempo, de dimensión infinita, no lineales) también pueden cubrirse con este conjunto, siempre que se les den interpretaciones apropiadas de "sector cónico" vía el teorema de Parseval. Esta conexión se desarrolla en [Safonov, 1980] y [Zames, 1966] y no se abordará aquí.
+
+Cuando se usan para representar los diversos mecanismos de alta frecuencia mencionados anteriormente, las funciones de ponderación en la ecuación (8.2) comúnmente tienen las propiedades ilustradas en la Figura 8.2. Son pequeñas $(\ll 1)$ en bajas frecuencias y crecen hasta la unidad y más allá en frecuencias más altas. El crecimiento con la frecuencia ocurre inevitablemente porque las incertidumbres de fase finalmente exceden $\pm 180$ grados y las desviaciones de magnitud finalmente exceden las magnitudes nominales de las funciones de transferencia. Se anima a los lectores que sean escépticos de esta realidad a intentar algunos experimentos con dispositivos físicos.
+
+\insertimage[\label{img:figura-8-2}]{2024_06_29_ce7c73b22613114bd4d6g-146_675_1025_1099_539}{width=0.35\textwidth}{comportamiento típico de la incertidumbre multiplicativa: $p_{\delta}(s)=[1+w(s) \delta(s)] p(s)$}
+
+Nótese también que la representación de incertidumbre en la ecuación (8.2) puede usarse para incluir efectos de perturbación que en realidad son ciertos. Un elemento no lineal puede modelarse con bastante precisión, pero debido a que nuestras técnicas de diseño no pueden tratar eficazmente la no linealidad, se trata como una no linealidad de sector cónico. ${ }^{1}$ Como otro ejemplo, podemos elegir deliberadamente ignorar varias características dinámicas conocidas para lograr un modelo nominal de diseño simple. Una instancia de esto es el proceso de reducción de modelo discutido en el capítulo anterior.[\^{}6]
+
+Ejemplo 8.1 Sea un sistema dinámico descrito por
+
+$$
+P(s, \alpha, \beta)=\frac{10\left((2+0.2 \alpha) s^{2}+(2+0.3 \alpha+0.4 \beta) s+(1+0.2 \beta)\right)}{\left(s^{2}+0.5 s+1\right)\left(s^{2}+2 s+3\right)\left(s^{2}+3 s+6\right)}, \quad \alpha, \beta \in[-1,1]
+$$
+
+Entonces, para cada frecuencia, todas las posibles respuestas en frecuencia con parámetros variables $\alpha$ y $\beta$ están en una caja, como se muestra en la Figura 8.3. También podemos obtener una cota de incertidumbre no estructurada para este sistema. En efecto, tenemos
+
+$$
+P(s, \alpha, \beta) \in\left\{P_{0}+W \Delta \mid\|\Delta\| \leq 1\right\}
+$$
+
+con $P_{0}:=P(s, 0,0)$ y
+
+$$
+W(s)=P(s, 1,1)-P(s, 0,0)=\frac{10\left(0.2 s^{2}+0.7 s+0.2\right)}{\left(s^{2}+0.5 s+1\right)\left(s^{2}+2 s+3\right)\left(s^{2}+3 s+6\right)}
+$$
+
+La respuesta en frecuencia $P_{0}+W \Delta$ se muestra en la Figura 8.3 como círculos.
+
+\insertimage[\label{img:figura-8-3}]{2024_06_29_ce7c73b22613114bd4d6g-147_637_715_1151_694}{width=0.35\textwidth}{diagrama de Nyquist de sistema incierto y cobertura por disco}
+
+Otra forma de acotar la respuesta en frecuencia es tratar $\alpha$ y $\beta$ como incertidumbres acotadas en norma; es decir,
+
+$$
+P(s, \alpha, \beta) \in\left\{P_{0}+W_{1} \Delta_{1}+W_{2} \Delta_{2} \mid\left\|\Delta_{i}\right\|_{\infty} \leq 1\right\}
+$$
+
+con $P_{0}=P(s, 0,0)$ y
+
+$$
+W_{1}=\frac{10\left(0.2 s^{2}+0.3 s\right)}{\left(s^{2}+0.5 s+1\right)\left(s^{2}+2 s+3\right)\left(s^{2}+3 s+6\right)}
+$$
+
+$$
+W_{2}=\frac{10(0.4 s+0.2)}{\left(s^{2}+0.5 s+1\right)\left(s^{2}+2 s+3\right)\left(s^{2}+3 s+6\right)}
+$$
+
+De hecho, es fácil mostrar que
+
+$$
+\left\{P_{0}+W_{1} \Delta_{1}+W_{2} \Delta_{2} \mid\left\|\Delta_{i}\right\|_{\infty} \leq 1\right\}=\left\{P_{0}+W \Delta \mid\|\Delta\|_{\infty} \leq 1\right\}
+$$
+
+con $|W|=\left|W_{1}\right|+\left|W_{2}\right|$. La respuesta en frecuencia $P_{0}+W \Delta$ se muestra en la Figura 8.4. Esta cota es claramente más conservadora.
+
+\insertimage[\label{img:figura-8-4}]{2024_06_29_ce7c73b22613114bd4d6g-148_621_634_752_735}{width=0.35\textwidth}{una cobertura conservadora}
+
+Ejemplo 8.2 Considere un modelo de control de procesos
+
+$$
+G(s)=\frac{k e^{-\tau s}}{T s+1}, \quad 4 \leq k \leq 9,2 \leq T \leq 3,1 \leq \tau \leq 2
+$$
+
+Tome el modelo nominal como
+
+$$
+G_{0}(s)=\frac{6.5}{(2.5 s+1)(1.5 s+1)}
+$$
+
+Entonces, para cada frecuencia, todas las posibles respuestas en frecuencia están en una caja, como se muestra en la Figura 8.5. Para obtener una cota de incertidumbre no estructurada para este sistema, trace el error
+
+$$
+\Delta_{a}(j \omega)=G(j \omega)-G_{0}(j \omega)
+$$
+
+para un conjunto de parámetros, como se muestra en la Figura 8.6, y luego use el comando de MATLAB ginput para seleccionar un conjunto de respuestas en frecuencia de cota superior y use fitmag para ajustar una función de transferencia estable y de fase mínima a dichas respuestas en frecuencia de cota superior.
+
+\insertimage[\label{img:figura-8-5}]{2024_06_29_ce7c73b22613114bd4d6g-149_750_1017_411_543}{width=0.35\textwidth}{sistema con retardo incierto y $G_{0}$}
+
+$\gg \mathbf{m f}=$ ginput(50) $\%$ seleccionar 50 puntos: la primera columna de $\mathrm{mf}$ son los puntos de frecuencia y la segunda columna de $\mathrm{mf}$ son las respuestas de magnitud correspondientes.
+
+$\gg \operatorname{magg}=\operatorname{vpck}(\operatorname{mf}(:, \mathbf{2}), \operatorname{mf}(:, \mathbf{1})) ; \quad \%$ empaquetarlos como una matriz variante.
+
+$\gg \mathbf{W}_{\mathbf{a}}=$ fitmag(magg); \% elegir en línea el orden de $W_{a}$. Un $W_{a}$ de tercer orden es suficiente para este ejemplo.
+
+$\gg[\mathbf{A}, \mathrm{B}, \mathrm{C}, \mathrm{D}]=\operatorname{unpck}\left(\mathbf{W}_{\mathbf{a}}\right) \quad \%$ convertir a espacio de estados.
+
+$\gg[\mathbf{Z}, \mathbf{P}, \mathbf{K}]=\operatorname{ss2zp}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}) \quad \%$ convertir a forma cero/polo/ganancia.
+
+Se obtiene
+
+$$
+W_{a}(s)=\frac{0.0376(s+116.4808)(s+7.4514)(s+0.2674)}{(s+1.2436)(s+0.5575)(s+4.9508)}
+$$
+
+y la respuesta en frecuencia de $W_{a}$ también se grafica en la Figura 8.6. De manera similar, defina la incertidumbre multiplicativa
+
+$$
+\Delta_{m}(s):=\frac{G(s)-G_{0}(s)}{G_{0}(s)}
+$$
+
+y puede encontrarse un $W_{m}$ tal que $\left|\Delta_{m}(j \omega)\right| \leq\left|W_{m}(j \omega)\right|$, como se muestra en la Figura 8.7. Un $W_{m}$ está dado por
+
+$$
+W_{m}=\frac{2.8169(s+0.212)\left(s^{2}+2.6128 s+1.732\right)}{s^{2}+2.2425 s+2.6319}
+$$
+
+\insertimage[\label{img:figura-8-6}]{2024_06_29_ce7c73b22613114bd4d6g-150_629_1020_545_539}{width=0.35\textwidth}{$\Delta_{a}$ (línea discontinua) y una cota $W_{a}$ (línea continua)}
+
+\insertimage[\label{img:figura-8-7}]{2024_06_29_ce7c73b22613114bd4d6g-150_629_1009_1385_539}{width=0.35\textwidth}{$\Delta_{m}$ (línea discontinua) y una cota $W_{m}$ (línea continua)}
+
+Nótese que este $W_{m}$ no es propio ya que $G_{0}$ y $G$ no tienen los mismos grados relativos. Para obtener un $W_{m}$ propio, necesitamos elegir un modelo nominal $G_{0}$ que tenga el mismo orden relativo que $G$.
+
+Las siguientes terminologías se usan en este libro:
+
+Definición 8.1 Dada la descripción de un conjunto de modelos de incertidumbre $\boldsymbol{\Pi}$ y un conjunto de objetivos de desempeño, suponga que $P \in \boldsymbol{\Pi}$ es el modelo nominal de diseño y $K$ es el controlador resultante. Entonces, se dice que el sistema de realimentación en lazo cerrado tiene
+
+Estabilidad Nominal (NS): si $K$ estabiliza internamente al modelo nominal $P$.
+
+Estabilidad Robusta (RS): si $K$ estabiliza internamente a toda planta perteneciente a $\boldsymbol{\Pi}$.
+
+Desempeño Nominal (NP): si los objetivos de desempeño se satisfacen para la planta nominal $P$.
+
+Desempeño Robusto (RP): si los objetivos de desempeño se satisfacen para toda planta perteneciente a $\boldsymbol{\Pi}$.
+
+La estabilidad y el desempeño nominales pueden verificarse fácilmente usando varias técnicas estándar. Las condiciones bajo las cuales se satisfacen la estabilidad robusta y el desempeño robusto, bajo diversos supuestos sobre el conjunto de incertidumbre $\boldsymbol{\Pi}$, se considerarán en las secciones siguientes.
+
+Comandos MATLAB relacionados: magfit, drawmag, fitsys, genphase, vunpck, vabs, vinv, vimag, vreal, vcjt, vebe
+
+\section{Teorema de pequeña ganancia}
+En esta sección y en la siguiente se considera la prueba de estabilidad de un sistema nominalmente estable bajo perturbaciones no estructuradas. La base de los criterios de estabilidad robusta derivados en lo que sigue es el llamado teorema de pequeña ganancia.
+
+Considere el sistema interconectado mostrado en la Figura 8.8, con $M(s)$ una matriz de transferencia estable de dimensión $p \times q$.
+
+Teorema 8.1 (Teorema de Pequeña Ganancia) Suponga que $M \in \mathcal{R} \mathcal{H}_{\infty}$ y sea $\gamma>0$. Entonces, el sistema interconectado mostrado en la Figura 8.8 está bien planteado y es internamente estable para toda $\Delta(s) \in \mathcal{R} \mathcal{H}_{\infty}$ con
+
+(a) $\|\Delta\|_{\infty} \leq 1 / \gamma$ si y solo si $\|M(s)\|_{\infty}<\gamma$
+
+(b) $\|\Delta\|_{\infty}<1 / \gamma$ si y solo si $\|M(s)\|_{\infty} \leq \gamma$
+
+\insertimage[\label{img:figura-8-8}]{2024_06_29_ce7c73b22613114bd4d6g-152_266_683_398_710}{width=0.35\textwidth}{lazo $M-\Delta$ para análisis de estabilidad}
+
+Demostración. Solo probaremos la parte (a). La demostración de la parte (b) es similar. Sin pérdida de generalidad, suponga $\gamma=1$.
+
+(Suficiencia) Es claro que $M(s) \Delta(s)$ es estable, ya que tanto $M(s)$ como $\Delta(s)$ son estables. Por lo tanto, por el Teorema 5.5 (o Corolario 5.4), el sistema en lazo cerrado es estable si $\operatorname{det}(I-M \Delta$ ) no tiene ceros en el semiplano derecho cerrado para toda $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ y $\|\Delta\|_{\infty} \leq 1$. De forma equivalente, el sistema en lazo cerrado es estable si
+
+$$
+\inf _{s \in \overline{\mathbb{C}}_{+}} \underline{\sigma}(I-M(s) \Delta(s)) \neq 0
+$$
+
+para toda $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ y $\|\Delta\|_{\infty} \leq 1$. Pero esto se deduce de
+
+$$
+\inf _{s \in \overline{\mathbb{C}}_{+}} \underline{\sigma}(I-M(s) \Delta(s)) \geq 1-\sup _{s \in \overline{\mathbb{C}}_{+}} \bar{\sigma}(M(s) \Delta(s))=1-\|M(s) \Delta(s)\|_{\infty} \geq 1-\|M(s)\|_{\infty}>0
+$$
+
+(Necesidad) Esto se demostrará por contradicción. Suponga que $\|M\|_{\infty} \geq 1$. Mostraremos que existe una $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty} \leq 1$ tal que $\operatorname{det}(I-M(s) \Delta(s))$ tiene un cero sobre el eje imaginario, por lo que el sistema es inestable. Suponga que $\omega_{0} \in \mathbb{R}_{+} \cup\{\infty\}$ es tal que $\bar{\sigma}\left(M\left(j \omega_{0}\right)\right) \geq 1$. Sea $M\left(j \omega_{0}\right)=U\left(j \omega_{0}\right) \Sigma\left(j \omega_{0}\right) V^{*}\left(j \omega_{0}\right)$ una descomposición en valores singulares con
+
+$$
+\begin{aligned}
+& U\left(j \omega_{0}\right)=\left[\begin{array}{llll}
+u_{1} & u_{2} & \cdots & u_{p}
+\end{array}\right] \\
+& V\left(j \omega_{0}\right)=\left[\begin{array}{llll}
+v_{1} & v_{2} & \cdots & v_{q}
+\end{array}\right] \\
+& \Sigma\left(j \omega_{0}\right)=\left[\begin{array}{lll}
+\sigma_{1} & & \\
+& \sigma_{2} & \\
+& & \ddots
+\end{array}\right]
+\end{aligned}
+$$
+
+Para obtener una contradicción, ahora basta construir una $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ tal que $\Delta\left(j \omega_{0}\right)=$ $\frac{1}{\sigma_{1}} v_{1} u_{1}^{*}$ y $\|\Delta\|_{\infty} \leq 1$. En efecto, para tal $\Delta(s)$,
+
+$$
+\operatorname{det}\left(I-M\left(j \omega_{0}\right) \Delta\left(j \omega_{0}\right)\right)=\operatorname{det}\left(I-U \Sigma V^{*} v_{1} u_{1}^{*} / \sigma_{1}\right)=1-u_{1}^{*} U \Sigma V^{*} v_{1} / \sigma_{1}=0
+$$
+
+y por lo tanto el sistema en lazo cerrado o bien no está bien planteado (si $\omega_{0}=\infty$ ) o bien es inestable (si $\omega \in \mathbb{R}$ ). Hay dos casos diferentes:
+
+(1) $\omega_{0}=0$ o $\infty$ : entonces $U$ y $V$ son matrices reales. En este caso, $\Delta(s)$ puede elegirse como
+
+$$
+\Delta=\frac{1}{\sigma_{1}} v_{1} u_{1}^{*} \in \mathbb{R}^{q \times p}
+$$
+
+(2) $0<\omega_{0}<\infty$ : escriba $u_{1}$ y $v_{1}$ en la forma siguiente:
+
+$$
+u_{1}^{*}=\left[\begin{array}{llll}
+u_{11} e^{j \theta_{1}} & u_{12} e^{j \theta_{2}} & \cdots & u_{1 p} e^{j \theta_{p}}
+\end{array}\right], \quad v_{1}=\left[\begin{array}{c}
+v_{11} e^{j \phi_{1}} \\
+v_{12} e^{j \phi_{2}} \\
+\vdots \\
+v_{1 q} e^{j \phi_{q}}
+\end{array}\right]
+$$
+
+donde $u_{1 i} \in \mathbb{R}$ y $v_{1 j} \in \mathbb{R}$ se eligen de modo que $\theta_{i}, \phi_{j} \in[-\pi, 0)$ para todo $i, j$.
+
+Elija $\beta_{i} \geq 0$ y $\alpha_{j} \geq 0$ de modo que
+
+$$
+\angle\left(\frac{\beta_{i}-j \omega_{0}}{\beta_{i}+j \omega_{0}}\right)=\theta_{i}, \quad \angle\left(\frac{\alpha_{j}-j \omega_{0}}{\alpha_{j}+j \omega_{0}}\right)=\phi_{j}
+$$
+
+para $i=1,2, \ldots, p$ y $j=1,2, \ldots, q$. Sea
+
+$$
+\Delta(s)=\frac{1}{\sigma_{1}}\left[\begin{array}{c}
+v_{11} \frac{\alpha_{1}-s}{\alpha_{1}+s} \\
+\vdots \\
+v_{1 q} \frac{\alpha_{q}-s}{\alpha_{q}+s}
+\end{array}\right]\left[\begin{array}{lll}
+u_{11} \frac{\beta_{1}-s}{\beta_{1}+s} & \cdots & u_{1 p} \frac{\beta_{p}-s}{\beta_{p}+s}
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Entonces $\|\Delta\|_{\infty}=1 / \sigma_{1} \leq 1$ y $\Delta\left(j \omega_{0}\right)=\frac{1}{\sigma_{1}} v_{1} u_{1}^{*}$.
+
+El teorema sigue siendo válido incluso si $\Delta$ y $M$ son de dimensión infinita. Esto se resume en el siguiente corolario.
+
+\textbf{Corolario 8.2 Las siguientes afirmaciones son equivalentes:}
+(i) El sistema está bien planteado y es internamente estable para toda $\Delta \in \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1 / \gamma$;
+
+(ii) El sistema está bien planteado y es internamente estable para toda $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1 / \gamma$;
+
+(iii) El sistema está bien planteado y es internamente estable para toda $\Delta \in \mathbb{C}^{q \times p}$ con $\|\Delta\|<1 / \gamma$;
+
+(iv) $\|M\|_{\infty} \leq \gamma$.
+
+Observación 8.1 Puede mostrarse que la condición de pequeña ganancia es suficiente para garantizar la estabilidad interna incluso si $\Delta$ es un operador "estable" no lineal y variante en el tiempo con una noción de estabilidad definida adecuadamente; víase Desoer y Vidyasagar [1975].
+
+El siguiente lema muestra que si $\|M\|_{\infty}>\gamma$, existe una $\Delta$ desestabilizante con $\|\Delta\|_{\infty}<1 / \gamma$ tal que el sistema en lazo cerrado tiene polos en el semiplano derecho abierto. (Esto es más fuerte que lo dado en la demostración del Teorema 8.1.)
+
+Lema 8.3 Suponga que $M \in \mathcal{R} \mathcal{H}_{\infty}$ y $\|M\|_{\infty}>\gamma$. Entonces existe un $\sigma_{0}>0$ tal que, para cualquier $\sigma \in\left[0, \sigma_{0}\right]$, existe una $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1 / \gamma$ tal que $\operatorname{det}(I-M(s) \Delta(s))$ tiene un cero sobre el eje $\operatorname{Re}(s)=\sigma$.
+
+Demostración. Sin pérdida de generalidad, suponga $\gamma=1$. Como $M \in \mathcal{R} \mathcal{H}_{\infty}$ y $\|M\|_{\infty}>1$, existe un $0<\omega_{0}<\infty$ tal que $\left\|M\left(j \omega_{0}\right)\right\|>1$. Dado cualquier $\gamma$ tal que $1<\gamma<\left\|M\left(j \omega_{0}\right)\right\|$, existe un $\sigma_{0}>0$ suficientemente pequeño tal que
+
+$$
+\min _{\sigma \in\left[0, \sigma_{0}\right]}\left\|M\left(\sigma+j \omega_{0}\right)\right\| \geq \gamma
+$$
+
+y
+
+$$
+\sqrt{\frac{\omega_{0}^{2}+\left(\sigma_{0}+\alpha\right)^{2}}{\omega_{0}^{2}+\left(\sigma_{0}-\alpha\right)^{2}}} \sqrt{\frac{\omega_{0}^{2}+\left(\sigma_{0}+\beta\right)^{2}}{\omega_{0}^{2}+\left(\sigma_{0}-\beta\right)^{2}}}<\gamma
+$$
+
+para cualquier $\alpha \geq 0$ y $\beta \geq 0$.
+
+Ahora sea $\sigma \in\left[0, \sigma_{0}\right]$ y sea $M\left(\sigma+j \omega_{0}\right)=U \Sigma V^{*}$ una descomposición en valores singulares con
+
+$$
+\begin{aligned}
+& U=\left[\begin{array}{llll}
+u_{1} & u_{2} & \cdots & u_{p}
+\end{array}\right] \\
+& V=\left[\begin{array}{llll}
+v_{1} & v_{2} & \cdots & v_{q}
+\end{array}\right] \\
+& \Sigma=\left[\begin{array}{lll}
+\sigma_{1} & & \\
+& \sigma_{2} & \\
+& & \ddots
+\end{array}\right]
+\end{aligned}
+$$
+
+Escriba $u_{1}$ y $v_{1}$ en la forma siguiente:
+
+$$
+u_{1}^{*}=\left[\begin{array}{llll}
+u_{11} e^{j \theta_{1}} & u_{12} e^{j \theta_{2}} & \cdots & u_{1 p} e^{j \theta_{p}}
+\end{array}\right], \quad v_{1}=\left[\begin{array}{c}
+v_{11} e^{j \phi_{1}} \\
+v_{12} e^{j \phi_{2}} \\
+\vdots \\
+v_{1 q} e^{j \phi_{q}}
+\end{array}\right]
+$$
+
+donde $u_{1 i} \in \mathbb{R}$ y $v_{1 j} \in \mathbb{R}$ se eligen de modo que $\theta_{i}, \phi_{j} \in[-\pi, 0)$ para todo $i, j$.
+
+Elija $\beta_{i} \geq 0$ y $\alpha_{j} \geq 0$ de modo que
+
+$$
+\angle\left(\frac{\beta_{i}-\sigma-j \omega_{0}}{\beta_{i}+\sigma+j \omega_{0}}\right)=\theta_{i}, \quad \angle\left(\frac{\alpha_{j}-\sigma-j \omega_{0}}{\alpha_{j}+\sigma+j \omega_{0}}\right)=\phi_{j}
+$$
+
+para $i=1,2, \ldots, p$ y $j=1,2, \ldots, q$. Sea
+
+$$
+\Delta(s)=\frac{1}{\sigma_{1}}\left[\begin{array}{c}
+\tilde{\alpha}_{1} v_{11} \frac{\alpha_{1}-s}{\alpha_{1}+s} \\
+\vdots \\
+\tilde{\alpha}_{q} v_{1 q} \frac{\alpha_{q}-s}{\alpha_{q}+s}
+\end{array}\right]\left[\begin{array}{lll}
+\tilde{\beta}_{1} u_{11} \frac{\beta_{1}-s}{\beta_{1}+s} & \cdots & \tilde{\beta}_{p} u_{1 p} \frac{\beta_{p}-s}{\beta_{p}+s}
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+donde
+
+$$
+\tilde{\beta}_{i}:=\sqrt{\frac{\omega_{0}^{2}+\left(\sigma+\beta_{i}\right)^{2}}{\omega_{0}^{2}+\left(\sigma-\beta_{i}\right)^{2}}}, \quad \tilde{\alpha}_{j}:=\sqrt{\frac{\omega_{0}^{2}+\left(\sigma+\alpha_{j}\right)^{2}}{\omega_{0}^{2}+\left(\sigma-\alpha_{j}\right)^{2}}}
+$$
+
+Entonces
+
+$$
+\|\Delta\|_{\infty} \leq \frac{\max _{j}\left\{\tilde{\alpha}_{j}\right\} \max _{i}\left\{\tilde{\beta}_{i}\right\}}{\sigma_{1}} \leq \frac{\max _{j}\left\{\tilde{\alpha}_{j}\right\} \max _{i}\left\{\tilde{\beta}_{i}\right\}}{\gamma}<1
+$$
+
+y
+
+$$
+\begin{gathered}
+\Delta\left(\sigma+j \omega_{0}\right)=\frac{1}{\sigma_{1}} v_{1} u_{1}^{*} \\
+\operatorname{det}\left(I-M\left(\sigma+j \omega_{0}\right) \Delta\left(\sigma+j \omega_{0}\right)\right)=0
+\end{gathered}
+$$
+
+Por lo tanto, $s=\sigma+j \omega_{0}$ es un cero de la función de transferencia $\operatorname{det}(I-M(s) \Delta(s))$.
+
+El lema anterior desempeña un papel clave en las demostraciones de necesidad de muchas pruebas de estabilidad robusta en lo que sigue.
+
+\section{Estabilidad bajo incertidumbres no estructuradas}
+El teorema de pequeña ganancia de la sección anterior se usará aquí para derivar pruebas de estabilidad robusta bajo diversas hipótesis de incertidumbre del modelo. Se volverá a suponer que el error de modelado $\Delta$ es estable. (La mayoría de las pruebas de estabilidad robusta analizadas en lo que sigue pueden generalizarse fácilmente al caso de $\Delta$ inestable con algunas hipótesis suaves sobre el número de polos inestables del modelo incierto; animamos al lector a completar los detalles.) Además, suponemos que el error de modelado $\Delta$ está escalado adecuadamente con funciones de ponderación $W_{1}$ y $W_{2}$ (es decir, la incertidumbre puede representarse como $W_{1} \Delta W_{2}$ ).
+
+\insertimage[\label{img:figura-8-9}]{2024_06_29_ce7c73b22613114bd4d6g-155_214_916_1590_599}{width=0.35\textwidth}{análisis de estabilidad robusta no estructurada}
+
+Consideraremos la configuración estándar mostrada en la Figura 8.9, donde $\boldsymbol{\Pi}$ es el conjunto de plantas inciertas con $P \in \boldsymbol{\Pi}$ como planta nominal y con $K$ como controlador que estabiliza internamente a $P$. Las funciones matriciales de sensibilidad y sensibilidad complementaria se definen, como es usual, por
+
+$$
+S_{o}=(I+P K)^{-1}, \quad T_{o}=I-S_{o}
+$$
+
+y
+
+$$
+S_{i}=(I+K P)^{-1}, \quad T_{i}=I-S_{i}
+$$
+
+Recuerde que el sistema en lazo cerrado está bien planteado y es internamente estable si y solo si
+
+$$
+\left[\begin{array}{cc}
+I & K \\
+-\Pi & I
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+(I+K \Pi)^{-1} & -K(I+\Pi K)^{-1} \\
+(I+\Pi K)^{-1} \Pi & (I+\Pi K)^{-1}
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+para toda $\Pi \in \Pi$.
+
+\subsection*{Incertidumbre aditiva}
+Suponemos que la incertidumbre del modelo puede representarse mediante una perturbación aditiva:
+
+$$
+\boldsymbol{\Pi}=P+W_{1} \Delta W_{2}
+$$
+
+Teorema 8.4 Sea $\boldsymbol{\Pi}=\left\{P+W_{1} \Delta W_{2}: \Delta \in \mathcal{R} \mathcal{H}_{\infty}\right\}$ y sea $K$ un controlador estabilizante para la planta nominal $P$. Entonces, el sistema en lazo cerrado está bien planteado y es internamente estable para todo $\|\Delta\|_{\infty}<1$ si y solo si $\left\|W_{2} K S_{o} W_{1}\right\|_{\infty} \leq 1$.
+
+Demostración. Sea $\Pi=P+W_{1} \Delta W_{2} \in \Pi$. Entonces
+
+$$
+\begin{gathered}
+{\left[\begin{array}{cc}
+I & K \\
+-\Pi & I
+\end{array}\right]^{-1}} \\
+=\left[\begin{array}{cc}
+\left(I+K S_{o} W_{1} \Delta W_{2}\right)^{-1} S_{i} & -K S_{o}\left(I+W_{1} \Delta W_{2} K S_{o}\right)^{-1} \\
+\left(I+S_{o} W_{1} \Delta W_{2} K\right)^{-1} S_{o}\left(P+W_{1} \Delta W_{2}\right) & S_{o}\left(I+W_{1} \Delta W_{2} K S_{o}\right)^{-1}
+\end{array}\right]
+\end{gathered}
+$$
+
+está bien planteado y es internamente estable si $\left(I+\Delta W_{2} K S_{o} W_{1}\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$, ya que
+
+$$
+\begin{aligned}
+\operatorname{det}\left(I+K S_{o} W_{1} \Delta W_{2}\right) & =\operatorname{det}\left(I+W_{1} \Delta W_{2} K S_{o}\right)=\operatorname{det}\left(I+S_{o} W_{1} \Delta W_{2} K\right) \\
+& =\operatorname{det}\left(I+\Delta W_{2} K S_{o} W_{1}\right)
+\end{aligned}
+$$
+
+Pero $\left(I+\Delta W_{2} K S_{o} W_{1}\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ está garantizado si $\left\|\Delta W_{2} K S_{o} W_{1}\right\|_{\infty}<1$ (teorema de pequeña ganancia). Por tanto, $\left\|W_{2} K S_{o} W_{1}\right\|_{\infty} \leq 1$ es suficiente para estabilidad robusta.
+
+Para mostrar la necesidad, note que la estabilidad robusta implica que
+
+$$
+K(I+\Pi K)^{-1}=K S_{o}\left(I+W_{1} \Delta W_{2} K S_{o}\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+para toda $\Delta$ admisible. Esto, a su vez, implica que
+
+$$
+\Delta W_{2} K(I+\Pi K)^{-1} W_{1}=I-\left(I+\Delta W_{2} K S_{o} W_{1}\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+para toda $\Delta$ admisible. Por el teorema de pequeña ganancia, esto es cierto para toda $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1$ solo si $\left\|W_{2} K S_{o} W_{1}\right\|_{\infty} \leq 1$.
+
+\insertimage[\label{img:figura-8-10}]{2024_06_29_ce7c73b22613114bd4d6g-157_453_1206_408_446}{width=0.35\textwidth}{sistemas perturbados multiplicativamente en la salida}
+
+\subsection*{Incertidumbre multiplicativa}
+En esta sección, suponemos que el modelo del sistema se describe por el siguiente conjunto de perturbaciones multiplicativas:
+
+$$
+\boldsymbol{\Pi}=\left(I+W_{1} \Delta W_{2}\right) P
+$$
+
+con $W_{1}, W_{2}, \Delta \in \mathcal{R} \mathcal{H}_{\infty}$. Considere el sistema de realimentación mostrado en la Figura 8.10.
+
+Teorema 8.5 Sea $\boldsymbol{\Pi}=\left\{\left(I+W_{1} \Delta W_{2}\right) P: \Delta \in \mathcal{R} \mathcal{H}_{\infty}\right\}$ y sea $K$ un controlador estabilizante para la planta nominal $P$. Entonces, el sistema en lazo cerrado está bien planteado y es internamente estable para toda $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1$ si y solo si $\left\|W_{2} T_{o} W_{1}\right\|_{\infty} \leq 1$.
+
+Demostración. Primero probaremos que la condición es necesaria para la estabilidad robusta. Suponga que $\left\|W_{2} T_{o} W_{1}\right\|_{\infty}>1$. Entonces, por el Lema 8.3, para cualquier $\sigma>0$ suficientemente pequeño, existe una $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1$ tal que $\left(I+\Delta W_{2} T_{o} W_{1}\right)^{-1}$ tiene polos sobre el eje $\operatorname{Re}(s)=\sigma$. Esto implica que
+
+$$
+(I+\Pi K)^{-1}=S_{o}\left(I+W_{1} \Delta W_{2} T_{o}\right)^{-1}
+$$
+
+tiene polos sobre el eje $\operatorname{Re}(s)=\sigma$, ya que siempre puede elegirse $\sigma$ de modo que los polos inestables no sean cancelados por los ceros de $S_{o}$. Por tanto, $\left\|W_{2} T_{o} W_{1}\right\|_{\infty} \leq 1$ es necesario para estabilidad robusta. La suficiencia se deduce del teorema de pequeña ganancia.
+
+\subsection*{Incertidumbre en factores coprimos}
+Como otro ejemplo, considere una planta perturbada en factores coprimos por la izquierda descrita en la Figura 8.11.
+
+\insertimage[\label{img:figura-8-11}]{2024_06_29_ce7c73b22613114bd4d6g-158_306_1016_590_541}{width=0.35\textwidth}{sistemas perturbados en factores coprimos por la izquierda}
+
+Teorema 8.6 Sea
+
+$$
+\Pi=\left(\tilde{M}+\tilde{\Delta}_{M}\right)^{-1}\left(\tilde{N}+\tilde{\Delta}_{N}\right)
+$$
+
+con $\tilde{M}, \tilde{N}, \tilde{\Delta}_{M}, \tilde{\Delta}_{N} \in \mathcal{R} \mathcal{H}_{\infty}$. Se supone que las matrices de transferencia $(\tilde{M}, \tilde{N})$ forman una factorización coprima izquierda estable de $P$ (es decir, $P=\tilde{M}^{-1} \tilde{N}$ ), y que $K$ estabiliza internamente al sistema nominal $P$. Defina $\Delta:=\left[\begin{array}{cc}\tilde{\Delta}_{N} & \tilde{\Delta}_{M}\end{array}\right]$. Entonces, el sistema en lazo cerrado está bien planteado y es internamente estable para todo $\|\Delta\|_{\infty}<1$ si y solo si
+
+$$
+\left\|\left[\begin{array}{c}
+K \\
+I
+\end{array}\right](I+P K)^{-1} \tilde{M}^{-1}\right\|_{\infty} \leq 1
+$$
+
+Demostración. Sea $K=U V^{-1}$ una factorización coprima derecha sobre $\mathcal{R} \mathcal{H}_{\infty}$. Por el Lema 5.7, el sistema en lazo cerrado es internamente estable si y solo si
+
+
+\begin{equation*}
+\left(\left(\tilde{N}+\tilde{\Delta}_{N}\right) U+\left(\tilde{M}+\tilde{\Delta}_{M}\right) V\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty} \tag{8.3}
+\end{equation*}
+
+
+Como $K$ estabiliza a $P$, $(\tilde{N} U+\tilde{M} V)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$. Por lo tanto, la ecuación (8.3) se cumple si y solo si
+
+$$
+\left(I+\left(\tilde{\Delta}_{N} U+\tilde{\Delta}_{M} V\right)(\tilde{N} U+\tilde{M} V)^{-1}\right)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Por el teorema de pequeña ganancia, lo anterior es cierto para todo $\|\Delta\|_{\infty}<1$ si y solo si
+
+$$
+\left\|\left[\begin{array}{c}
+U \\
+V
+\end{array}\right](\tilde{N} U+\tilde{M} V)^{-1}\right\|_{\infty}=\left\|\left[\begin{array}{c}
+K \\
+I
+\end{array}\right](I+P K)^{-1} \tilde{M}^{-1}\right\|_{\infty} \leq 1
+$$
+
+\subsection*{Pruebas no estructuradas de estabilidad robusta}
+La Tabla 8.1 resume pruebas de estabilidad robusta para incertidumbres en la planta bajo diversos supuestos. Todas las pruebas corresponden a la configuración estándar mostrada en la Figura 8.9, donde $\Pi$ es el conjunto de plantas inciertas con $P \in \Pi$ como planta nominal y con $K$ como controlador que estabiliza internamente a $P$.
+
+% | $W_{1} \in \mathcal{R} \mathcal{H}_{\infty} \quad W_{2} \in \mathcal{R} \mathcal{H}_{\infty} \quad \Delta \in \mathcal{R} \mathcal{H}_{\infty} \quad\\|\Delta\\|_{\infty}<1$ |  |  |\\
+% | :---: | :---: | :---: |\\
+% | Conjuntos de modelos perturbados \\ $\boldsymbol{\Pi}$ | Tipos representativos de \\ incertidumbre caracterizada | Pruebas de estabilidad robusta |\\
+% | $\left(I+W_{1} \Delta W_{2}\right) P$ | errores de salida (sensores) \\ dinámica HF no modelada \\ ceros rhp inciertos | $\left\\|W_{2} T_{o} W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $P\left(I+W_{1} \Delta W_{2}\right)$ | errores de entrada (actuadores) \\ dinámica HF no modelada \\ ceros rhp inciertos | $\left\\|W_{2} T_{i} W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $\left(I+W_{1} \Delta W_{2}\right)^{-1} P$ | errores paramétricos LF \\ polos rhp inciertos | $\left\\|W_{2} S_{o} W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $P\left(I+W_{1} \Delta W_{2}\right)^{-1}$ | errores paramétricos LF \\ polos rhp inciertos | $\left\\|W_{2} S_{i} W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $P+W_{1} \Delta W_{2}$ | errores aditivos de planta \\ dinámica HF no modelada \\ ceros rhp inciertos | $\left\\|W_{2} K S_{o} W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $P\left(I+W_{1} \Delta W_{2} P\right)^{-1}$ | errores paramétricos LF \\ polos rhp inciertos | $\left\\|W_{2} S_{o} P W_{1}\right\\|_{\infty} \leq 1$ |\\
+% | $\left(\tilde{M}+\tilde{\Delta}_{M}\right)^{-1}\left(\tilde{N}+\tilde{\Delta}_{N}\right)$ \\ $P=\tilde{M}^{-1} \tilde{N}$ \\ $\Delta=\left[\begin{array}{ll}\tilde{\Delta}_{N} & \tilde{\Delta}_{M}\end{array}\right]$ | errores paramétricos LF \\ dinámica HF no modelada \\ polos y ceros rhp inciertos | $\left\\|\left[\begin{array}{c}K \\ I\end{array}\right] S_{o} \tilde{M}^{-1}\right\\|_{\infty} \leq 1$ |\\
+% | $\left(N+\Delta_{N}\right)\left(M+\Delta_{M}\right)^{-1}$ \\ $P=N M^{-1}$ \\ $\Delta=\left[\begin{array}{l}\Delta_{N} \\ \Delta_{M}\end{array}\right]$ | errores paramétricos LF \\ dinámica HF no modelada \\ polos y ceros rhp inciertos | $\left\\|M^{-1} S_{i}[K I]\right\\|_{\infty} \leq 1$ |
+
+Tabla 8.1: pruebas no estructuradas de estabilidad robusta (HF: alta frecuencia, LF: baja frecuencia)
+
+La Tabla 8.1 debe interpretarse como sigue:
+
+\textbf{TEOREMA DE ANÁLISIS NO ESTRUCTURADO}
+Dado NS y Conjuntos de Modelos Perturbados
+
+Entonces Estabilidad Robusta en Lazo Cerrado
+
+si y solo si Pruebas de Estabilidad Robusta
+
+La tabla también indica tipos representativos de incertidumbres físicas que pueden representarse útilmente mediante perturbaciones acotadas por cono insertadas en ubicaciones apropiadas. Por ejemplo, la representación $P_{\Delta}=\left(I+W_{1} \Delta W_{2}\right) P$ de la primera fila es útil para errores de salida en altas frecuencias (HF), cubriendo aspectos como dinámica de alta frecuencia no modelada de sensores o plantas, incluidos procesos de difusión, retardos de transporte, resonancias electromecánicas, etc. La representación $P_{\Delta}=P\left(I+W_{1} \Delta W_{2}\right)$ de la segunda fila cubre tipos similares de errores en las entradas. Ambos casos deben contrastarse con la tercera y la cuarta fila, que tratan $P\left(I+W_{1} \Delta W_{2}\right)^{-1}$ y $\left(I+W_{1} \Delta W_{2}\right)^{-1} P$. Estas representaciones son más útiles para variaciones en la dinámica modelada, como errores de baja frecuencia (LF) producidos por variaciones paramétricas con las condiciones de operación, con el envejecimiento o entre copias de producción de la misma planta.
+
+Nótese en la tabla que los requisitos de estabilidad sobre $\Delta$ no limitan nuestra capacidad para representar variaciones ni en el número ni en las ubicaciones de singularidades rhp, como puede verse en algunos ejemplos sencillos.
+
+Ejemplo 8.3 Suponga que un sistema incierto con número cambiante de polos en el semiplano derecho se describe por
+
+$$
+P_{\Delta}=\left\{\frac{1}{s-\delta}: \delta \in \mathbb{R},|\delta| \leq 1\right\}
+$$
+
+Entonces $P_{1}=\frac{1}{s-1} \in P_{\Delta}$ tiene un polo en el semiplano derecho y $P_{2}=\frac{1}{s+1} \in P_{\Delta}$ no tiene polos en el semiplano derecho. Sin embargo, el conjunto $P_{\Delta}$ puede cubrirse mediante un conjunto de plantas inciertas por realimentación:
+
+$$
+P_{\Delta} \subset \Pi:=\left\{P(1+\delta P)^{-1}: \delta \in \mathcal{R} \mathcal{H}_{\infty}, \quad\|\delta\|_{\infty} \leq 1\right\}
+$$
+
+con $P=\frac{1}{s}$.
+
+Ejemplo 8.4 Como otro ejemplo, considere el siguiente conjunto de plantas:
+
+$$
+P_{\Delta}=\frac{s+1+\alpha}{(s+1)(s+2)},|\alpha| \leq 2
+$$
+
+Este conjunto de plantas tiene un número cambiante de ceros en el semiplano derecho, ya que la planta no tiene ceros en el semiplano derecho cuando $\alpha=0$ y tiene un cero en el semiplano derecho cuando $\alpha=-2$. La planta incierta puede cubrirse mediante un conjunto de plantas con perturbación multiplicativa:
+
+$$
+P_{\Delta} \subset \Pi:=\left\{\frac{1}{s+2}\left(1+\frac{2 \delta}{s+1}\right), \delta \in \mathcal{R} \mathcal{H}_{\infty}, \quad\|\delta\|_{\infty} \leq 1\right\}
+$$
+
+Debe señalarse que esta cobertura puede ser bastante conservadora.
+
+\section{Desempeño robusto}
+Considere el sistema perturbado mostrado en la Figura 8.12, con el conjunto de modelos perturbados descrito por un conjunto $\Pi$. Suponga que las matrices de ponderación $W_{d}, W_{e} \in \mathcal{R} \mathcal{H}_{\infty}$ y que el criterio de desempeño es mantener el error $e$ tan pequeño como sea posible, en algún sentido, para todos los modelos posibles que pertenezcan al conjunto $\boldsymbol{\Pi}$. En general, el conjunto $\boldsymbol{\Pi}$ puede ser un conjunto parametrizado o un conjunto no estructurado como los descritos en la Tabla 8.1. Las especificaciones de desempeño suelen expresarse en términos de la magnitud de cada componente de $e$ en el dominio del tiempo respecto de perturbaciones acotadas o, de manera alternativa y más conveniente, mediante ciertos requisitos sobre la respuesta en frecuencia en lazo cerrado de la matriz de transferencia entre $\tilde{d}$ y $e$ (por ejemplo, la integral del error cuadrático o la magnitud del error en estado estacionario frente a perturbaciones sinusoidales). El primer criterio de diseño conduce al marco de control óptimo $\mathcal{L}_{1}$ y el segundo conduce, respectivamente, a los marcos de diseño $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$. En esta sección nos enfocaremos principalmente en objetivos de desempeño $\mathcal{H}_{\infty}$ con descripciones no estructuradas de incertidumbre del modelo. El desempeño bajo incertidumbre estructurada se considerará en el Capítulo 10.
+
+\insertimage[\label{img:figura-8-12}]{2024_06_29_ce7c73b22613114bd4d6g-161_450_826_1325_644}{width=0.35\textwidth}{diagrama para análisis de desempeño robusto}
+
+Suponga que el criterio de desempeño consiste en mantener la energía del peor caso del error $e$ tan pequeña como sea posible sobre todos los $\tilde{d}$ de energía unitaria; por ejemplo,
+
+$$
+\sup _{\|\tilde{d}\|_{2} \leq 1}\|e\|_{2} \leq \epsilon
+$$
+
+para algún $\epsilon$ pequeño. Escalando el error $e$ (es decir, seleccionando adecuadamente $W_{e}$), podemos suponer sin pérdida de generalidad que $\epsilon=1$.
+
+Sea $T_{e \tilde{d}}$ la matriz de transferencia entre $\tilde{d}$ y $e$, entonces
+
+
+\begin{equation*}
+T_{e \tilde{d}}=W_{e}\left(I+P_{\Delta} K\right)^{-1} W_{d}, \quad P_{\Delta} \in \boldsymbol{\Pi} \tag{8.4}
+\end{equation*}
+
+
+Entonces, el criterio de desempeño robusto en este caso puede describirse exigiendo que el sistema en lazo cerrado sea robustamente estable y que
+
+
+\begin{equation*}
+\left\|T_{e \tilde{d}}\right\|_{\infty} \leq 1, \quad \forall P_{\Delta} \in \boldsymbol{\Pi} \tag{8.5}
+\end{equation*}
+
+
+Más específicamente, primero se analizará un sistema con perturbación multiplicativa en la salida. El análisis para otras clases de modelos puede hacerse de manera análoga. El modelo perturbado puede describirse como
+
+
+\begin{equation*}
+\Pi:=\left\{\left(I+W_{1} \Delta W_{2}\right) P: \quad \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\} \tag{8.6}
+\end{equation*}
+
+
+con $W_{1}, W_{2} \in \mathcal{R} \mathcal{H}_{\infty}$. El diagrama explícito del sistema es el mostrado en la Figura 8.10. Para esta clase de modelos, se tiene
+
+$$
+T_{e \tilde{d}}=W_{e} S_{o}\left(I+W_{1} \Delta W_{2} T_{o}\right)^{-1} W_{d}
+$$
+
+y el desempeño robusto se satisface sii
+
+$$
+\left\|W_{2} T_{o} W_{1}\right\|_{\infty} \leq 1
+$$
+
+y
+
+$$
+\left\|T_{e \tilde{d}}\right\|_{\infty} \leq 1, \forall \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1
+$$
+
+El análisis exacto de este problema de desempeño robusto no es trivial y se presentará en el Capítulo 10. Sin embargo, algunas condiciones suficientes son relativamente fáciles de obtener acotando estas dos desigualdades, y pueden arrojar luz sobre la naturaleza de estos problemas. Se asumirá en toda esta sección que el controlador $K$ estabiliza internamente a la planta nominal $P$.
+
+Teorema 8.7 Suponga que $P_{\Delta} \in\left\{\left(I+W_{1} \Delta W_{2}\right) P: \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\}$ y que $K$ estabiliza internamente a $P$. Entonces, el desempeño robusto del sistema está garantizado si se satisface cualquiera de las siguientes condiciones:\\
+(i) para cada frecuencia $\omega$
+
+
+\begin{equation*}
+\bar{\sigma}\left(W_{d}\right) \bar{\sigma}\left(W_{e} S_{o}\right)+\bar{\sigma}\left(W_{1}\right) \bar{\sigma}\left(W_{2} T_{o}\right) \leq 1 \tag{8.7}
+\end{equation*}
+
+
+(ii) para cada frecuencia $\omega$
+
+
+\begin{equation*}
+\kappa\left(W_{1}^{-1} W_{d}\right) \bar{\sigma}\left(W_{e} S_{o} W_{d}\right)+\bar{\sigma}\left(W_{2} T_{o} W_{1}\right) \leq 1 \tag{8.8}
+\end{equation*}
+
+
+donde se supone que $W_{1}$ y $W_{d}$ son invertibles y $\kappa\left(W_{1}^{-1} W_{d}\right)$ es el número de condición.
+
+Demostración. Es evidente que tanto la condición (8.7) como la condición (8.8) garantizan que $\left\|W_{2} T_{o} W_{1}\right\|_{\infty} \leq 1$. Por lo tanto, basta mostrar que $\left\|T_{e \tilde{d}}\right\|_{\infty} \leq 1, \forall \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1$. Ahora, para cualquier frecuencia $\omega$, es fácil ver que
+
+$$
+\begin{aligned}
+\bar{\sigma}\left(T_{e \bar{d}}\right) & \leq \bar{\sigma}\left(W_{e} S_{o}\right) \bar{\sigma}\left[\left(I+W_{1} \Delta W_{2} T_{o}\right)^{-1}\right] \bar{\sigma}\left(W_{d}\right) \\
+& =\frac{\bar{\sigma}\left(W_{e} S_{o}\right) \bar{\sigma}\left(W_{d}\right)}{\underline{\sigma}\left(I+W_{1} \Delta W_{2} T_{o}\right)} \leq \frac{\bar{\sigma}\left(W_{e} S_{o}\right) \bar{\sigma}\left(W_{d}\right)}{1-\bar{\sigma}\left(W_{1} \Delta W_{2} T_{o}\right)} \\
+& \leq \frac{\bar{\sigma}\left(W_{e} S_{o}\right) \bar{\sigma}\left(W_{d}\right)}{1-\bar{\sigma}\left(W_{1}\right) \bar{\sigma}\left(W_{2} T_{o}\right) \bar{\sigma}(\Delta)} .
+\end{aligned}
+$$
+
+Por lo tanto, la condición (8.7) garantiza que $\bar{\sigma}\left(T_{e \tilde{d}}\right) \leq 1$ para todo $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1$ en todas las frecuencias.
+
+De forma similar, suponga que $W_{1}$ y $W_{d}$ son invertibles; escriba
+
+$$
+T_{e \tilde{d}}=W_{e} S_{o} W_{d}\left(W_{1}^{-1} W_{d}\right)^{-1}\left(I+\Delta W_{2} T_{o} W_{1}\right)^{-1}\left(W_{1}^{-1} W_{d}\right)
+$$
+
+y entonces
+
+$$
+\bar{\sigma}\left(T_{e \tilde{d}}\right) \leq \frac{\bar{\sigma}\left(W_{e} S_{o} W_{d}\right) \kappa\left(W_{1}^{-1} W_{d}\right)}{1-\bar{\sigma}\left(W_{2} T_{o} W_{1}\right) \bar{\sigma}(\Delta)}
+$$
+
+Por lo tanto, por la condición (8.8), se garantiza $\bar{\sigma}\left(T_{e \tilde{d}}\right) \leq 1$ para todo $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$ con $\|\Delta\|_{\infty}<1$ en todas las frecuencias.
+
+Observación 8.2 No es difícil mostrar que cualquiera de las condiciones del teorema también es necesaria para sistemas escalares.
+
+Observación 8.3 Suponga que $\kappa\left(W_{1}^{-1} W_{d}\right) \approx 1$ (las matrices de ponderación que satisfacen esta condición suelen llamarse ponderaciones redondas). Este es particularmente el caso si $W_{1}=w_{1}(s) I$ y $W_{d}=w_{d}(s) I$. Recuerde que $\bar{\sigma}\left(W_{e} S_{o} W_{d}\right) \leq 1$ es la condición necesaria y suficiente para desempeño nominal y que $\bar{\sigma}\left(W_{2} T_{o} W_{1}\right) \leq 1$ es la condición necesaria y suficiente para estabilidad robusta. Por lo tanto, la condición (ii) del Teorema 8.7 queda casi garantizada por $\mathrm{NP}+\mathrm{RS}$ (es decir, RP queda casi garantizado por NP $+\mathrm{RS}$). Dado que RP implica NP $+\mathrm{RS}$, se tiene NP $+\mathrm{RS} \approx \mathrm{RP}$. (En contraste, tal conclusión no puede extraerse en el caso sesgado, que se considerará en la siguiente sección). Como la condición (ii) implica NP $+\mathrm{RS}$, también podemos concluir que la condición (ii) es casi equivalente a RP (es decir, además de ser suficiente, es casi necesaria).
+
+Observación 8.4 Nótese que, a la luz de la relación de equivalencia entre estabilidad robusta y desempeño nominal, es razonable conjeturar que el problema de desempeño robusto precedente es equivalente al problema de estabilidad robusta en la Figura 8.9 con el conjunto de modelos de incertidumbre dado por
+
+$$
+\boldsymbol{\Pi}:=\left(I+W_{d} \Delta_{e} W_{e}\right)^{-1}\left(I+W_{1} \Delta W_{2}\right) P
+$$
+
+y $\left\|\Delta_{e}\right\|_{\infty}<1,\|\Delta\|_{\infty}<1$, como se muestra en la Figura 8.13. Esta conjetura es en efecto verdadera; sin embargo, la incertidumbre equivalente del modelo es estructurada, y el análisis exacto de estabilidad para tales sistemas no es trivial y se estudiará en el Capítulo 10.
+
+\insertimage[\label{img:figura-8-13}]{2024_06_29_ce7c73b22613114bd4d6g-164_450_1176_832_477}{width=0.35\textwidth}{desempeño robusto con incertidumbre no estructurada vs. estabilidad robusta con incertidumbre estructurada}
+
+Observación 8.5 Nótese que si $W_{1}$ y $W_{d}$ son invertibles, entonces $T_{e \tilde{d}}$ también puede escribirse como
+
+$$
+T_{e \tilde{d}}=W_{e} S_{o} W_{d}\left[I+\left(W_{1}^{-1} W_{d}\right)^{-1} \Delta W_{2} T_{o} W_{1}\left(W_{1}^{-1} W_{d}\right)\right]^{-1}
+$$
+
+Por lo tanto, otra condición suficiente alternativa para desempeño robusto puede obtenerse como
+
+$$
+\bar{\sigma}\left(W_{e} S_{o} W_{d}\right)+\kappa\left(W_{1}^{-1} W_{d}\right) \bar{\sigma}\left(W_{2} T_{o} W_{1}\right) \leq 1
+$$
+
+Una situación similar también ocurre en el caso sesgado de abajo. No repetiremos todas esas variaciones.
+
+\section{Especificaciones sesgadas}
+Ahora consideramos el sistema con especificaciones sesgadas (es decir, la incertidumbre y el desempeño no se miden en la misma ubicación). Por ejemplo, el desempeño del sistema todavía se mide en términos de la sensibilidad de salida, pero el modelo de incertidumbre está en forma multiplicativa de entrada:
+
+$$
+\boldsymbol{\Pi}:=\left\{P\left(I+W_{1} \Delta W_{2}\right): \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\}
+$$
+
+\insertimage[\label{img:figura-8-14}]{2024_06_29_ce7c73b22613114bd4d6g-165_360_1114_389_489}{width=0.35\textwidth}{problemas sesgados}
+
+El diagrama en bloques del sistema se muestra en la Figura 8.14.
+
+Para sistemas descritos por esta clase de modelos, la condición de estabilidad robusta se convierte en
+
+$$
+\left\|W_{2} T_{i} W_{1}\right\|_{\infty} \leq 1
+$$
+
+y la condición de desempeño nominal se convierte en
+
+$$
+\left\|W_{e} S_{o} W_{d}\right\|_{\infty} \leq 1
+$$
+
+Para considerar el desempeño robusto, sea $\tilde{T}_{e \tilde{d}}$ la matriz de transferencia de $\tilde{d}$ a $e$. Entonces
+
+$$
+\begin{aligned}
+\tilde{T}_{e \tilde{d}} & =W_{e} S_{o}\left(I+P W_{1} \Delta W_{2} K S_{o}\right)^{-1} W_{d} \\
+& =W_{e} S_{o} W_{d}\left[I+\left(W_{d}^{-1} P W_{1}\right) \Delta\left(W_{2} T_{i} W_{1}\right)\left(W_{d}^{-1} P W_{1}\right)^{-1}\right]^{-1}
+\end{aligned}
+$$
+
+La última igualdad se cumple si $W_{1}$, $W_{d}$ y $P$ son invertibles y, si $W_{2}$ es invertible, también puede escribirse como
+
+$$
+\tilde{T}_{e \tilde{d}}=W_{e} S_{o} W_{d}\left(W_{1}^{-1} W_{d}\right)^{-1}\left[I+\left(W_{1}^{-1} P W_{1}\right) \Delta\left(W_{2} P^{-1} W_{2}^{-1}\right)\left(W_{2} T_{o} W_{1}\right)\right]^{-1}\left(W_{1}^{-1} W_{d}\right)
+$$
+
+Entonces, los siguientes resultados se obtienen fácilmente.
+
+Teorema 8.8 Suponga que $P_{\Delta} \in \Pi=\left\{P\left(I+W_{1} \Delta W_{2}\right): \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\}$ y que $K$ estabiliza internamente a $P$. Suponga que $P$, $W_{1}$, $W_{2}$ y $W_{d}$ son cuadrados e invertibles. Entonces, el desempeño robusto del sistema está garantizado si se satisface cualquiera de las siguientes condiciones:
+
+(i) para cada frecuencia $\omega$
+
+
+\begin{equation*}
+\bar{\sigma}\left(W_{e} S_{o} W_{d}\right)+\kappa\left(W_{d}^{-1} P W_{1}\right) \bar{\sigma}\left(W_{2} T_{i} W_{1}\right) \leq 1 \tag{8.9}
+\end{equation*}
+
+
+(ii) para cada frecuencia $\omega$
+
+
+\begin{equation*}
+\kappa\left(W_{1}^{-1} W_{d}\right) \bar{\sigma}\left(W_{e} S_{o} W_{d}\right)+\bar{\sigma}\left(W_{1}^{-1} P W_{1}\right) \bar{\sigma}\left(W_{2} P^{-1} W_{2}^{-1}\right) \bar{\sigma}\left(W_{2} T_{o} W_{1}\right) \leq 1 \tag{8.10}
+\end{equation*}
+
+
+Observación 8.6 Si no se satisfacen las condiciones de invertibilidad apropiadas, entonces puede darse una condición suficiente alternativa para desempeño robusto:
+
+$$
+\bar{\sigma}\left(W_{d}\right) \bar{\sigma}\left(W_{e} S_{o}\right)+\bar{\sigma}\left(P W_{1}\right) \bar{\sigma}\left(W_{2} K S_{o}\right) \leq 1
+$$
+
+De forma similar al caso anterior, hay muchas variaciones distintas de condiciones suficientes, aunque la ecuación (8.10) puede ser la más útil.
+
+Observación 8.7 Es importante notar que, en este caso, la condición de estabilidad robusta se da en términos de $L_{i}=K P$, mientras que la condición de desempeño nominal se da en términos de $L_{o}=P K$. Estas clases de problemas se llaman problemas sesgados o problemas con especificaciones sesgadas. ${ }^{2}$ Dado que, en general, $P K \neq K P$, el margen de estabilidad robusta o las tolerancias para incertidumbres en la entrada y la salida de la planta generalmente no son iguales.
+
+Observación 8.8 También se observa que la condición de desempeño robusto está relacionada con el número de condición del modelo nominal ponderado. Por lo tanto, en general, si el modelo nominal ponderado está mal condicionado en el rango de frecuencias críticas, entonces la condición de desempeño robusto puede ser mucho más restrictiva que la condición de estabilidad robusta y la condición de desempeño nominal juntas. Por simplicidad, suponga $W_{1}=I$, $W_{d}=I$ y $W_{2}=w_{t} I$, donde $w_{t} \in \mathcal{R} \mathcal{H}_{\infty}$ es una función escalar. Además, se asume que $P$ es invertible. Entonces la condición de desempeño robusto (8.10) puede escribirse como
+
+$$
+\bar{\sigma}\left(W_{e} S_{o}\right)+\kappa(P) \bar{\sigma}\left(w_{t} T_{o}\right) \leq 1, \forall \omega
+$$
+
+Comparar estas condiciones con las obtenidas para problemas no sesgados muestra que la condición relacionada con estabilidad robusta se escala por el número de condición de la planta. ${ }^{3}$ Como $\kappa(P) \geq 1$, es claro que las especificaciones sesgadas son mucho más difíciles de satisfacer si la planta no está bien condicionada. Este problema se discutirá con más detalle en la Sección 10.3.3 del Capítulo 10.
+
+Observación 8.9 Suponga que $K$ es invertible; entonces $\tilde{T}_{e \tilde{d}}$ puede escribirse como
+
+$$
+\tilde{T}_{e \tilde{d}}=W_{e} K^{-1}\left(I+T_{i} W_{1} \Delta W_{2}\right)^{-1} S_{i} K W_{d}
+$$
+
+Suponga además que $W_{e}=I$, $W_{d}=w_{s} I$, $W_{2}=I$, donde $w_{s} \in \mathcal{R} \mathcal{H}_{\infty}$ es una función escalar. Entonces una condición suficiente para desempeño robusto está dada por
+
+$$
+\kappa(K) \bar{\sigma}\left(S_{i} w_{s}\right)+\bar{\sigma}\left(T_{i} W_{1}\right) \leq 1, \forall \omega
+$$
+
+con $\kappa(K):=\bar{\sigma}(K) \bar{\sigma}\left(K^{-1}\right)$. Esto es equivalente a tratar la incertidumbre multiplicativa de entrada de la planta como incertidumbre multiplicativa de salida del controlador.[\^{}7]
+
+El hecho de que el número de condición aparezca en la prueba de desempeño robusto para problemas sesgados puede recibir otra interpretación considerando dos conjuntos de plantas $\boldsymbol{\Pi}_{1}$ y $\boldsymbol{\Pi}_{2}$, como se muestra en la Figura 8.15 y más abajo.
+
+$$
+\begin{aligned}
+& \boldsymbol{\Pi}_{1}:=\left\{P\left(I+w_{t} \Delta\right): \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\} \\
+& \boldsymbol{\Pi}_{2}:=\left\{\left(I+\tilde{w}_{t} \Delta\right) P: \Delta \in \mathcal{R} \mathcal{H}_{\infty},\|\Delta\|_{\infty}<1\right\}
+\end{aligned}
+$$
+
+\insertimage[\label{img:figura-8-15}]{2024_06_29_ce7c73b22613114bd4d6g-167_274_1192_710_455}{width=0.35\textwidth}{conversión de incertidumbre de entrada a incertidumbre de salida}
+
+Suponga que $P$ es invertible; entonces
+
+$$
+\boldsymbol{\Pi}_{2} \supseteq \boldsymbol{\Pi}_{1} \quad \text { si } \quad\left|\tilde{w}_{t}\right| \geq\left|w_{t}\right| \kappa(P) \quad \forall \omega
+$$
+
+ya que $P\left(I+w_{t} \Delta\right)=\left(I+w_{t} P \Delta P^{-1}\right) P$.
+
+El número de condición de una matriz de transferencia puede ser muy alto en alta frecuencia, lo que puede limitar significativamente el desempeño alcanzable. El ejemplo siguiente, tomado del libro de Franklin, Powell y Workman [1990, página 788], muestra que el número de condición mostrado en la Figura 8.16 puede aumentar con la frecuencia:
+
+$$
+P(s)=\left[\begin{array}{ccc|cc}
+-0.2 & 0.1 & 1 & 0 & 1 \\
+-0.05 & 0 & 0 & 0 & 0.7 \\
+0 & 0 & -1 & 1 & 0 \\
+\hline 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0
+\end{array}\right]=\frac{1}{a(s)}\left[\begin{array}{cc}
+s & (s+1)(s+0.07) \\
+-0.05 & 0.7(s+1)(s+0.13)
+\end{array}\right]
+$$
+
+donde $a(s)=(s+1)(s+0.1707)(s+0.02929)$.
+
+Es apropiado señalar que la formulación del problema sesgado, aunque más complicada que la del problema no sesgado, es particularmente adecuada para el diseño de sistemas de control. Más específicamente, considere la función de transferencia de $w$ y $\tilde{d}$ hacia $z$ y $e$:
+
+$$
+\left[\begin{array}{l}
+z \\
+e
+\end{array}\right]=G(s)\left[\begin{array}{l}
+w \\
+\tilde{d}
+\end{array}\right]
+$$
+
+donde
+
+$$
+\begin{aligned}
+G(s) & :=\left[\begin{array}{cc}
+-W_{2} T_{i} W_{1} & -W_{2} K S_{o} W_{d} \\
+W_{e} S_{o} P W_{1} & W_{e} S_{o} W_{d}
+\end{array}\right] \\
+& =\left[\begin{array}{cc}
+-W_{2} & 0 \\
+0 & W_{e}
+\end{array}\right]\left[\begin{array}{c}
+K \\
+I
+\end{array}\right](I+P K)^{-1}\left[\begin{array}{ll}
+P & I
+\end{array}\right]\left[\begin{array}{cc}
+W_{1} & 0 \\
+0 & W_{d}
+\end{array}\right]
+\end{aligned}
+$$
+
+\insertimage[\label{img:figura-8-16}]{2024_06_29_ce7c73b22613114bd4d6g-168_810_846_457_626}{width=0.35\textwidth}{número de condición $\kappa(\omega)=\bar{\sigma}(P(j \omega)) / \underline{\sigma}(P(j \omega))$}
+
+Entonces, un criterio de desempeño adecuado es hacer pequeño $\|G(s)\|_{\infty}$. En efecto, un $\|G(s)\|_{\infty}$ pequeño implica que $T_{i}$, $K S_{o}$, $S_{o} P$ y $S_{o}$ son pequeños en rangos de frecuencia adecuados, que son las especificaciones de diseño deseadas discutidas en la Sección 6.1 del Capítulo 6. Quedará claro en el Capítulo 16 y en el Capítulo 17 que $\|G\|_{\infty}$ está relacionado con el margen de estabilidad robusta en la métrica gap, la métrica $\nu$-gap y las perturbaciones normalizadas de factores coprimos. Por lo tanto, hacer pequeño $\|G\|_{\infty}$ es un enfoque de diseño adecuado.
+
+\section{Control clásico para sistemas MIMO}
+En esta sección mostramos, mediante un ejemplo, que la teoría clásica de control puede no ser confiable cuando se aplica al diseño de sistemas MIMO.
+
+Considere un cuerpo giratorio simétrico con entradas de torque, $T_{1}$ y $T_{2}$, a lo largo de dos ejes transversales ortogonales, $x$ y $y$, como se muestra en la Figura 8.17. Suponga que la velocidad angular del cuerpo giratorio con respecto al eje $z$ es constante, $\Omega$. Suponga además que las inercias del cuerpo giratorio con respecto a los ejes $x$, $y$ y $z$ son $I_{1}$, $I_{2}=I_{1}$ e $I_{3}$, respectivamente. Denote por $\omega_{1}$ y $\omega_{2}$ las velocidades angulares del cuerpo con respecto a los ejes $x$ y $y$, respectivamente. Entonces, la ecuación de Euler del cuerpo giratorio está dada por
+
+$$
+\begin{aligned}
+I_{1} \dot{\omega}_{1}-\omega_{2} \Omega\left(I_{1}-I_{3}\right) & =T_{1} \\
+I_{1} \dot{\omega}_{2}-\omega_{1} \Omega\left(I_{3}-I_{1}\right) & =T_{2}
+\end{aligned}
+$$
+
+\insertimage[\label{img:figura-8-17}]{2024_06_29_ce7c73b22613114bd4d6g-169_776_829_642_629}{width=0.35\textwidth}{cuerpo giratorio}
+
+Defina
+
+$$
+\left[\begin{array}{l}
+u_{1} \\
+u_{2}
+\end{array}\right]:=\left[\begin{array}{l}
+T_{1} / I_{1} \\
+T_{2} / I_{1}
+\end{array}\right], a:=\left(1-I_{3} / I_{1}\right) \Omega
+$$
+
+Entonces las ecuaciones dinámicas del sistema pueden escribirse como
+
+$$
+\left[\begin{array}{c}
+\dot{\omega}_{1} \\
+\dot{\omega}_{2}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & a \\
+-a & 0
+\end{array}\right]\left[\begin{array}{l}
+\omega_{1} \\
+\omega_{2}
+\end{array}\right]+\left[\begin{array}{l}
+u_{1} \\
+u_{2}
+\end{array}\right]
+$$
+
+Ahora suponga que las velocidades angulares $\omega_{1}$ y $\omega_{2}$ se miden en coordenadas escaladas y rotadas:
+
+$$
+\left[\begin{array}{l}
+y_{1} \\
+y_{2}
+\end{array}\right]=\frac{1}{\cos \theta}\left[\begin{array}{cc}
+\cos \theta & \sin \theta \\
+-\sin \theta & \cos \theta
+\end{array}\right]\left[\begin{array}{l}
+\omega_{1} \\
+\omega_{2}
+\end{array}\right]=\left[\begin{array}{cc}
+1 & a \\
+-a & 1
+\end{array}\right]\left[\begin{array}{l}
+\omega_{1} \\
+\omega_{2}
+\end{array}\right]
+$$
+
+donde $\tan \theta:=a$. (No hay un significado físico específico para las mediciones de $y_{1}$ y $y_{2}$, pero se asumen aquí solo por conveniencia de la discusión). Entonces la matriz de transferencia del cuerpo giratorio puede calcularse como
+
+$$
+Y(s)=P(s) U(s)
+$$
+
+con
+
+$$
+P(s)=\frac{1}{s^{2}+a^{2}}\left[\begin{array}{cc}
+s-a^{2} & a(s+1) \\
+-a(s+1) & s-a^{2}
+\end{array}\right]
+$$
+
+Suponga que la ley de control se elige como realimentación unitaria $u=-y$. Entonces, la función de sensibilidad y la función de sensibilidad complementaria están dadas por
+
+$$
+S=(I+P)^{-1}=\frac{1}{s+1}\left[\begin{array}{cc}
+s & -a \\
+a & s
+\end{array}\right], \quad T=P(I+P)^{-1}=\frac{1}{s+1}\left[\begin{array}{cc}
+1 & a \\
+-a & 1
+\end{array}\right]
+$$
+
+Nótese que cada lazo individual tiene como función de transferencia en lazo abierto $\frac{1}{s}$, por lo que cada lazo tiene margen de fase de $90^{\circ}$ y margen de ganancia infinito.
+
+Suponga que se perturba una función de transferencia de lazo, como se muestra en la Figura 8.18.
+
+\insertimage[\label{img:figura-8-18}]{2024_06_29_ce7c73b22613114bd4d6g-170_368_670_960_714}{width=0.35\textwidth}{análisis un lazo a la vez}
+
+Denote
+
+$$
+\frac{z(s)}{w(s)}=-T_{11}=-\frac{1}{s+1}
+$$
+
+Entonces la perturbación máxima permisible está dada por
+
+$$
+\|\delta\|_{\infty}<\frac{1}{\left\|T_{11}\right\|_{\infty}}=1
+$$
+
+la cual es independiente de $a$. De manera similar, la perturbación máxima permisible en el otro lazo también es 1 por simetría. Sin embargo, si ambos lazos se perturban al mismo tiempo, entonces la perturbación máxima permisible es mucho menor, como se muestra a continuación.
+
+Considere una perturbación multivariable, como se muestra en la Figura 8.19; es decir, $P_{\Delta}=(I+$ $\Delta) P$, con
+
+$$
+\Delta=\left[\begin{array}{ll}
+\delta_{11} & \delta_{12} \\
+\delta_{21} & \delta_{22}
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+una matriz de transferencia $2 \times 2$ tal que $\|\Delta\|_{\infty}<\gamma$. Entonces, por el teorema de pequeña ganancia, el sistema es robustamente estable para toda tal $\Delta$ sii
+
+$$
+\gamma \leq \frac{1}{\|T\|_{\infty}}=\frac{1}{\sqrt{1+a^{2}}} \quad(\ll 1 \text { si } a \gg 1)
+$$
+
+\insertimage[\label{img:figura-8-19}]{2024_06_29_ce7c73b22613114bd4d6g-171_628_851_407_623}{width=0.35\textwidth}{perturbaciones simultáneas}
+
+En particular, considere
+
+$$
+\Delta=\Delta_{d}=\left[\begin{array}{ll}
+\delta_{11} & \\
+& \delta_{22}
+\end{array}\right] \in \mathbb{R}^{2 \times 2}
+$$
+
+Entonces el sistema en lazo cerrado es estable para toda tal $\Delta$ sii
+
+$$
+\operatorname{det}\left(I+T \Delta_{d}\right)=\frac{1}{(s+1)^{2}}\left(s^{2}+\left(2+\delta_{11}+\delta_{22}\right) s+1+\delta_{11}+\delta_{22}+\left(1+a^{2}\right) \delta_{11} \delta_{22}\right)
+$$
+
+no tiene ceros en el semiplano derecho cerrado. Por lo tanto, la región de estabilidad está dada por
+
+$$
+\begin{aligned}
+2+\delta_{11}+\delta_{22} & >0 \\
+1+\delta_{11}+\delta_{22}+\left(1+a^{2}\right) \delta_{11} \delta_{22} & >0
+\end{aligned}
+$$
+
+Es fácil ver que el sistema es inestable con
+
+$$
+\delta_{11}=-\delta_{22}=\frac{1}{\sqrt{1+a^{2}}}
+$$
+
+La región de estabilidad para $a=5$ se dibuja en la Figura 8.20, que muestra cómo verificar sobre los ejes omite regiones cercanas de inestabilidad, y que para $a>>5$ la situación empeora aún más. La parte hiperbólica de la figura se acerca arbitrariamente a $(0,0)$. Esto muestra claramente que el análisis de un sistema MIMO usando métodos SISO puede ser engañoso e incluso producir resultados erróneos. Por lo tanto, debe utilizarse un método MIMO.
+
+\section{Notas y referencias}
+El teorema de pequeña ganancia fue presentado por primera vez por Zames [1966]. El libro de Desoer y Vidyasagar [1975] contiene un tratamiento extenso y aplicaciones de este teorema en diversas formas. Las condiciones de estabilidad robusta bajo diversos supuestos de incertidumbre se discuten en Doyle, Wall y Stein [1982].
+
+\insertimage[\label{img:figura-8-20}]{2024_06_29_ce7c73b22613114bd4d6g-172_807_808_415_648}{width=0.35\textwidth}{región de estabilidad para $a=5$}
+
+\subsection*{Problemas}
+Problema 8.1 Este problema muestra que el margen de estabilidad depende de manera crítica del tipo de perturbación. La configuración es un lazo de realimentación unitaria con controlador $K(s)=1$ y planta $P_{\text {nom }}(s)+\Delta(s)$, donde
+
+$$
+P_{\mathrm{nom}}(s)=\frac{10}{s^{2}+0.2 s+1}
+$$
+
+\begin{enumerate}
+  \item Suponga que $\Delta(s) \in \mathcal{R} \mathcal{H}_{\infty}$. Calcule el mayor $\beta$ tal que el sistema en realimentación sea internamente estable para todo $\|\Delta\|_{\infty}<\beta$.
+  \item Repita, pero con $\Delta \in \mathbb{R}$.
+\end{enumerate}
+
+Problema 8.2 Sea $M \in \mathbb{C}^{p \times q}$ una matriz compleja dada. En Qiu et al [1995] se muestra que $I-\Delta M$ es invertible para todo $\Delta \in \mathbb{R}^{q \times p}$ tal que $\bar{\sigma}(\Delta) \leq \gamma$ si y solo si $\mu_{\Delta}(M)<1 / \gamma$, donde
+
+$$
+\mu_{\Delta}(M)=\inf _{\alpha \in(0,1]} \sigma_{2}\left(\left[\begin{array}{cc}
+\operatorname{Re} M & -\alpha \Im M \\
+\alpha^{-1} \Im M & \operatorname{Re} M
+\end{array}\right]\right)
+$$
+
+Se sigue que $(I-\Delta M(s))^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ para un $M(s) \in \mathcal{R} \mathcal{H}_{\infty}$ dado y para todo $\Delta \in \mathbb{R}^{q \times p}$ con $\bar{\sigma}(\Delta) \leq \gamma$ si y solo si $\sup _{\omega} \mu_{\Delta}(M(j \omega))<1 / \gamma$. Escriba un programa en MATLAB para calcular $\mu_{\Delta}(M)$ y aplíquelo al problema anterior.
+
+Problema 8.3 Sea $G(s)=\frac{K e^{-\tau s}}{T s+1}$ y $K \in[10,12], \tau \in[0,0.5], T=1$. Encuentre un modelo nominal $G_{o}(s) \in \mathcal{R} \mathcal{H}_{\infty}$ y una función de ponderación $W(s) \in \mathcal{R} \mathcal{H}_{\infty}$ tales que
+
+$$
+G(s) \in\left\{G_{o}(s)(1+W(s) \Delta(s)): \quad \Delta \in \mathcal{H}_{\infty}, \quad\|\Delta\| \leq 1\right\}
+$$
+
+Problema 8.4 Piense en un ejemplo de un sistema físico con la propiedad de que el número de polos inestables cambia cuando el sistema sufre un pequeño cambio, por ejemplo, cuando una masa se perturba ligeramente o la geometría se deforma levemente.
+
+Problema 8.5 Sea $\mathcal{X}$ un espacio de funciones de transferencia escalares. Una función $f(s)$ en $\mathcal{X}$ es una unidad si $1 / f(s)$ pertenece a $\mathcal{X}$.
+
+\begin{enumerate}
+  \item Demuestre que el conjunto de unidades en $\mathcal{R} \mathcal{H}_{\infty}$ es un conjunto abierto, es decir, si $f$ es una unidad, entonces
+\end{enumerate}
+
+
+\begin{equation*}
+(\exists \epsilon>0)\left(\forall g \in \mathcal{R} \mathcal{H}_{\infty}\right)\|g\|_{\infty}<\epsilon \Longrightarrow f+g \text { es una unidad. } \tag{8.11}
+\end{equation*}
+
+
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item Aquí hay una aplicación del hecho anterior. Considere el sistema de realimentación unitaria con controlador $k(s)$ y planta $p(s)$, ambos SISO, con $k(s)$ propia y $p(s)$ estrictamente propia. Haga factorizaciones coprimas sobre $\mathcal{R} \mathcal{H}_{\infty}$ :
+\end{enumerate}
+
+$$
+p=\frac{n_{p}}{m_{p}}, \quad k=\frac{n_{k}}{m_{k}}
+$$
+
+Entonces el sistema en realimentación es internamente estable si y solo si $n_{p} n_{k}+m_{p} m_{k}$ es una unidad en $\mathcal{R} \mathcal{H}_{\infty}$. Suponga que lo es. Perturbe $p(s)$ a
+
+$$
+p=\frac{n_{p}+\Delta_{n}}{m_{p}+\Delta_{m}}, \quad \Delta_{n}, \Delta_{m} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Muestre que la estabilidad interna se preserva si $\left\|\Delta_{n}\right\|_{\infty}$ y $\left\|\Delta_{m}\right\|_{\infty}$ son suficientemente pequeñas. La conclusión es que la estabilidad interna se preserva si las perturbaciones son suficientemente pequeñas en la norma $\mathcal{H}_{\infty}$.
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item Dé un ejemplo de una unidad $f(s)$ en $\mathcal{R} \mathcal{H}_{\infty}$ tal que la ecuación (8.11) falle para la norma $\mathcal{H}_{2}$, es decir, tal que
+\end{enumerate}
+
+$$
+(\forall \epsilon>0)\left(\exists g \in \mathcal{R} \mathcal{H}_{2}\right)\|g\|_{2}<\epsilon \text { y } f+g \text { no es una unidad. }
+$$
+
+¿Cuál es la significancia de este hecho respecto a la estabilidad robusta?
+
+Problema 8.6 Sean $\Delta$ y $M$ matrices cuadradas constantes. Demuestre que las tres condiciones siguientes son equivalentes:
+
+\begin{enumerate}
+  \item $\left[\begin{array}{cc}I & -\Delta \\ -M & I\end{array}\right]$ es invertible;
+  \item $I-M \Delta$ es invertible;
+  \item $I-\Delta M$ es invertible.
+\end{enumerate}
+
+Problema 8.7 Considere el sistema de realimentación unitaria
+
+\insertimage[\label{img:figura-8-21}]{2024_06_29_ce7c73b22613114bd4d6g-174_165_612_793_751}{width=0.35\textwidth}{Diagrama del Problema 8.7.}
+
+Para
+
+$$
+G(s)=\left[\begin{array}{cc}
+\frac{1}{s} & \frac{1}{s} \\
+\frac{1}{s} & \frac{1}{s}
+\end{array}\right]
+$$
+
+diseñe un controlador propio $K(s)$ para estabilizar internamente el sistema en realimentación. Ahora perturbe $G(s)$ a
+
+$$
+\left[\begin{array}{cc}
+\frac{1+\epsilon}{s} & \frac{1}{s} \\
+\frac{1}{s} & \frac{1}{s}
+\end{array}\right], \quad \epsilon \in \mathbb{R}
+$$
+
+¿Es el sistema en realimentación internamente estable para todo $\epsilon$ suficientemente pequeño?
+
+Problema 8.8 Considere el sistema de realimentación unitaria con $K(s)=3, G(s)=\frac{1}{s-2}$. Calcule a mano (es decir, sin MATLAB) una factorización coprima normalizada de $G(s)$. Considerando perturbaciones $\Delta_{N}$ y $\Delta_{M}$ de los factores de $G(s)$, calcule a mano el radio de estabilidad $\epsilon$, es decir, la mínima cota superior de $\left\|\left[\begin{array}{ll}\Delta_{N} & \Delta_{M}\end{array}\right]\right\|_{\infty}$ tal que se preserve la estabilidad en realimentación.
+
+Problema 8.9 Sea un sistema de realimentación unitaria con un controlador $K(s)=\frac{1}{s}$ y un modelo nominal de planta $P_{o}(s)=\frac{s+1}{s^{2}+0.2 s+5}$. Construya una $\Delta \in \mathcal{R H}_{\infty}$ desestabilizante mínima en el sentido de $\|\Delta\|_{\infty}$ para cada uno de los casos siguientes:
+
+(a) $P=P_{o}+\Delta$;
+
+(b) $P=P_{o}(1+W \Delta)$ con $W(s)=\frac{0.2(s+10)}{s+50}$;\\
+(c) $P=\frac{N+\Delta_{n}}{M+\Delta_{m}}, N=\frac{s+1}{(s+2)^{2}}, M=\frac{s^{2}+0.2 s+5}{(s+2)^{2}}$, y $\Delta=\left[\begin{array}{ll}\Delta_{n} & \Delta_{m}\end{array}\right]$.
+
+Problema 8.10 Este problema trata sobre el sistema de realimentación unitaria con controlador $K(s)$ y planta
+
+$$
+G(s)=\frac{1}{s+1}\left[\begin{array}{ll}
+1 & 2 \\
+3 & 4
+\end{array}\right]
+$$
+
+\begin{enumerate}
+  \item Tome $K(s)=k I_{2}$ ( $k$ un escalar real) y encuentre el rango de $k$ para estabilidad interna.
+  \item Tome
+\end{enumerate}
+
+$$
+K(s)=\left[\begin{array}{cc}
+k_{1} & 0 \\
+0 & k_{2}
+\end{array}\right]
+$$
+
+( $k_{1}, k_{2}$ escalares reales) y encuentre la región de $\left(k_{1}, k_{2}\right)$ en $\mathbb{R}^{2}$ para estabilidad interna.
+
+Problema 8.11 (Teorema de Kharitonov) Sea $a(s)$ un polinomio de intervalo
+
+$$
+a(s)=\left[a_{0}^{-}, a_{0}^{+}\right]+\left[a_{1}^{-}, a_{1}^{+}\right] s+\left[a_{2}^{-}, a_{2}^{+}\right] s^{2}+\cdots
+$$
+
+El teorema de Kharitonov muestra que $a(s)$ es estable si y solo si los siguientes cuatro polinomios de Kharitonov son estables:
+
+$$
+\begin{aligned}
+& K_{1}(s)=a_{0}^{-}+a_{1}^{-} s+a_{2}^{+} s^{2}+a_{3}^{+} s^{3}+a_{4}^{-} s^{4}+a_{5}^{-} s^{5}+a_{6}^{+} s^{6}+\cdots \\
+& K_{2}(s)=a_{0}^{-}+a_{1}^{+} s+a_{2}^{+} s^{2}+a_{3}^{-} s^{3}+a_{4}^{-} s^{4}+a_{5}^{+} s^{5}+a_{6}^{+} s^{6}+\cdots \\
+& K_{3}(s)=a_{0}^{+}+a_{1}^{+} s+a_{2}^{-} s^{2}+a_{3}^{-} s^{3}+a_{4}^{+} s^{4}+a_{5}^{+} s^{5}+a_{6}^{-} s^{6}+\cdots \\
+& K_{4}(s)=a_{0}^{+}+a_{1}^{-} s+a_{2}^{-} s^{2}+a_{3}^{+} s^{3}+a_{4}^{+} s^{4}+a_{5}^{-} s^{5}+a_{6}^{-} s^{6}+\cdots
+\end{aligned}
+$$
+
+Sea $a_{i}:=\left(a_{i}^{-}+a_{i}^{+}\right) / 2$ y sea
+
+$$
+a_{\text {nom }}(s)=a_{0}+a_{1} s+a_{2} s^{2}+\cdots
+$$
+
+Encuentre una $W(s)$ lo menos conservadora posible tal que
+
+$$
+\frac{a(s)}{a_{\text {nom }}(s)} \in\left\{1+W(s) \Delta(s) \mid\|\Delta\|_{\infty} \leq 1\right\}
+$$
+
+Problema 8.12 Una de las herramientas principales de este capítulo fue el teorema de pequeña ganancia. Una forma de enunciarlo es la siguiente: Defina una matriz de transferencia $F(s)$ en $\mathcal{R} \mathcal{H}_{\infty}$ como contractiva si $\|F\|_{\infty} \leq 1$ y estrictamente contractiva si $\|F\|_{\infty}<1$. Entonces, para el sistema de realimentación unitaria, el teorema de pequeña ganancia dice lo siguiente: si $K$ es contractiva y $G$ es estrictamente contractiva, entonces el sistema en realimentación es estable.
+
+Este problema trata sobre pasividad y el teorema de pasividad. Esta es una herramienta importante en el estudio de la estabilidad de sistemas en realimentación, especialmente en robótica, y complementa al teorema de pequeña ganancia.
+
+Considere un sistema con una matriz de transferencia cuadrada $F(s)$ en $\mathcal{R} \mathcal{H}_{\infty}$. Se dice que este es pasivo si
+
+$$
+F(j \omega)+F(j \omega)^{*} \geq 0, \quad \forall \omega
+$$
+
+Aquí, el símbolo $\geq 0$ significa que la matriz es semidefinida positiva. Si el sistema es SISO, la condición es equivalente a
+
+$$
+\operatorname{Re} F(j \omega) \geq 0, \quad \forall \omega
+$$
+
+es decir, el diagrama de Nyquist de $F$ yace en el semiplano derecho. El sistema es estrictamente pasivo si $F-\epsilon I$ es pasivo para algún $\epsilon>0$.
+
+\begin{enumerate}
+  \item Considere un sistema mecónico con vector de entrada $u(t)$ (fuerzas y torques) y vector de salida $y(t)$ (velocidades), modelado por la ecuación
+\end{enumerate}
+
+$$
+M \dot{y}+K y=u
+$$
+
+donde $M$ y $K$ son matrices simétricas definidas positivas. Muestre que este sistema es pasivo.
+
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item Si $F$ es pasivo, entonces $(I+F)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ y $(I+F)^{-1}(I-F)$ es contractiva; si $F$ es estrictamente pasivo, entonces $(I+F)^{-1}(I-F)$ es estrictamente contractiva. Pruebe estas afirmaciones para el caso en que $F$ es SISO.
+  \item Usando los resultados hasta ahora, muestre (en el caso MIMO) que el sistema de realimentación unitaria es estable si $K$ es pasiva y $G$ es estrictamente pasiva.
+\end{enumerate}
+
+Problema 8.13 Considere un sistema de realimentación SISO mostrado abajo con $P=P_{o}+W_{2} \Delta_{2}$.
+
+\insertimage[\label{img:figura-8-22}]{2024_06_29_ce7c73b22613114bd4d6g-176_347_718_1564_693}{width=0.35\textwidth}{Diagrama del Problema 8.13.}
+
+Suponga que $P_{0}$ y $P$ tienen el mismo número de polos en el semiplano derecho, que $W_{2}$ es estable, y que
+
+$$
+\left|\operatorname{Re}\left\{\Delta_{2}\right\}\right| \leq \alpha, \quad\left|\Im\left\{\Delta_{2}\right\}\right| \leq \beta
+$$
+
+Derive las condiciones necesarias y suficientes para que el sistema en realimentación sea robustamente estable.
+
+Problema 8.14 Sea $P=\left[\begin{array}{ll}P_{11} & P_{12} \\ P_{21} & P_{22}\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}$ una matriz de transferencia dos por dos. Encuentre condiciones suficientes (y necesarias, si es posible) en cada caso para que $\mathcal{F}_{u}(P, \Delta)$ sea estable para toda posible $\Delta$ estable que satisfaga, respectivamente, las siguientes condiciones:
+
+\begin{enumerate}
+  \item en cada frecuencia
+\end{enumerate}
+
+$$
+\operatorname{Re} \Delta(j \omega) \geq 0, \quad|\Delta(j \omega)|<\alpha
+$$
+
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item en cada frecuencia
+\end{enumerate}
+
+$$
+\operatorname{Re} \Delta(j \omega) e^{ \pm j \theta} \geq 0, \quad|\Delta(j \omega)|<\alpha
+$$
+
+donde $\theta \geq 0$.
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item en cada frecuencia
+\end{enumerate}
+
+$$
+\operatorname{Re} \Delta(j \omega) \geq 0, \Im \Delta(j \omega) \geq 0, \operatorname{Re} \Delta(j \omega)+\Im \Delta(j \omega)<\alpha
+$$
+
+Problema 8.15 Sea $P=(I+\Delta W) P_{0}$ tal que $P$ y $P_{0}$ tengan el mismo número de polos inestables para toda $\Delta$ admisible, $\|\Delta\|_{\infty}<\gamma$. Muestre que $K$ estabiliza robustamente a $P$ si y solo si $K$ estabiliza a $P_{0}$ y
+
+$$
+\left\|W P_{0} K\left(I+P_{0} K\right)^{-1}\right\|_{\infty} \leq 1
+$$
+
+Problema 8.16 Dé generalizaciones apropiadas del problema anterior a otros tipos de incertidumbres.
+
+Problema 8.17 Sea $K=I$ y
+
+$$
+P_{0}=\left[\begin{array}{cc}
+\frac{1}{s+1} & \frac{2}{s+3} \\
+\frac{1}{s+1} & \frac{1}{s+1}
+\end{array}\right]
+$$
+
+\begin{enumerate}
+  \item Sea $P=P_{0}+\Delta$ con $\|\Delta\|_{\infty} \leq \gamma$. Determine el mayor $\gamma$ para estabilidad robusta.
+  \item Sea $\Delta=\left[\begin{array}{ll}k_{1} & \\ & k_{2}\end{array}\right] \in \mathbb{R}^{2 \times 2}$. Determine la region de estabilidad.
+\end{enumerate}
+
+Problema 8.18 Repita el problema anterior con
+
+$$
+P_{0}=\left[\begin{array}{cc}
+\frac{s-1}{(s+1)^{2}} & \frac{5 s+1}{(s+1)^{2}} \\
+\frac{-1}{(s+1)^{2}} & \frac{s-1}{(s+1)^{2}}
+\end{array}\right]
+$$
+
+
+
