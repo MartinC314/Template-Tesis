@@ -1,0 +1,336 @@
+
+\chapter{Introducción}
+Este capítulo ofrece una breve descripción de los problemas considerados en este libro y de los resultados clave presentados en cada capítulo.
+
+\section{¿De qué trata este libro?}
+Este libro trata sobre teoría básica de control robusto y $\mathcal{H}_{\infty}$. Consideramos un sistema de control con posibles múltiples fuentes de incertidumbre, ruido y perturbaciones, como se muestra en la Figura 1.1.
+
+\insertimage[\label{img:introduccion-interconexion-general-sistema}]{2024_06_29_ce7c73b22613114bd4d6g-015_724_1022_1427_541}{width=0.75\textwidth}{Interconexión general del sistema.}
+
+Consideramos principalmente dos tipos de problemas:
+
+\begin{itemize}
+  \item Problemas de análisis: Dado un controlador, determinar si las señales controladas (incluyendo errores de seguimiento, señales de control, etc.) satisfacen las propiedades deseadas para todos los ruidos, perturbaciones e incertidumbres del modelo admisibles.
+  \item Problemas de síntesis: Diseñar un controlador de modo que las señales controladas satisfagan las propiedades deseadas para todos los ruidos, perturbaciones e incertidumbres del modelo admisibles.
+\end{itemize}
+
+La mayor parte de nuestro análisis y síntesis se realizará en un marco unificado de transformación fraccional lineal (LFT). Con ese fin, mostraremos que el sistema de la Figura 1.1 puede expresarse en el diagrama general de la Figura 1.2, donde $P$ es la matriz de interconexión, $K$ es el controlador, $\Delta$ es el conjunto de todas las incertidumbres posibles, $w$ es una señal vectorial que incluye ruidos, perturbaciones y señales de referencia, $z$ es una señal vectorial que incluye todas las señales controladas y errores de seguimiento, $u$ es la señal de control y $y$ es la medición.
+
+\insertimage[\label{img:introduccion-marco-lft-general}]{2024_06_29_ce7c73b22613114bd4d6g-016_384_428_1044_838}{width=0.35\textwidth}{Marco LFT general.}
+
+El diagrama de bloques de la Figura 1.2 representa las siguientes ecuaciones:
+
+$$
+\begin{aligned}
+{\left[\begin{array}{l}
+v \\
+z \\
+y
+\end{array}\right] } & =P\left[\begin{array}{l}
+\eta \\
+w \\
+u
+\end{array}\right] \\
+\eta & =\Delta v \\
+u & =K y
+\end{aligned}
+$$
+
+Denotemos por $T_{z w}$ la matriz de transferencia de $w$ a $z$, y supongamos que la incertidumbre admisible $\Delta$ satisface $\|\Delta\|_{\infty}<1 / \gamma_{u}$ para algún $\gamma_{u}>0$. Entonces, nuestro problema de análisis consiste en responder si el sistema en lazo cerrado es estable para todo $\Delta$ admisible y si $\left\|T_{z w}\right\|_{\infty} \leq \gamma_{p}$ para algún $\gamma_{p}>0$ preespecificado, donde $\left\|T_{z w}\right\|_{\infty}$ es la norma $\mathcal{H}_{\infty}$ definida como $\left\|T_{z w}\right\|_{\infty}=\sup _{\omega} \bar{\sigma}\left(T_{z w}(j \omega)\right)$. El problema de síntesis consiste en diseñar un controlador $K$ de modo que se satisfagan las condiciones de estabilidad robusta y desempeño antes mencionadas.
+
+En la forma más simple, tenemos o bien $\Delta=0$ o bien $w=0$. El primer caso se convierte en el conocido problema de control $\mathcal{H}_{\infty}$ y el segundo en el problema de estabilidad robusta. Los dos\\
+problemas son equivalentes cuando $\Delta$ es una incertidumbre no estructurada de un solo bloque, mediante la aplicación del teorema de la pequeña ganancia (véase el Capítulo 8). Esta consecuencia de estabilidad robusta fue probablemente la principal motivación para el desarrollo de los métodos $\mathcal{H}_{\infty}$.
+
+El análisis y la síntesis para sistemas con $\Delta$ de múltiples bloques pueden reducirse, en la mayoría de los casos, a un problema equivalente de $\mathcal{H}_{\infty}$ con escalados adecuados. Por lo tanto, una solución al problema de control $\mathcal{H}_{\infty}$ es la clave para todos los problemas de robustez considerados en este libro. En la siguiente sección, presentaremos un resumen capítulo por capítulo de los principales resultados del libro.
+
+Remitimos al lector al libro Robust and Optimal Control de K. Zhou, J. C. Doyle y K. Glover [1996] para una breve reseña histórica de $\mathcal{H}_{\infty}$ y del control robusto, así como para un tratamiento detallado de algunos temas avanzados.
+
+\section{Destacados de este libro}
+En esta sección se destacan los resultados clave de cada capítulo. Los lectores deben consultar los capítulos correspondientes para los enunciados y condiciones exactos.
+
+El Capítulo 2 repasa algunos hechos básicos de álgebra lineal.
+
+El Capítulo 3 repasa conceptos teóricos de sistemas: controlabilidad, observabilidad, estabilizabilidad, detectabilidad, asignación de polos, teoría de observadores, polos y ceros del sistema, y realizaciones en espacio de estados.
+
+El Capítulo 4 introduce los espacios $\mathcal{H}_{2}$ y los espacios $\mathcal{H}_{\infty}$. Se presentan métodos en espacio de estados para calcular normas de matrices de transferencia racionales reales en $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$. Por ejemplo, sea
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline C & 0
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Entonces
+
+$$
+\|G\|_{2}^{2}=\operatorname{trace}\left(B^{*} Q B\right)=\operatorname{trace}\left(C P C^{*}\right)
+$$
+
+y
+
+$$
+\|G\|_{\infty}=\max \{\gamma: H \text { tiene un valor propio sobre el eje imaginario }\}
+$$
+
+donde $P$ y $Q$ son los Gramianos de controlabilidad y observabilidad, y
+
+$$
+H=\left[\begin{array}{cc}
+A & B B^{*} / \gamma^{2} \\
+-C^{*} C & -A^{*}
+\end{array}\right]
+$$
+
+El Capítulo 5 introduce la estructura de realimentación y discute su estabilidad.
+
+\insertimage[\label{img:introduccion-estructura-realimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-018_266_683_474_710}{width=0.75\textwidth}{Estructura de realimentación considerada en el análisis de estabilidad interna.}
+
+Definimos que el sistema en lazo cerrado anterior es internamente estable si y solo si
+
+$$
+\left[\begin{array}{cc}
+I & -\hat{K} \\
+-P & I
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+(I-\hat{K} P)^{-1} & \hat{K}(I-P \hat{K})^{-1} \\
+P(I-\hat{K} P)^{-1} & (I-P \hat{K})^{-1}
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+También se presentan caracterizaciones alternativas de la estabilidad interna usando factorizaciones coprimas.
+
+El Capítulo 6 considera las propiedades de los sistemas de realimentación y las limitaciones de diseño. También se estudian en este capítulo las formulaciones de los problemas de control óptimo $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$, así como la selección de funciones de ponderación.
+
+El Capítulo 7 considera el problema de reducir el orden de un sistema dinámico lineal multivariable usando el método de truncamiento balanceado. Supongamos que
+
+$$
+G(s)=\left[\begin{array}{cc|c}
+A_{11} & A_{12} & B_{1} \\
+A_{21} & A_{22} & B_{2} \\
+\hline C_{1} & C_{2} & D
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+es una realización balanceada con Gramianos de controlabilidad y observabilidad $P=Q=\Sigma=$ $\operatorname{diag}\left(\Sigma_{1}, \Sigma_{2}\right)$
+
+$$
+\begin{aligned}
+& \Sigma_{1}=\operatorname{diag}\left(\sigma_{1} I_{s_{1}}, \sigma_{2} I_{s_{2}}, \ldots, \sigma_{r} I_{s_{r}}\right) \\
+& \Sigma_{2}=\operatorname{diag}\left(\sigma_{r+1} I_{s_{r+1}}, \sigma_{r+2} I_{s_{r+2}}, \ldots, \sigma_{N} I_{s_{N}}\right)
+\end{aligned}
+$$
+
+Entonces el sistema truncado $G_{r}(s)=\left[\begin{array}{c|c}A_{11} & B_{1} \\ \hline C_{1} & D\end{array}\right]$ es estable y satisface una cota de error aditiva:
+
+$$
+\left\|G(s)-G_{r}(s)\right\|_{\infty} \leq 2 \sum_{i=r+1}^{N} \sigma_{i}
+$$
+
+También se discute el método de truncamiento balanceado con ponderación en frecuencia.
+
+El Capítulo 8 deriva pruebas de estabilidad robusta para sistemas bajo diversas hipótesis de modelado mediante el uso del teorema de la pequeña ganancia. En particular, mostramos que un sistema, mostrado al inicio de la página siguiente, con una incertidumbre no estructurada $\Delta \in \mathcal{R} \mathcal{H}_{\infty}$\\
+con $\|\Delta\|_{\infty}<1$ es robustamente estable si y solo si $\left\|T_{z w}\right\|_{\infty} \leq 1$, donde $T_{z w}$ es la matriz de transferencia de $w$ a $z$.
+
+\insertimage[\label{img:introduccion-incertidumbre-no-estructurada}]{2024_06_29_ce7c73b22613114bd4d6g-019_374_631_537_736}{width=0.35\textwidth}{Interconexión con incertidumbre no estructurada para el análisis de estabilidad robusta.}
+
+El Capítulo 9 introduce la LFT en detalle. Mostramos que muchos problemas de control pueden formularse y tratarse en el marco LFT. En particular, mostramos que todo problema de análisis puede expresarse en forma LFT con cierta $\Delta(s)$ estructurada y cierta matriz de interconexión $M(s)$, y que todo problema de síntesis puede expresarse en forma LFT con una planta generalizada $G(s)$ y un controlador $K(s)$ por diseñar.\\
+\insertimage[\label{img:introduccion-formulacion-lft}]{2024_06_29_ce7c73b22613114bd4d6g-019_212_994_1260_585}{width=0.75\textwidth}{Formulación general de problemas de análisis y síntesis en el marco LFT.}
+
+El Capítulo 10 considera la estabilidad robusta y el desempeño para sistemas con múltiples fuentes de incertidumbre. Mostramos que un sistema incierto es robustamente estable y satisface cierto criterio de desempeño $\mathcal{H}_{\infty}$ para todo $\Delta_{i} \in \mathcal{R} \mathcal{H}_{\infty}$ con $\left\|\Delta_{i}\right\|_{\infty}<1$ si y solo si el valor singular estructurado $(\mu)$ del modelo de interconexión correspondiente no es mayor que 1.
+
+\insertimage[\label{img:introduccion-estructura-mu}]{2024_06_29_ce7c73b22613114bd4d6g-019_412_700_1824_707}{width=0.35\textwidth}{Estructura de interconexión para análisis de estabilidad robusta y desempeño con $\mu$.}
+
+El Capítulo 11 caracteriza en espacio de estados todos los controladores que estabilizan un sistema dinámico dado $G(s)$. Para una planta generalizada dada
+
+$$
+G(s)=\left[\begin{array}{cc}
+G_{11}(s) & G_{12}(s) \\
+G_{21}(s) & G_{22}(s)
+\end{array}\right]=\left[\begin{array}{c|cc}
+A & B_{1} & B_{2} \\
+\hline C_{1} & D_{11} & D_{12} \\
+C_{2} & D_{21} & D_{22}
+\end{array}\right]
+$$
+
+mostramos que todos los controladores estabilizantes pueden parametrizarse como la matriz de transferencia de $y$ a $u$ que aparece abajo, donde $F$ y $L$ son tales que $A+L C_{2}$ y $A+B_{2} F$ son estables, y donde $Q$ es cualquier matriz de transferencia propia y estable.
+
+\insertimage[\label{img:introduccion-parametrizacion-controladores}]{2024_06_29_ce7c73b22613114bd4d6g-020_727_808_829_648}{width=0.55\textwidth}{Estructura de parametrización de controladores estabilizantes.}
+
+El Capítulo 12 estudia la solución estabilizante de una ecuación algebraica de Riccati (ARE). Una solución de la siguiente ARE
+
+$$
+A^{*} X+X A+X R X+Q=0
+$$
+
+se denomina solución estabilizante si $A+R X$ es estable. Sea ahora
+
+$$
+H:=\left[\begin{array}{cc}
+A & R \\
+-Q & -A^{*}
+\end{array}\right]
+$$
+
+y sea $\mathcal{X}_{-}(H)$ el subespacio invariante estable de $H$, y
+
+$$
+\mathcal{X}_{-}(H)=\operatorname{Im}\left[\begin{array}{l}
+X_{1} \\
+X_{2}
+\end{array}\right]
+$$
+
+donde $X_{1}, X_{2} \in \mathbb{C}^{n \times n}$. Si $X_{1}$ es no singular, entonces $X:=X_{2} X_{1}^{-1}$ queda determinado de manera única por $H$, denotado por $X=\operatorname{Ric}(H)$. Un resultado clave de este capítulo es el llamado lema real acotado,\\
+que establece que una matriz de transferencia estable $G(s)$ satisface $\|G(s)\|_{\infty}<\gamma$ si y solo si existe un $X$ tal que $A+B B^{*} X / \gamma^{2}$ es estable y
+
+$$
+X A+A^{*} X+X B B^{*} X / \gamma^{2}+C^{*} C=0
+$$
+
+La teoría de control $\mathcal{H}_{\infty}$ del Capítulo 14 se derivará con base en este lema.
+
+El Capítulo 13 trata el control óptimo de sistemas lineales invariantes en el tiempo con criterios de desempeño cuadrático (es decir, problemas $\mathcal{H}_{2}$). Consideramos un sistema dinámico descrito por una LFT con
+
+$$
+G(s)=\left[\begin{array}{c|cc}
+A & B_{1} & B_{2} \\
+\hline C_{1} & 0 & D_{12} \\
+C_{2} & D_{21} & 0
+\end{array}\right]
+$$
+
+\insertimage[\label{img:introduccion-lft-control-h2}]{2024_06_29_ce7c73b22613114bd4d6g-021_236_317_961_901}{width=0.35\textwidth}{Planta generalizada en formulación LFT para el problema de control $\mathcal{H}_{2}$.}
+
+Definimos
+
+$$
+\begin{aligned}
+& R_{1}=D_{12}^{*} D_{12}>0, \quad R_{2}=D_{21} D_{21}^{*}>0 \\
+& H_{2}:=\left[\begin{array}{cc}
+A-B_{2} R_{1}^{-1} D_{12}^{*} C_{1} & -B_{2} R_{1}^{-1} B_{2}^{*} \\
+-C_{1}^{*}\left(I-D_{12} R_{1}^{-1} D_{12}^{*}\right) C_{1} & -\left(A-B_{2} R_{1}^{-1} D_{12}^{*} C_{1}\right)^{*}
+\end{array}\right] \\
+& J_{2}:=\left[\begin{array}{cc}
+\left(A-B_{1} D_{21}^{*} R_{2}^{-1} C_{2}\right)^{*} & -C_{2}^{*} R_{2}^{-1} C_{2} \\
+-B_{1}\left(I-D_{21}^{*} R_{2}^{-1} D_{21}\right) B_{1}^{*} & -\left(A-B_{1} D_{21}^{*} R_{2}^{-1} C_{2}\right)
+\end{array}\right] \\
+& X_{2}:=\operatorname{Ric}\left(H_{2}\right) \geq 0, \quad Y_{2}:=\operatorname{Ric}\left(J_{2}\right) \geq 0 \\
+& F_{2}:=-R_{1}^{-1}\left(B_{2}^{*} X_{2}+D_{12}^{*} C_{1}\right), \quad L_{2}:=-\left(Y_{2} C_{2}^{*}+B_{1} D_{21}^{*}\right) R_{2}^{-1}
+\end{aligned}
+$$
+
+Entonces, el controlador óptimo $\mathcal{H}_{2}$ (es decir, el controlador que minimiza $\left\|T_{z w}\right\|_{2}$ ) viene dado por
+
+$$
+K_{\mathrm{opt}}(s):=\left[\begin{array}{c|c}
+A+B_{2} F_{2}+L_{2} C_{2} & -L_{2} \\
+\hline F_{2} & 0
+\end{array}\right]
+$$
+
+El Capítulo 14 considera primero un problema de control $\mathcal{H}_{\infty}$ con la planta generalizada $G(s)$ dada en el Capítulo 13, pero con algunas simplificaciones adicionales: $R_{1}=I, R_{2}=I$, $D_{12}^{*} C_{1}=0$ y $B_{1} D_{21}^{*}=0$. Mostramos que existe un controlador admisible tal que $\left\|T_{z w}\right\|_{\infty}<\gamma$ si y solo si se cumplen las siguientes tres condiciones:
+
+(i) $H_{\infty} \in \operatorname{dom}(\operatorname{Ric})$ and $X_{\infty}:=\operatorname{Ric}\left(H_{\infty}\right)>0$, where
+
+$$
+H_{\infty}:=\left[\begin{array}{cc}
+A & \gamma^{-2} B_{1} B_{1}^{*}-B_{2} B_{2}^{*} \\
+-C_{1}^{*} C_{1} & -A^{*}
+\end{array}\right]
+$$
+
+(ii) $J_{\infty} \in \operatorname{dom}($ Ric $)$ and $Y_{\infty}:=\operatorname{Ric}\left(J_{\infty}\right)>0$, where
+
+$$
+J_{\infty}:=\left[\begin{array}{cc}
+A^{*} & \gamma^{-2} C_{1}^{*} C_{1}-C_{2}^{*} C_{2} \\
+-B_{1} B_{1}^{*} & -A
+\end{array}\right]
+$$
+
+(iii) $\rho\left(X_{\infty} Y_{\infty}\right)<\gamma^{2}$.
+
+Además, un controlador admisible tal que $\left\|T_{z w}\right\|_{\infty}<\gamma$ viene dado por
+
+$$
+K_{\mathrm{sub}}=\left[\begin{array}{c|c}
+\hat{A}_{\infty} & -Z_{\infty} L_{\infty} \\
+\hline F_{\infty} & 0
+\end{array}\right]
+$$
+
+where
+
+$$
+\begin{gathered}
+\hat{A}_{\infty}:=A+\gamma^{-2} B_{1} B_{1}^{*} X_{\infty}+B_{2} F_{\infty}+Z_{\infty} L_{\infty} C_{2} \\
+F_{\infty}:=-B_{2}^{*} X_{\infty}, \quad L_{\infty}:=-Y_{\infty} C_{2}^{*}, \quad Z_{\infty}:=\left(I-\gamma^{-2} Y_{\infty} X_{\infty}\right)^{-1}
+\end{gathered}
+$$
+
+A continuación consideramos con más detalle el problema general de control $\mathcal{H}_{\infty}$. Indicamos cómo pueden relajarse varias hipótesis para abarcar otros problemas más complejos, como los problemas de control singular. También consideramos el control integral en la teoría $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$, y mostramos cómo la solución general de $\mathcal{H}_{\infty}$ puede usarse para resolver el problema de filtrado $\mathcal{H}_{\infty}$.
+
+El Capítulo 15 considera el diseño de controladores de orden reducido mediante reducción de controladores. Se presta especial atención a los métodos de reducción que preservan la estabilidad y el desempeño en lazo cerrado. Se presentan métodos que proporcionan condiciones suficientes en términos de reducción de modelo ponderada en frecuencia.
+
+El Capítulo 16 resuelve primero un problema especial de minimización $\mathcal{H}_{\infty}$. Sea $P=\tilde{M}^{-1} \tilde{N}$ una factorización coprima izquierda normalizada. Entonces mostramos que
+
+$$
+\begin{aligned}
+\inf _{K \text { estabilizante }}\left\|\left[\begin{array}{c}
+K \\
+I
+\end{array}\right](I+P K)^{-1}\left[\begin{array}{ll}
+I & P
+\end{array}\right]\right\|_{\infty} \\
+=\inf _{K \text { estabilizante }}\left\|\left[\begin{array}{c}
+K \\
+I
+\end{array}\right](I+P K)^{-1} \tilde{M}^{-1}\right\|_{\infty}=\left(\sqrt{1-\left\|\left[\begin{array}{ll}
+\tilde{N} & \tilde{M}
+\end{array}\right]\right\|_{H}^{2}}\right)^{-1} .
+\end{aligned}
+$$
+
+Esto implica que existe un controlador robustamente estabilizante para
+
+$$
+P_{\Delta}=\left(\tilde{M}+\tilde{\Delta}_{M}\right)^{-1}\left(\tilde{N}+\tilde{\Delta}_{N}\right)
+$$
+
+con
+
+$$
+\left\|\left[\begin{array}{ll}
+\tilde{\Delta}_{N} & \tilde{\Delta}_{M}
+\end{array}\right]\right\|_{\infty}<\epsilon
+$$
+
+si y solo si
+
+$$
+\epsilon \leq \sqrt{1-\left\|\left[\begin{array}{ll}
+\tilde{N} & \tilde{M}
+\end{array}\right]\right\|_{H}^{2}}
+$$
+
+Usando este resultado de estabilización, se propone una técnica de diseño por conformación de lazo (loop-shaping). La técnica propuesta usa únicamente el concepto básico de los métodos de loop-shaping, y luego se emplea un controlador de estabilización robusta para el sistema perturbado en factores coprimos normalizados para construir el controlador final.
+
+El Capítulo 17 introduce la métrica gap y la métrica $\nu$-gap. Se discuten la interpretación en el dominio de la frecuencia y las aplicaciones de la métrica $\nu$-gap. También se considera la reducción de orden de controladores en el marco de la métrica gap o $\nu$-gap.
+
+El Capítulo 18 considera brevemente los problemas de validación de modelos y de análisis y síntesis $\mu$ mixtos (reales y complejos).
+
+La mayoría de los cálculos y ejemplos de este libro se realizan usando Matlab. Dado que utilizaremos MATLAB como herramienta computacional principal, se supone que los lectores tienen conocimientos básicos de las operaciones de MatcaB (por ejemplo, cómo ingresar vectores y matrices). También hemos incluido en este libro breves explicaciones de comandos de Matlab, SimulinK ${ }^{\circledR}$, Control System Toolbox y $\mu$ Analysis and Synthesis Toolbox ${ }^{1}$. En particular, este libro está escrito de manera consistente con $\mu$ Analysis and Synthesis Toolbox. (Robust Control Toolbox, LMI Control Toolbox y otros paquetes de software también pueden usarse con este libro.) Por ello, es útil que los lectores tengan acceso a esta toolbox. En este punto se sugiere probar los siguientes programas de demostración de esta toolbox.
+
+\textbf{msdemo1}
+
+\textbf{msdemo2}
+Introduciremos muchos más comandos de MatcaB en los capítulos siguientes.
+
+\section{Notas y referencias}
+La formulación original del problema de control $\mathcal{H}_{\infty}$ puede encontrarse en Zames [1981]. Actualmente se han establecido relaciones entre $\mathcal{H}_{\infty}$ y muchos otros temas de control: por ejemplo, control sensible al riesgo de Whittle [1990]; juegos diferenciales (véase Başar y Bernhard [1991], Limebeer, Anderson, Khargonekar y Green [1992]; Green y Limebeer [1995]); representación chain-scattering y factorización J-lossless (Green [1992] y Kimura [1997]). Véase también Zhou, Doyle y Glover [1996] para discusiones y referencias adicionales. La teoría en espacio de estados de $\mathcal{H}_{\infty}$ también se ha desarrollado mucho más, generalizando de invariante en el tiempo a variante en el tiempo, de horizonte infinito a horizonte finito, y de dimensión finita a dimensión infinita, e incluso a algunos escenarios no lineales.[\^{}0]
+
+\section{Problemas}
+
+Problema 1.1 Resolveremos primero un problema fácil. Cuando lees un artículo o un libro, a menudo encuentras una afirmación como esta: ``Es fácil...''. Lo que el autor realmente quiso decir fue una de las siguientes opciones: (a) realmente es fácil; (b) parece fácil; (c) es fácil para un experto; (d) el autor no sabe cómo demostrarlo, pero cree que es correcto. Ahora demuestre que cuando digo ``Es fácil'' en este libro, quiero decir que realmente es fácil. (Pista: Si puede demostrarlo después de leer todo el libro, pídale a su jefe un ascenso. Si no puede demostrarlo después de leer todo el libro, tire el libro y escriba uno usted mismo. Recuerde usar algo como ``es fácil...'' si no está seguro de lo que está diciendo.)

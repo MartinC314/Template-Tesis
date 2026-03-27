@@ -1,0 +1,834 @@
+\chapter{Álgebra lineal}
+
+En este capítulo se revisan algunos hechos básicos de álgebra lineal. El tratamiento detallado de este tema puede encontrarse en las referencias listadas al final del capítulo. Por ello, omitiremos la mayoría de las demostraciones y presentaremos pruebas solo para aquellos resultados que no pueden encontrarse fácilmente en los textos estándar de álgebra lineal o que resultan esclarecedores para comprender algunos problemas relacionados.
+
+\section{Subespacios lineales}
+Sea $\mathbb{R}$ el campo escalar real y $\mathbb{C}$ el campo escalar complejo. Para los fines de este capítulo, sea $\mathbb{F}$ igual a $\mathbb{R}$ o a $\mathbb{C}$, y sea $\mathbb{F}^{n}$ el espacio vectorial sobre $\mathbb{F}$ (es decir, $\mathbb{F}^{n}$ es $\mathbb{R}^{n}$ o $\left.\mathbb{C}^{n}\right)$). Ahora, sean $x_{1}, x_{2}, \ldots, x_{k} \in \mathbb{F}^{n}$. Entonces, un elemento de la forma $\alpha_{1} x_{1}+\ldots+\alpha_{k} x_{k}$ con $\alpha_{i} \in \mathbb{F}$ es una combinación lineal sobre $\mathbb{F}$ de $x_{1}, \ldots, x_{k}$. El conjunto de todas las combinaciones lineales de $x_{1}, x_{2}, \ldots, x_{k} \in \mathbb{F}^{n}$ es un subespacio llamado la envolvente lineal de $x_{1}, x_{2}, \ldots, x_{k}$, denotado por
+
+$$
+\operatorname{span}\left\{x_{1}, x_{2}, \ldots, x_{k}\right\}:=\left\{x=\alpha_{1} x_{1}+\ldots+\alpha_{k} x_{k}: \alpha_{i} \in \mathbb{F}\right\}
+$$
+
+Se dice que un conjunto de vectores $x_{1}, x_{2}, \ldots, x_{k} \in \mathbb{F}^{n}$ es linealmente dependiente sobre $\mathbb{F}$ si existen $\alpha_{1}, \ldots, \alpha_{k} \in \mathbb{F}$, no todos nulos, tales que $\alpha_{1} x_{2}+\ldots+\alpha_{k} x_{k}=0$; de lo contrario, se dice que los vectores son linealmente independientes.
+
+Sea $S$ un subespacio de $\mathbb{F}^{n}$; entonces, un conjunto de vectores $\left\{x_{1}, x_{2}, \ldots, x_{k}\right\} \in S$ se llama base de $S$ si $x_{1}, x_{2}, \ldots, x_{k}$ son linealmente independientes y $S=\operatorname{span}\left\{x_{1}, x_{2}, \ldots, x_{k}\right\}$. Sin embargo, una base de un subespacio $S$ no es única, aunque todas las bases de $S$ tienen el mismo número de elementos. Este número se llama dimensión de $S$, y se denota por $\operatorname{dim}(S)$.
+
+Un conjunto de vectores $\left\{x_{1}, x_{2}, \ldots, x_{k}\right\}$ en $\mathbb{F}^{n}$ es mutuamente ortogonal si $x_{i}^{*} x_{j}=0$ para todo $i \neq j$, y es ortonormal si $x_{i}^{*} x_{j}=\delta_{i j}$, donde el superíndice * denota transpuesta conjugada compleja y $\delta_{i j}$ es la función delta de Kronecker con $\delta_{i j}=1$ para $i=j$ y $\delta_{i j}=0$ para $i \neq j$. Más generalmente, una colección de subespacios $S_{1}, S_{2}, \ldots, S_{k}$ de $\mathbb{F}^{n}$ es mutuamente ortogonal si $x^{*} y=0$ siempre que $x \in S_{i}$ y $y \in S_{j}$ con $i \neq j$.
+
+El complemento ortogonal de un subespacio $S \subset \mathbb{F}^{n}$ se define por
+
+$$
+S^{\perp}:=\left\{y \in \mathbb{F}^{n}: y^{*} x=0 \text { for all } x \in S\right\}
+$$
+
+Llamamos base ortonormal de un subespacio $S \in \mathbb{F}^{n}$ a un conjunto de vectores $\left\{u_{1}, u_{2}, \ldots, u_{k}\right\}$ si los vectores forman una base de $S$ y son ortonormales. Siempre es posible extender dicha base a una base ortonormal completa $\left\{u_{1}, u_{2}, \ldots, u_{n}\right\}$ de $\mathbb{F}^{n}$. Nótese que, en este caso,
+
+$$
+S^{\perp}=\operatorname{span}\left\{u_{k+1}, \ldots, u_{n}\right\}
+$$
+
+y $\left\{u_{k+1}, \ldots, u_{n}\right\}$ se llama una completación ortonormal de $\left\{u_{1}, u_{2}, \ldots, u_{k}\right\}$.
+
+Sea $A \in \mathbb{F}^{m \times n}$ una transformación lineal de $\mathbb{F}^{n}$ a $\mathbb{F}^{m}$; es decir,
+
+$$
+A: \mathbb{F}^{n} \longmapsto \mathbb{F}^{m}
+$$
+
+Entonces, el núcleo o espacio nulo de la transformación lineal $A$ se define por
+
+$$
+\operatorname{Ker} A=N(A):=\left\{x \in \mathbb{F}^{n}: A x=0\right\}
+$$
+
+y la imagen o rango de $A$ es
+
+$$
+\operatorname{Im} A=R(A):=\left\{y \in \mathbb{F}^{m}: y=A x, x \in \mathbb{F}^{n}\right\}
+$$
+
+Sea $a_{i}, i=1,2, \ldots, n$, la notación de las columnas de una matriz $A \in \mathbb{F}^{m \times n}$; entonces
+
+$$
+\operatorname{Im} A=\operatorname{span}\left\{a_{1}, a_{2}, \ldots, a_{n}\right\}
+$$
+
+Una matriz cuadrada $U \in F^{n \times n}$ cuyas columnas forman una base ortonormal de $\mathbb{F}^{n}$ se llama matriz unitaria (o matriz ortogonal si $\mathbb{F}=\mathbb{R}$), y satisface $U^{*} U=I=U U^{*}$.
+
+Ahora sea $A=\left[a_{i j}\right] \in \mathbb{C}^{n \times n}$; entonces la traza de $A$ se define como
+
+$$
+\operatorname{trace}(A):=\sum_{i=1}^{n} a_{i i}
+$$
+
+\textbf{Comandos ilustrativos de MATLAB:}
+$\gg$ basis\_of\_KerA $=$ null(A); basis\_of\_ImA $=$ orth $(\mathbf{A})$; rank\_of\_A $=$ rank(A);
+
+\section{Valores y vectores propios}
+Sea $A \in \mathbb{C}^{n \times n}$; entonces los valores propios de $A$ son las $n$ raíces de su polinomio característico $p(\lambda)=\operatorname{det}(\lambda I-A)$. El módulo máximo de los valores propios se llama radio espectral y se denota por
+
+$$
+\rho(A):=\max _{1 \leq i \leq n}\left|\lambda_{i}\right|
+$$
+
+si $\lambda_{i}$ es una raíz de $p(\lambda)$, donde, como es usual, $|\cdot|$ denota el módulo. El radio espectral real de una matriz $A$, denotado por $\rho_{R}(A)$, es el máximo módulo de los valores propios reales\\
+de $A$; es decir, $\rho_{R}(A):=\max _{\lambda_{i} \in \mathbb{R}}\left|\lambda_{i}\right|$, y $\rho_{R}(A):=0$ si $A$ no tiene valores propios reales. Un vector no nulo $x \in \mathbb{C}^{n}$ que satisface
+
+$$
+A x=\lambda x
+$$
+
+se denomina vector propio derecho de $A$. De manera dual, un vector no nulo $y$ se llama vector propio izquierdo de $A$ si
+
+$$
+y^{*} A=\lambda y^{*}
+$$
+
+En general, los valores propios no tienen por qué ser reales, y tampoco sus vectores propios correspondientes. Sin embargo, si $A$ es real y $\lambda$ es un valor propio real de $A$, entonces existe un vector propio real correspondiente a $\lambda$. En el caso de que todos los valores propios de una matriz $A$ sean reales, denotaremos por $\lambda_{\max }(A)$ el mayor valor propio de $A$ y por $\lambda_{\min }(A)$ el menor valor propio. En particular, si $A$ es una matriz hermítica (es decir, $A=A^{*}$), entonces existen una matriz unitaria $U$ y una matriz diagonal real $\Lambda$ tales que $A=U \Lambda U^{*}$, donde los elementos diagonales de $\Lambda$ son los valores propios de $A$ y las columnas de $U$ son los vectores propios de $A$.
+
+Lema 2.1 Considere la ecuación de Sylvester
+
+
+\begin{equation*}
+A X+X B=C \tag{2.1}
+\end{equation*}
+
+
+donde $A \in \mathbb{F}^{n \times n}, B \in \mathbb{F}^{m \times m}$ y $C \in \mathbb{F}^{n \times m}$ son matrices dadas. Existe una solución única $X \in \mathbb{F}^{n \times m}$ si y solo si $\lambda_{i}(A)+\lambda_{j}(B) \neq 0, \forall i=1,2, \ldots, n$, y $j=1,2, \ldots, m$.
+
+En particular, si $B=A^{*}$, la ecuación (2.1) se llama ecuación de Lyapunov; y la condición necesaria y suficiente para la existencia de una solución única es que $\lambda_{i}(A)+\bar{\lambda}_{j}(A) \neq 0, \forall i, j=1,2, \ldots, n$.
+
+\textbf{Comandos ilustrativos de MATLAB:}
+$\gg[\mathbf{V}, \mathbf{D}]=\operatorname{eig}(\mathbf{A}) \quad \% A V=V D$
+
+$\gg \mathbf{X}=\mathbf{y} \mathbf{y a p}(\mathbf{A}, \mathbf{B},-\mathbf{C}) \quad \%$ resolver ecuación de Sylvester.
+
+\section{Fórmulas de inversión de matrices}
+Sea $A$ una matriz cuadrada particionada como sigue:
+
+$$
+A:=\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]
+$$
+
+donde $A_{11}$ y $A_{22}$ también son matrices cuadradas. Supongamos ahora que $A_{11}$ es no singular; entonces $A$ tiene la siguiente descomposición:
+
+$$
+\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]=\left[\begin{array}{cc}
+I & 0 \\
+A_{21} A_{11}^{-1} & I
+\end{array}\right]\left[\begin{array}{cc}
+A_{11} & 0 \\
+0 & \Delta
+\end{array}\right]\left[\begin{array}{cc}
+I & A_{11}^{-1} A_{12} \\
+0 & I
+\end{array}\right]
+$$
+
+con $\Delta:=A_{22}-A_{21} A_{11}^{-1} A_{12}$, y $A$ es no singular si y solo si $\Delta$ es no singular. De manera dual, si $A_{22}$ es no singular, entonces
+
+$$
+\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]=\left[\begin{array}{cc}
+I & A_{12} A_{22}^{-1} \\
+0 & I
+\end{array}\right]\left[\begin{array}{cc}
+\hat{\Delta} & 0 \\
+0 & A_{22}
+\end{array}\right]\left[\begin{array}{cc}
+I & 0 \\
+A_{22}^{-1} A_{21} & I
+\end{array}\right]
+$$
+
+con $\hat{\Delta}:=A_{11}-A_{12} A_{22}^{-1} A_{21}$, y $A$ es no singular si y solo si $\hat{\Delta}$ es no singular. La matriz $\Delta$ ($\hat{\Delta}$) se llama complemento de Schur de $A_{11}\left(A_{22}\right)$ en $A$.
+
+Además, si $A$ es no singular, entonces
+
+$$
+\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+A_{11}^{-1}+A_{11}^{-1} A_{12} \Delta^{-1} A_{21} A_{11}^{-1} & -A_{11}^{-1} A_{12} \Delta^{-1} \\
+-\Delta^{-1} A_{21} A_{11}^{-1} & \Delta^{-1}
+\end{array}\right]
+$$
+
+and
+
+$$
+\left[\begin{array}{ll}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+\hat{\Delta}^{-1} & -\hat{\Delta}^{-1} A_{12} A_{22}^{-1} \\
+-A_{22}^{-1} A_{21} \hat{\Delta}^{-1} & A_{22}^{-1}+A_{22}^{-1} A_{21} \hat{\Delta}^{-1} A_{12} A_{22}^{-1}
+\end{array}\right]
+$$
+
+Las fórmulas anteriores de inversión de matrices son particularmente simples si $A$ es triangular por bloques:
+
+$$
+\begin{aligned}
+& {\left[\begin{array}{cc}
+A_{11} & 0 \\
+A_{21} & A_{22}
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+A_{11}^{-1} & 0 \\
+-A_{22}^{-1} A_{21} A_{11}^{-1} & A_{22}^{-1}
+\end{array}\right]} \\
+& {\left[\begin{array}{cc}
+A_{11} & A_{12} \\
+0 & A_{22}
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+A_{11}^{-1} & -A_{11}^{-1} A_{12} A_{22}^{-1} \\
+0 & A_{22}^{-1}
+\end{array}\right]}
+\end{aligned}
+$$
+
+La siguiente identidad también es muy útil. Supóngase que $A_{11}$ y $A_{22}$ son ambas matrices no singulares; entonces
+
+$$
+\left(A_{11}-A_{12} A_{22}^{-1} A_{21}\right)^{-1}=A_{11}^{-1}+A_{11}^{-1} A_{12}\left(A_{22}-A_{21} A_{11}^{-1} A_{12}\right)^{-1} A_{21} A_{11}^{-1} .
+$$
+
+Como consecuencia de las fórmulas de descomposición de matrices mencionadas anteriormente, podemos calcular el determinante de una matriz usando sus submatrices. Supóngase que $A_{11}$ es no singular; entonces
+
+$$
+\operatorname{det} A=\operatorname{det} A_{11} \operatorname{det}\left(A_{22}-A_{21} A_{11}^{-1} A_{12}\right)
+$$
+
+Por otro lado, si $A_{22}$ es no singular, entonces
+
+$$
+\operatorname{det} A=\operatorname{det} A_{22} \operatorname{det}\left(A_{11}-A_{12} A_{22}^{-1} A_{21}\right) \text {. }
+$$
+
+En particular, para cualesquiera $B \in \mathbb{C}^{m \times n}$ y $C \in \mathbb{C}^{n \times m}$, tenemos
+
+$$
+\operatorname{det}\left[\begin{array}{cc}
+I_{m} & B \\
+-C & I_{n}
+\end{array}\right]=\operatorname{det}\left(I_{n}+C B\right)=\operatorname{det}\left(I_{m}+B C\right)
+$$
+
+y para $x, y \in \mathbb{C}^{n}$
+
+$$
+\operatorname{det}\left(I_{n}+x y^{*}\right)=1+y^{*} x \text {. }
+$$
+
+\textbf{Comandos de MATLAB relacionados: inv, det}
+
+\section{Subespacios invariantes}
+Sea $A: \mathbb{C}^{n} \longmapsto \mathbb{C}^{n}$ una transformación lineal, $\lambda$ un valor propio de $A$ y $x$ un vector propio correspondiente. Entonces $A x=\lambda x$ y $A(\alpha x)=\lambda(\alpha x)$ para cualquier $\alpha \in \mathbb{C}$. Claramente, el vector propio $x$ define un subespacio unidimensional que es invariante respecto a la premultiplicación por $A$, ya que $A^{k} x=\lambda^{k} x, \forall k$. En general, un subespacio $S \subset \mathbb{C}^{n}$ se llama invariante para la transformación $A$, o $A$-invariante, si $A x \in S$ para todo $x \in S$. En otras palabras, que $S$ sea invariante para $A$ significa que la imagen de $S$ bajo $A$ está contenida en $S: A S \subset S$. Por ejemplo, $\{0\}, \mathbb{C}^{n}, \operatorname{Ker} A$ y $\operatorname{Im} A$ son todos subespacios $A$-invariantes.
+
+Como generalización del subespacio invariante unidimensional inducido por un vector propio, sean $\lambda_{1}, \ldots, \lambda_{k}$ valores propios de $A$ (no necesariamente distintos), y sean $x_{i}$ los vectores propios correspondientes y los vectores propios generalizados. Entonces $S=\operatorname{span}\left\{x_{1}, \ldots, x_{k}\right\}$ es un subespacio $A$-invariante siempre que se incluyan todos los vectores propios generalizados de rango inferior. Más específicamente, sea $\lambda_{1}=\lambda_{2}=\cdots=\lambda_{l}$ un conjunto de valores propios de $A$, y sean $x_{1}, x_{2}, \ldots, x_{l}$ el vector propio correspondiente y los vectores propios generalizados obtenidos a través de las siguientes ecuaciones:
+
+$$
+\begin{aligned}
+& \left(A-\lambda_{1} I\right) x_{1}=0 \\
+& \left(A-\lambda_{1} I\right) x_{2}=x_{1} \\
+& \vdots \\
+& \left(A-\lambda_{1} I\right) x_{l}=x_{l-1}
+\end{aligned}
+$$
+
+Entonces, un subespacio $S$ con $x_{t} \in S$ para algún $t \leq l$ es un subespacio $A$-invariante solo si todos los vectores propios y vectores propios generalizados de rango inferior asociados a $x_{t}$ están en $S$ (es decir, $x_{i} \in S, \forall 1 \leq i \leq t$). Esto se ilustrará con más detalle en el Ejemplo 2.1.
+
+Por otro lado, si $S$ es un subespacio no trivial ${ }^{1}$ y es $A$-invariante, entonces existen $x \in S$ y $\lambda$ tales que $A x=\lambda x$.
+
+Un subespacio $A$-invariante $S \subset \mathbb{C}^{n}$ se llama subespacio invariante estable si todos los valores propios de $A$ restringidos a $S$ tienen parte real negativa. Los subespacios invariantes estables desempeñarán un papel importante en el cálculo de las soluciones estabilizantes de las ecuaciones algebraicas de Riccati en el Capítulo 12.
+
+Ejemplo 2.1 Suponga que una matriz $A$ tiene la siguiente forma canónica de Jordan:
+
+$$
+A\left[\begin{array}{llll}
+x_{1} & x_{2} & x_{3} & x_{4}
+\end{array}\right]=\left[\begin{array}{llll}
+x_{1} & x_{2} & x_{3} & x_{4}
+\end{array}\right]\left[\begin{array}{cccc}
+\lambda_{1} & 1 & & \\
+& \lambda_{1} & & \\
+& & \lambda_{3} & \\
+& & & \lambda_{4}
+\end{array}\right]
+$$
+
+[\^{}1]con $\operatorname{Re} \lambda_{1}<0, \lambda_{3}<0$ y $\lambda_{4}>0$. Entonces es fácil verificar que
+
+$$
+\begin{aligned}
+& S_{1}=\operatorname{span}\left\{x_{1}\right\} \quad S_{12}=\operatorname{span}\left\{x_{1}, x_{2}\right\} \quad S_{123}=\operatorname{span}\left\{x_{1}, x_{2}, x_{3}\right\} \\
+& S_{3}=\operatorname{span}\left\{x_{3}\right\} \quad S_{13}=\operatorname{span}\left\{x_{1}, x_{3}\right\} \quad S_{124}=\operatorname{span}\left\{x_{1}, x_{2}, x_{4}\right\} \\
+& S_{4}=\operatorname{span}\left\{x_{4}\right\} \quad S_{14}=\operatorname{span}\left\{x_{1}, x_{4}\right\} \quad S_{34}=\operatorname{span}\left\{x_{3}, x_{4}\right\}
+\end{aligned}
+$$
+
+son todos subespacios $A$-invariantes. Además, $S_{1}, S_{3}, S_{12}, S_{13}$ y $S_{123}$ son subespacios $A$-invariantes estables. Los subespacios $S_{2}=\operatorname{span}\left\{x_{2}\right\}, S_{23}=\operatorname{span}\left\{x_{2}, x_{3}\right\}, S_{24}=\operatorname{span}\left\{x_{2}, x_{4}\right\}$ y $S_{234}=\operatorname{span}\left\{x_{2}, x_{3}, x_{4}\right\}$, sin embargo, no son subespacios $A$-invariantes, ya que el vector propio de rango inferior $x_{1}$ no pertenece a estos subespacios. Para ilustrar esto, considere el subespacio $S_{23}$. Entonces, por definición, $A x_{2} \in S_{23}$ si este fuera un subespacio $A$-invariante. Como
+
+$$
+A x_{2}=\lambda x_{2}+x_{1}
+$$
+
+$A x_{2} \in S_{23}$ requeriría que $x_{1}$ fuera una combinación lineal de $x_{2}$ y $x_{3}$, pero esto es imposible porque $x_{1}$ es independiente de $x_{2}$ y $x_{3}$.
+
+\section{Normas vectoriales y normas matriciales}
+En esta sección definiremos normas vectoriales y normas matriciales. Sea $X$ un espacio vectorial. Una función real $\|\cdot\|$ definida sobre $X$ se llama norma en $X$ si satisface las siguientes propiedades:
+
+(i) $\|x\| \geq 0$ (positividad);
+
+(ii) $\|x\|=0$ si y solo si $x=0$ (definida positiva);
+
+(iii) $\|\alpha x\|=|\alpha|\|x\|$, para cualquier escalar $\alpha$ (homogeneidad);
+
+(iv) $\|x+y\| \leq\|x\|+\|y\|$ (desigualdad triangular)
+
+para todo $x \in X$ y $y \in X$.
+
+Sea $x \in \mathbb{C}^{n}$. Entonces definimos la norma vectorial $p$ de $x$ como
+
+$$
+\|x\|_{p}:=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1 / p}, \text { for } 1 \leq p<\infty
+$$
+
+En particular, cuando $p=1,2, \infty$ tenemos
+
+$$
+\begin{gathered}
+\|x\|_{1}:=\sum_{i=1}^{n}\left|x_{i}\right| \\
+\|x\|_{2}:=\sqrt{\sum_{i=1}^{n}\left|x_{i}\right|^{2}}
+\end{gathered}
+$$
+
+$$
+\|x\|_{\infty}:=\max _{1 \leq i \leq n}\left|x_{i}\right|
+$$
+
+Claramente, una norma es una abstracción y extensión de nuestro concepto usual de longitud en el espacio euclidiano tridimensional. Así, la norma de un vector es una medida de su "longitud" (por ejemplo, $\|x\|_{2}$ es la distancia euclidiana del vector $x$ al origen). De forma similar, podemos introducir algún tipo de medida para una matriz.
+
+Sea $A=\left[a_{i j}\right] \in \mathbb{C}^{m \times n}$; entonces la norma matricial inducida por una norma vectorial $p$ se define como
+
+$$
+\|A\|_{p}:=\sup _{x \neq 0} \frac{\|A x\|_{p}}{\|x\|_{p}}
+$$
+
+Las normas matriciales inducidas por normas vectoriales $p$ a veces se llaman normas $p$ inducidas. Esto se debe a que $\|A\|_{p}$ está definida por, o inducida a partir de, una norma vectorial $p$. De hecho, $A$ puede verse como una aplicación desde un espacio vectorial $\mathbb{C}^{n}$ equipado con una norma vectorial $\|\cdot\|_{p}$ hacia otro espacio vectorial $\mathbb{C}^{m}$ equipado con una norma vectorial $\|\cdot\|_{p}$. Así, desde el punto de vista de teoría de sistemas, las normas inducidas se interpretan como ganancias de amplificación entrada/salida.
+
+En particular, la norma matricial inducida 2 puede calcularse como
+
+$$
+\|A\|_{2}=\sqrt{\lambda_{\max }\left(A^{*} A\right)}
+$$
+
+Adoptaremos la siguiente convención en todo este libro para las normas vectoriales y matriciales, salvo indicación contraria: sea $x \in \mathbb{C}^{n}$ y $A \in \mathbb{C}^{m \times n}$; entonces denotaremos la norma euclidiana 2 de $x$ simplemente por
+
+$$
+\|x\|:=\|x\|_{2}
+$$
+
+y la norma inducida 2 de $A$ por
+
+$$
+\|A\|:=\|A\|_{2}
+$$
+
+La norma euclidiana 2 tiene propiedades muy útiles:
+
+Lema 2.2 Sean $x \in \mathbb{F}^{n}$ y $y \in \mathbb{F}^{m}$.
+
+\begin{enumerate}
+  \item Suponga $n \geq m$. Entonces $\|x\|=\|y\|$ si y solo si existe una matriz $U \in \mathbb{F}^{n \times m}$ tal que $x=U y$ y $U^{*} U=I$.
+  \item Suponga $n=m$. Entonces $\left|x^{*} y\right| \leq\|x\|\|y\|$. Además, la igualdad se cumple si y solo si $x=\alpha y$ para algún $\alpha \in \mathbb{F}$ o $y=0$.
+  \item $\|x\| \leq\|y\|$ si y solo si existe una matriz $\Delta \in \mathbb{F}^{n \times m}$ con $\|\Delta\| \leq 1$ tal que $x=\Delta y$. Además, $\|x\|<\|y\|$ si y solo si $\|\Delta\|<1$.
+  \item $\|U x\|=\|x\|$ para cualquier matriz unitaria $U$ de dimensiones apropiadas.
+\end{enumerate}
+
+Otra norma matricial de uso frecuente es la llamada norma de Frobenius. Se define como
+
+$$
+\|A\|_{F}:=\sqrt{\operatorname{trace}\left(A^{*} A\right)}=\sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n}\left|a_{i j}\right|^{2}}
+$$
+
+Sin embargo, la norma de Frobenius no es una norma inducida.
+
+Las siguientes propiedades de normas matriciales son fáciles de demostrar:
+
+Lema 2.3 Sean $A$ y $B$ matrices cualesquiera con dimensiones apropiadas. Entonces
+
+\begin{enumerate}
+  \item $\rho(A) \leq\|A\|$ (esto también es cierto para la norma $F$ y cualquier norma matricial inducida).
+  \item $\|A B\| \leq\|A\|\|B\|$. En particular, esto da $\left\|A^{-1}\right\| \geq\|A\|^{-1}$ si $A$ es invertible. (Esto también es cierto para cualquier norma matricial inducida.)
+  \item $\|U A V\|=\|A\|$, y $\|U A V\|_{F}=\|A\|_{F}$, para cualesquiera matrices unitarias $U$ y $V$ de dimensiones apropiadas.
+  \item $\|A B\|_{F} \leq\|A\|\|B\|_{F}$ y $\|A B\|_{F} \leq\|B\|\|A\|_{F}$.
+\end{enumerate}
+
+Nótese que, aunque la premultiplicación o postmultiplicación de una matriz unitaria sobre una matriz no cambia su norma inducida 2 ni su norma $F$, sí cambia sus valores propios. Por ejemplo, sea
+
+$$
+A=\left[\begin{array}{ll}
+1 & 0 \\
+1 & 0
+\end{array}\right]
+$$
+
+Then $\lambda_{1}(A)=1, \lambda_{2}(A)=0$. Now let
+
+$$
+U=\left[\begin{array}{cc}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\
+-\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}
+\end{array}\right]
+$$
+
+entonces $U$ es una matriz unitaria y
+
+$$
+U A=\left[\begin{array}{cc}
+\sqrt{2} & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+con $\lambda_{1}(U A)=\sqrt{2}, \lambda_{2}(U A)=0$. Esta propiedad es útil en algunos problemas de perturbación matricial, particularmente en el cálculo de cotas para valores singulares estructurados, que se estudiarán en el Capítulo 9.
+
+\textbf{Comandos de MATLAB relacionados: norm, normest}
+
+\section{Descomposición en valores singulares}
+Una herramienta muy útil en análisis matricial es la descomposición en valores singulares (SVD). Se verá que los valores singulares de una matriz son buenas medidas del "tamaño" de la matriz, y que los vectores singulares correspondientes son buenos indicadores de direcciones de entrada o salida fuertes/débiles.
+
+Teorema 2.4 Sea $A \in \mathbb{F}^{m \times n}$. Existen matrices unitarias
+
+$$
+\begin{aligned}
+U & =\left[u_{1}, u_{2}, \ldots, u_{m}\right] \in \mathbb{F}^{m \times m} \\
+V & =\left[v_{1}, v_{2}, \ldots, v_{n}\right] \in \mathbb{F}^{n \times n}
+\end{aligned}
+$$
+
+tales que
+
+$$
+A=U \Sigma V^{*}, \quad \Sigma=\left[\begin{array}{cc}
+\Sigma_{1} & 0 \\
+0 & 0
+\end{array}\right]
+$$
+
+donde
+
+$$
+\Sigma_{1}=\left[\begin{array}{cccc}
+\sigma_{1} & 0 & \cdots & 0 \\
+0 & \sigma_{2} & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & \sigma_{p}
+\end{array}\right]
+$$
+
+y
+
+$$
+\sigma_{1} \geq \sigma_{2} \geq \cdots \geq \sigma_{p} \geq 0, \quad p=\min \{m, n\}
+$$
+
+Prueba. Sea $\sigma=\|A\|$ y, sin pérdida de generalidad, supóngase $m \geq n$. Entonces, por la definición de $\|A\|$, existe un $z \in \mathbb{F}^{n}$ tal que
+
+$$
+\|A z\|=\sigma\|z\|
+$$
+
+Por el Lema 2.2, existe una matriz $\tilde{U} \in F^{m \times n}$ tal que $\tilde{U}^{*} \tilde{U}=I$ y
+
+$$
+A z=\sigma \tilde{U} z
+$$
+
+Ahora sea
+
+$$
+x=\frac{z}{\|z\|} \in \mathbb{F}^{n}, \quad y=\frac{\tilde{U} z}{\|\tilde{U} z\|} \in \mathbb{F}^{m}
+$$
+
+Tenemos $A x=\sigma y$. Sea
+
+$$
+V=\left[\begin{array}{ll}
+x & V_{1}
+\end{array}\right] \in \mathbb{F}^{n \times n}
+$$
+
+y
+
+$$
+U=\left[\begin{array}{ll}
+y & U_{1}
+\end{array}\right] \in \mathbb{F}^{m \times m}
+$$
+
+unitarias. ${ }^{2}$ En consecuencia, $U^{*} A V$ tiene la siguiente estructura:
+
+$$
+A_{1}:=U^{*} A V=\left[\begin{array}{cc}
+y^{*} A x & y^{*} A V_{1} \\
+U_{1}^{*} A x & U_{1}^{*} A V_{1}
+\end{array}\right]=\left[\begin{array}{cc}
+\sigma y^{*} y & y^{*} A V_{1} \\
+\sigma U_{1}^{*} y & U_{1}^{*} A V_{1}
+\end{array}\right]=\left[\begin{array}{cc}
+\sigma & w^{*} \\
+0 & B
+\end{array}\right]
+$$
+
+[\^{}2]donde $w:=V_{1}^{*} A^{*} y \in \mathbb{F}^{n-1}$ y $B:=U_{1}^{*} A V_{1} \in \mathbb{F}^{(m-1) \times(n-1)}$.
+
+Since
+
+$$
+\left\|A_{1}^{*}\left[\begin{array}{c}
+1 \\
+0 \\
+\vdots \\
+0
+\end{array}\right]\right\|_{2}^{2}=\left(\sigma^{2}+w^{*} w\right)
+$$
+
+se sigue que $\left\|A_{1}\right\|^{2} \geq \sigma^{2}+w^{*} w$. Pero como $\sigma=\|A\|=\left\|A_{1}\right\|$, debemos tener $w=0$. Un argumento de inducción evidente da
+
+$$
+U^{*} A V=\Sigma
+$$
+
+Esto completa la demostración.
+
+$\sigma_{i}$ es el $i$-ésimo valor singular de $A$, y los vectores $u_{i}$ y $v_{j}$ son, respectivamente, el $i$-ésimo vector singular izquierdo y el $j$-ésimo vector singular derecho. Es fácil verificar que
+
+$$
+\begin{aligned}
+A v_{i} & =\sigma_{i} u_{i} \\
+A^{*} u_{i} & =\sigma_{i} v_{i} .
+\end{aligned}
+$$
+
+Las ecuaciones anteriores también pueden escribirse como
+
+$$
+\begin{aligned}
+A^{*} A v_{i} & =\sigma_{i}^{2} v_{i} \\
+A A^{*} u_{i} & =\sigma_{i}^{2} u_{i}
+\end{aligned}
+$$
+
+Por tanto, $\sigma_{i}^{2}$ es un valor propio de $A A^{*}$ o de $A^{*} A$, $u_{i}$ es un vector propio de $A A^{*}$ y $v_{i}$ es un vector propio de $A^{*} A$.
+
+A menudo se adoptan las siguientes notaciones para los valores singulares:
+
+$$
+\bar{\sigma}(A)=\sigma_{\max }(A)=\sigma_{1}=\text { el mayor valor singular de } A ;
+$$
+
+and
+
+$$
+\underline{\sigma}(A)=\sigma_{\min }(A)=\sigma_{p}=\text { el menor valor singular de } A \text {. }
+$$
+
+Geométricamente, los valores singulares de una matriz $A$ son precisamente las longitudes de los semiejes del hiperelipsoide $E$ definido por
+
+$$
+E=\left\{y: y=A x, x \in \mathbb{C}^{n},\|x\|=1\right\}
+$$
+
+Así, $v_{1}$ es la dirección en la que $\|y\|$ es mayor para todo $\|x\|=1$; mientras que $v_{n}$ es la dirección en la que $\|y\|$ es menor para todo $\|x\|=1$. Desde el punto de vista entrada/salida, $v_{1}\left(v_{n}\right)$ es la dirección de entrada (o control) de mayor (menor) ganancia, mientras que $u_{1}\left(u_{m}\right)$ es la dirección de salida (u observación) de mayor (menor) ganancia. Esto puede ilustrarse con la siguiente matriz $2 \times 2$:
+
+$$
+A=\left[\begin{array}{cc}
+\cos \theta_{1} & -\sin \theta_{1} \\
+\sin \theta_{1} & \cos \theta_{1}
+\end{array}\right]\left[\begin{array}{ll}
+\sigma_{1} & \\
+& \sigma_{2}
+\end{array}\right]\left[\begin{array}{cc}
+\cos \theta_{2} & -\sin \theta_{2} \\
+\sin \theta_{2} & \cos \theta_{2}
+\end{array}\right] .
+$$
+
+Es fácil ver que $A$ transforma un círculo unitario en un elipsoide con semiejes $\sigma_{1}$ y $\sigma_{2}$.
+
+Por ello, a menudo es conveniente introducir las siguientes definiciones alternativas del mayor valor singular $\bar{\sigma}$:
+
+$$
+\bar{\sigma}(A):=\max _{\|x\|=1}\|A x\|
+$$
+
+y para el menor valor singular $\underline{\sigma}$ de una matriz alta:
+
+$$
+\underline{\sigma}(A):=\min _{\|x\|=1}\|A x\|
+$$
+
+Lema 2.5 Supóngase que $A$ y $\Delta$ son matrices cuadradas. Entonces
+
+(i) $|\underline{\sigma}(A+\Delta)-\underline{\sigma}(A)| \leq \bar{\sigma}(\Delta)$;
+
+(ii) $\underline{\sigma}(A \Delta) \geq \underline{\sigma}(A) \underline{\sigma}(\Delta)$;
+
+(iii) $\bar{\sigma}\left(A^{-1}\right)=\frac{1}{\underline{\sigma}(A)}$ si $A$ es invertible.
+
+\textbf{Prueba.}
+
+(i) Por definición
+
+$$
+\begin{aligned}
+\underline{\sigma}(A+\Delta) & :=\min _{\|x\|=1}\|(A+\Delta) x\| \geq \min _{\|x\|=1}\{\|A x\|-\|\Delta x\|\} \\
+& \geq \min _{\|x\|=1}\|A x\|-\max _{\|x\|=1}\|\Delta x\| \\
+& =\underline{\sigma}(A)-\bar{\sigma}(\Delta)
+\end{aligned}
+$$
+
+Por lo tanto, $-\bar{\sigma}(\Delta) \leq \underline{\sigma}(A+\Delta)-\underline{\sigma}(A)$. La otra desigualdad $\underline{\sigma}(A+\Delta)-\underline{\sigma}(A) \leq \bar{\sigma}(\Delta)$ se obtiene reemplazando $A$ por $A+\Delta$ y $\Delta$ por $-\Delta$ en la prueba anterior.
+
+(ii) Esto se sigue al notar que
+
+$$
+\begin{aligned}
+\underline{\sigma}(A \Delta) & :=\min _{\|x\|=1}\|A \Delta x\| \\
+& =\sqrt{\min _{\|x\|=1} x^{*} \Delta^{*} A^{*} A \Delta x} \\
+& \geq \underline{\sigma}(A) \min _{\|x\|=1}\|\Delta x\|=\underline{\sigma}(A) \underline{\sigma}(\Delta)
+\end{aligned}
+$$
+
+(iii) Sea la descomposición en valores singulares de $A$: $A=U \Sigma V^{*}$; entonces $A^{-1}=V \Sigma^{-1} U^{*}$. Por lo tanto, $\bar{\sigma}\left(A^{-1}\right)=\bar{\sigma}\left(\Sigma^{-1}\right)=1 / \underline{\sigma}(\Sigma)=1 / \underline{\sigma}(A)$.
+
+Nótese que (ii) puede no ser cierto si $A$ y $\Delta$ no son matrices cuadradas. Por ejemplo, considere $A=\left[\begin{array}{l}1 \\ 2\end{array}\right]$ y $\Delta=\left[\begin{array}{ll}3 & 4\end{array}\right]$; entonces $\underline{\sigma}(A \Delta)=0$, pero $\underline{\sigma}(A)=\sqrt{5}$ y $\underline{\sigma}(\Delta)=5$.
+
+Algunas propiedades útiles de la SVD se recopilan en el siguiente lema.
+
+Lema 2.6 Sea $A \in \mathbb{F}^{m \times n}$ y
+
+$$
+\sigma_{1} \geq \sigma_{2} \geq \cdots \geq \sigma_{r}>\sigma_{r+1}=\cdots=0, r \leq \min \{m, n\}
+$$
+
+Entonces
+
+\begin{enumerate}
+  \item $\operatorname{rank}(A)=r$
+  \item $\operatorname{Ker} A=\operatorname{span}\left\{v_{r+1}, \ldots, v_{n}\right\}$ y $(\operatorname{Ker} A)^{\perp}=\operatorname{span}\left\{v_{1}, \ldots, v_{r}\right\}$;
+  \item $\operatorname{Im} A=\operatorname{span}\left\{u_{1}, \ldots, u_{r}\right\}$ y $(\operatorname{Im} A)^{\perp}=\operatorname{span}\left\{u_{r+1}, \ldots, u_{m}\right\}$;
+  \item $A \in \mathbb{F}^{m \times n}$ tiene una expansión diádica:
+\end{enumerate}
+
+$$
+A=\sum_{i=1}^{r} \sigma_{i} u_{i} v_{i}^{*}=U_{r} \Sigma_{r} V_{r}^{*}
+$$
+
+donde $U_{r}=\left[u_{1}, \ldots, u_{r}\right], V_{r}=\left[v_{1}, \ldots, v_{r}\right]$ y $\Sigma_{r}=\operatorname{diag}\left(\sigma_{1}, \ldots, \sigma_{r}\right)$;\\
+5. $\|A\|_{F}^{2}=\sigma_{1}^{2}+\sigma_{2}^{2}+\cdots+\sigma_{r}^{2}$\\
+6. $\|A\|=\sigma_{1}$;\\
+7. $\sigma_{i}\left(U_{0} A V_{0}\right)=\sigma_{i}(A), i=1, \ldots, p$, para cualesquiera matrices unitarias $U_{0}$ y $V_{0}$ de dimensiones apropiadas;
+
+\begin{enumerate}
+  \setcounter{enumi}{7}
+  \item Sea $k<r=\operatorname{rank}(A)$ y $A_{k}:=\sum_{i=1}^{k} \sigma_{i} u_{i} v_{i}^{*}$; entonces
+\end{enumerate}
+
+$$
+\min _{\operatorname{rank}(B) \leq k}\|A-B\|=\left\|A-A_{k}\right\|=\sigma_{k+1}
+$$
+
+Prueba. Solo daremos una demostración de la parte 8. Es fácil ver que $\operatorname{rank}\left(A_{k}\right) \leq k$ y $\left\|A-A_{k}\right\|=\sigma_{k+1}$. Por lo tanto, solo necesitamos mostrar que $\min _{\operatorname{rank}(B) \leq k}\|A-B\| \geq \sigma_{k+1}$. Sea $B$ cualquier matriz tal que $\operatorname{rank}(B) \leq k$. Entonces
+
+$$
+\begin{aligned}
+\|A-B\| & =\left\|U \Sigma V^{*}-B\right\|=\left\|\Sigma-U^{*} B V\right\| \\
+& \geq\left\|\left[\begin{array}{ll}
+I_{k+1} & 0
+\end{array}\right]\left(\Sigma-U^{*} B V\right)\left[\begin{array}{c}
+I_{k+1} \\
+0
+\end{array}\right]\right\|=\left\|\Sigma_{k+1}-\hat{B}\right\|
+\end{aligned}
+$$
+
+donde $\hat{B}=\left[\begin{array}{ll}I_{k+1} & 0\end{array}\right] U^{*} B V\left[\begin{array}{c}I_{k+1} \\ 0\end{array}\right] \in \mathbb{F}^{(k+1) \times(k+1)}$ y $\operatorname{rank}(\hat{B}) \leq k$. Sea $x \in \mathbb{F}^{k+1}$ tal que $\hat{B} x=0$ y $\|x\|=1$. Entonces
+
+$$
+\|A-B\| \geq\left\|\Sigma_{k+1}-\hat{B}\right\| \geq\left\|\left(\Sigma_{k+1}-\hat{B}\right) x\right\|=\left\|\Sigma_{k+1} x\right\| \geq \sigma_{k+1}
+$$
+
+Como $B$ es arbitraria, se sigue la conclusión.
+
+\textbf{Comandos ilustrativos de MATLAB:}
+
+$\gg[\mathbf{U}, \boldsymbol{\Sigma}, \mathbf{V}]=\operatorname{svd}(\mathbf{A}) \quad \% A=U \Sigma V^{*}$
+
+\textbf{Comandos de MATLAB relacionados: cond, condest}
+
+\section{Matrices semidefinidas}
+Se dice que una matriz hermítica cuadrada $A=A^{*}$ es definida positiva (semidefinida positiva), denotada por $A>0(\geq 0)$, si $x^{*} A x>0(\geq 0)$ para todo $x \neq 0$. Suponga que $A \in \mathbb{F}^{n \times n}$ y $A=A^{*} \geq 0$; entonces existe una matriz $B \in \mathbb{F}^{n \times r}$ con $r \geq \operatorname{rank}(A)$ tal que $A=B B^{*}$.
+
+Lema 2.7 Sean $B \in \mathbb{F}^{m \times n}$ y $C \in \mathbb{F}^{k \times n}$. Suponga que $m \geq k$ y $B^{*} B=C^{*} C$. Entonces existe una matriz $U \in \mathbb{F}^{m \times k}$ tal que $U^{*} U=I$ y $B=U C$.
+
+Prueba. Sean $V_{1}$ y $V_{2}$ matrices unitarias tales que
+
+$$
+B=V_{1}\left[\begin{array}{c}
+B_{1} \\
+0
+\end{array}\right], C=V_{2}\left[\begin{array}{c}
+C_{1} \\
+0
+\end{array}\right]
+$$
+
+donde $B_{1}$ y $C_{1}$ tienen rango fila completo. Entonces $B_{1}$ y $C_{1}$ tienen el mismo número de filas y $V_{3}:=B_{1} C_{1}^{*}\left(C_{1} C_{1}^{*}\right)^{-1}$ satisface $V_{3}^{*} V_{3}=I$ ya que $B^{*} B=C^{*} C$. Por lo tanto, $V_{3}$ es una matriz unitaria y $V_{3}^{*} B_{1}=C_{1}$. Finalmente, sea
+
+$$
+U=V_{1}\left[\begin{array}{cc}
+V_{3} & 0 \\
+0 & V_{4}
+\end{array}\right] V_{2}^{*}
+$$
+
+para cualquier $V_{4}$ de dimensiones adecuadas tal que $V_{4}^{*} V_{4}=I$.
+
+Podemos definir la raíz cuadrada de una matriz semidefinida positiva $A$, $A^{1 / 2}=\left(A^{1 / 2}\right)^{*} \geq 0$, mediante
+
+$$
+A=A^{1 / 2} A^{1 / 2}
+$$
+
+Claramente, $A^{1 / 2}$ puede calcularse usando descomposición espectral o SVD: sea $A=U \Lambda U^{*}$; entonces
+
+$$
+A^{1 / 2}=U \Lambda^{1 / 2} U^{*}
+$$
+
+donde
+
+$$
+\Lambda=\operatorname{diag}\left\{\lambda_{1}, \ldots, \lambda_{n}\right\}, \quad \Lambda^{1 / 2}=\operatorname{diag}\left\{\sqrt{\lambda_{1}}, \ldots, \sqrt{\lambda_{n}}\right\}
+$$
+
+Lema 2.8 Suponga que $A=A^{*}>0$ y $B=B^{*} \geq 0$. Entonces $A>B$ si y solo si $\rho\left(B A^{-1}\right)<1$.
+
+Prueba. Como $A>0$, tenemos $A>B$ si y solo si
+
+$$
+0<I-A^{-1 / 2} B A^{-1 / 2}
+$$
+
+es decir, si y solo si $\rho\left(A^{-1 / 2} B A^{-1 / 2}\right)<1$. Sin embargo, $A^{-1 / 2} B A^{-1 / 2}$ y $B A^{-1}$ son similares; por tanto, $\rho\left(B A^{-1}\right)=\rho\left(A^{-1 / 2} B A^{-1 / 2}\right)$ y la afirmación se sigue.
+
+\section{Notas y referencias}
+Un tratamiento muy amplio de la mayoría de los temas de este capítulo puede encontrarse en Brogan [1991], Horn y Johnson [1990, 1991], y Lancaster y Tismenetsky [1985]. El libro de Golub y Van Loan [1983] contiene muchos algoritmos numéricos para resolver la mayoría de los problemas de este capítulo.
+
+\section{Problemas}
+Problema 2.1 Sea
+
+$$
+A=\left(\begin{array}{lll}
+1 & 1 & 0 \\
+1 & 0 & 1 \\
+2 & 1 & 1 \\
+1 & 0 & 1 \\
+2 & 0 & 2
+\end{array}\right)
+$$
+
+Determine el rango por filas y por columnas de $A$, y encuentre bases para $\operatorname{Im}(A), \operatorname{Im}\left(A^{*}\right)$ y $\operatorname{Ker}(A)$.
+
+Problema 2.2 Sea $D_{0}=\left[\begin{array}{ll}1 & 4 \\ 2 & 5 \\ 3 & 6\end{array}\right]$. Encuentre una matriz $D$ tal que $D^{*} D=I$ y $\operatorname{Im} D=\operatorname{Im} D_{0}$.
+
+Además, encuentre $D_{\perp}$ tal que $\left[\begin{array}{cc}D & D_{\perp}\end{array}\right]$ sea una matriz unitaria.
+
+Problema 2.3 Sea $A$ una matriz no singular y $x, y \in \mathbb{C}^{n}$. Demuestre
+
+$$
+\left(A^{-1}+x y^{*}\right)^{-1}=A-\frac{A x y^{*} A}{1+y^{*} A x}
+$$
+
+and
+
+$$
+\operatorname{det}\left(A^{-1}+x y^{*}\right)^{-1}=\frac{\operatorname{det} A}{1+y^{*} A x}
+$$
+
+Problema 2.4 Sean $A$ y $B$ matrices compatibles. Demuestre
+
+$$
+B(I+A B)^{-1}=(I+B A)^{-1} B, \quad(I+A)^{-1}=I-A(I+A)^{-1}
+$$
+
+Problema 2.5 Encuentre una base para el subespacio invariante estable de dimensión máxima de $H=\left[\begin{array}{cc}A & R \\ -Q & -A^{*}\end{array}\right]$ con
+
+\begin{enumerate}
+  \item $A=\left[\begin{array}{cc}-1 & 2 \\ 3 & 0\end{array}\right], R=\left[\begin{array}{cc}-1 & -1 \\ -1 & -1\end{array}\right]$, and $Q=0$
+  \item $A=\left[\begin{array}{ll}0 & 1 \\ 0 & 2\end{array}\right], R=\left[\begin{array}{cc}0 & 0 \\ 0 & -1\end{array}\right]$, and $Q=\left[\begin{array}{ll}1 & 2 \\ 2 & 4\end{array}\right]$
+  \item $A=0, R=\left[\begin{array}{ll}1 & 2 \\ 2 & 5\end{array}\right]$, and $Q=I_{2}$.
+\end{enumerate}
+
+Problema 2.6 Sea $A=\left[a_{i j}\right]$. Demuestre que $\alpha(A):=\max _{i, j}\left|a_{i j}\right|$ define una norma matricial. Dé ejemplos tales que $\alpha(A)<\rho(A)$ y $\alpha(A B)>\alpha(A) \alpha(B)$.
+
+Problema 2.7 Sea $A=\left(\begin{array}{ccc}1 & 2 & 3 \\ 4 & 1 & -1\end{array}\right)$ y $B=\binom{0}{1}$. (a) Encuentre todas las $x$ tales que $A x=B$.
+
+(b) Encuentre la solución de norma mínima $x: \min \{\|x\|: A x=B\}$.
+
+Problema 2.8 Sea $A=\left(\begin{array}{cc}1 & 2 \\ -2 & -5 \\ 0 & 1\end{array}\right)$ y $B=\left(\begin{array}{l}3 \\ 4 \\ 5\end{array}\right)$. Encuentre un $x$ tal que $\|A x-B\|$ sea mínimo.
+
+Problema 2.9 Sea $\|A\|<1$. Demuestre
+
+\begin{enumerate}
+  \item $(I-A)^{-1}=I+A+A^{2}+\cdots$.
+  \item $\left\|(I-A)^{-1}\right\| \leq 1+\|A\|+\|A\|^{2}+\cdots=\frac{1}{1-\|A\|}$.
+  \item $\left\|(I-A)^{-1}\right\| \geq \frac{1}{1+\|A\|}$.
+\end{enumerate}
+
+Problema 2.10 Sea $A \in \mathbb{C}^{m \times n}$. Demuestre que
+
+$$
+\begin{aligned}
+& \frac{1}{\sqrt{m}}\|A\|_{2} \leq\|A\|_{\infty} \leq \sqrt{n}\|A\|_{2} \\
+& \frac{1}{\sqrt{n}}\|A\|_{2} \leq\|A\|_{1} \leq \sqrt{m}\|A\|_{2} \\
+& \frac{1}{n}\|A\|_{\infty} \leq\|A\|_{1} \leq m\|A\|_{\infty}
+\end{aligned}
+$$
+
+Problema 2.11 Sea $A=x y^{*}$ y $x, y \in \mathbb{C}^{n}$. Demuestre que $\|A\|_{2}=\|A\|_{F}=\|x\|\|y\|$.
+
+Problema 2.12 Sea $A=\left[\begin{array}{cc}1 & 1+j \\ 1-j & 2\end{array}\right]$. Encuentre $A^{\frac{1}{2}}$ y una $B \in \mathbb{C}^{2}$ tal que $A=B B^{*}$.
+
+Problema 2.13 Sea $P=P^{*}=\left[\begin{array}{ll}P_{11} & P_{12} \\ P_{12}^{*} & P_{22}\end{array}\right] \geq 0$ con $P_{11} \in \mathbb{C}^{k \times k}$. Demuestre que $\lambda_{i}(P) \geq$ $\lambda_{i}\left(P_{11}\right), \forall 1 \leq i \leq k$.
+
+Problema 2.14 Sea $X=X^{*} \geq 0$ particionada como $X=\left[\begin{array}{ll}X_{11} & X_{12} \\ X_{12}^{*} & X_{22}\end{array}\right]$. (a) Demuestre que $\operatorname{Ker} X_{22} \subset \operatorname{Ker} X_{12}$; (b) sea $X_{22}=U_{2} \operatorname{diag}\left(\Lambda_{1}, 0\right) U_{2}^{*}$ tal que $\Lambda_{1}$ es no singular, y defina $X_{22}^{+}:=U_{2}$ diag $\left(\Lambda_{1}^{-1}, 0\right) U_{2}^{*}$ (la seudoinversa de $X_{22}$); luego demuestre que $Y=X_{12} X_{22}^{+}$ resuelve $Y X_{22}=X_{12}$; y (c) demuestre que
+
+$$
+\left[\begin{array}{ll}
+X_{11} & X_{12} \\
+X_{12}^{*} & X_{22}
+\end{array}\right]=\left[\begin{array}{cc}
+I & X_{12} X_{22}^{+} \\
+0 & I
+\end{array}\right]\left[\begin{array}{cc}
+X_{11}-X_{12} X_{22}^{+} X_{12}^{*} & 0 \\
+0 & X_{22}
+\end{array}\right]\left[\begin{array}{cc}
+I & 0 \\
+X_{22}^{+} X_{12}^{*} & I
+\end{array}\right]
+$$

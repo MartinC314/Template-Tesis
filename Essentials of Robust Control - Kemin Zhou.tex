@@ -1,0 +1,164 @@
+% Template:     Tesis LaTeX
+% Documento:    Archivo principal
+% Versión:      3.4.8 (02/12/2025)
+
+% CREACIÓN DEL DOCUMENTO
+\documentclass[
+	spanish, % Idioma: spanish, english, etc.	
+	letterpaper, oneside
+]{book}
+
+% INFORMACIÓN DEL DOCUMENTO
+% DESIGN OF ROBUST CONTROL SYSTEMS
+% Essentials of Robust Control - Kemin Zhou
+\def\documenttitle {Esenciales de Control Robusto}
+\def\documentsubtitle {}
+\def\degreetitle {
+	% Un enfoque teórico - Kemin Zhou
+	Un enfoque teórico
+	\bigbreak\vspace{0.3cm}
+	Kemin Zhou
+}
+
+\def\universityname {Universidad Autónoma de Nuevo León}
+\def\universityfaculty {Facultad de Ingeniería Mecánica y Eléctrica}
+\def\universitydepartment {Ingeniería Eléctrica}
+\def\universitydepartmentimage {departamentos/fime-logo-cel}
+\def\universitydepartmentimagecfg {height=3cm}
+\def\universitylocation {San Nicolás de los Garza, Nuevo León, México}
+
+% INTEGRANTES, PROFESORES Y FECHAS
+\def\documentauthor {Joanathan de la Cruz}
+\def\documentdate {\the\year}
+
+\def\portrait {
+	\begin{center}
+	\vspace{1.5cm} ~ \\
+	\MakeUppercase{\textbf{\documenttitle}} ~ \\
+	\vspace{1.5cm}
+	\MakeUppercase{\degreetitle} ~ \\
+	\vfill
+	\begin{tabular}{c}
+		\MakeUppercase{\textbf{\documentauthor}} \\ \\
+		\vspace{1.0cm} \\
+		% PROFESOR GUÍA: \\
+		% PROFESOR 1 \\
+		% \vspace{0.5cm} \\
+		% MIEMBROS DE LA COMISIÓN: \\
+		% PROFESOR 2 \\
+		% PROFESOR 3 \\
+		% \vspace{0.5cm} \\
+		% Este trabajo ha sido parcialmente financiado por: \\
+		% NOMBRE INSTITUCIÓN \\
+		\vspace{0.5cm} \\
+		\MakeUppercase{\universitylocation} \\
+		\MakeUppercase{\documentdate}
+	\end{tabular}
+	\end{center}
+}
+\def\abstracttable {
+	% \begin{tabular}{l}
+	% 	RESUMEN DE LA MEMORIA PARA OPTAR \\
+	% 	AL TÍTULO DE MAGÍSTER EN CIENCIAS \\
+	% 	DE LA INGENIERÍA \\
+	% 	POR: \MakeUppercase{\documentauthor} \\
+	% 	FECHA: \MakeUppercase{\documentdate} \\
+	% 	PROF. GUÍA: NOMBRE PROFESOR
+	% \end{tabular}
+}
+
+% IMPORTACIÓN DEL TEMPLATE
+\input{template}
+
+% INICIO DE LAS PÁGINAS
+\begin{document}
+
+% PORTADA
+\templatePortrait
+
+% CONFIGURACIÓN DE PÁGINA Y ENCABEZADOS
+\templatePagecfg
+
+% RESUMEN O ABSTRACT
+\begin{abstractd}
+% 	Robustness of control systems to disturbances and uncertainties has always been the central issue in feedback control. Feedback would not be needed for most control systems if there were no disturbances and uncertainties. Developing multivariable robust control methods has been the focal point in the last two decades in the control community. The state-of-the-art $\mathcal{H}_{\infty}$ robust control theory is the result of this effort.
+
+% This book introduces some essentials of robust and $\mathcal{H}_{\infty}$ control theory. It grew from another book by this author, John C. Doyle, and Keith Glover, entitled Robust and Optimal Control, which has been extensively class-tested in many universities around the world. Unlike that book, which is intended primarily as a comprehensive reference of robust and $\mathcal{H}_{\infty}$ control theory, this book is intended to be a text for a graduate course in multivariable control. It is also intended to be a reference for practicing control engineers who are interested in applying the state-of-the-art robust control techniques in their applications. With this objective in mind, I have streamlined the presentation, added more than 50 illustrative examples, included many related MATLAB ${ }^{\text {b }}$ commands ${ }^1$ and more than 150 exercise problems, and added some recent developments in the area of robust control such as gap metric, $\nu$-gap metric, model validation, and mixed $\mu$ problem. In addition, many proofs are completely rewritten and some advanced topics are either deleted completely or do not get an in-depth treatment.
+
+% The prerequisite for reading this book is some basic knowledge of classical control theory and state-space theory. The text contains more material than could be covered in detail in a one-semester or a one-quarter course. Chapter 1 gives a chapter-by-chapter summary of the main results presented in the book, which could be used as a guide for the selection of topics for a specific course. Chapters 2 and 3 can be used as a refresher for some linear algebra facts and some standard linear system theory. A course focusing on $\mathcal{H}_{\infty}$ control should cover at least most parts of Chapters 4-6, 8, 9, 11-13, and Sections 14.1 and 14.2. An advanced $\mathcal{H}_{\infty}$ control course should also include the rest of Chapter 14, Chapter 16, and possibly Chapters 10, 7, and 15. A course focusing on robustness and model uncertainty should cover at least Chapters 4,5, and 8-10. Chapters 17 and 18 can be added to any advanced robust and $\mathcal{H}_{\infty}$ control course if time permits.
+
+% I have tried hard to eliminate obvious mistakes. It is, however, impossible for me to make the book perfect. Readers are encouraged to send corrections, comments, and suggestions to me, preferably by electronic mail, at
+% kemin@ee.lsu.edu
+% I am also planning to put any corrections, modifications, and extensions on the Internet so that they can be obtained either from the following anonymous ftp:
+% ftp gate.ee.lsu.edu cd pub/kemin/books/essentials/
+% or from the author's home page:
+% http://kilo.ee.lsu.edu/kemin/books/essentials/
+% This book would not be possible without the work done jointly for the previous book with Professor John C. Doyle and Professor Keith Glover. I thank them for their influence on my research and on this book. Their serious attitudes toward scientific research have been reference models for me. I am especially grateful to John for having me as a research fellow in Caltech, where I had two very enjoyable years and had opportunities to catch a glimpse of his "BIG PICTURE" of control.
+
+% I want to thank my editor from Prentice Hall, Tom Robbins, who originally proposed the idea for this book and has been a constant source of support for me while writing it. Without his support and encouragement, this project would have been a difficult one. It has been my great pleasure to work with him.
+
+% I would like to express my sincere gratitude to Professor Bruce A. Francis for giving me many helpful comments and suggestions on this book. Professor Francis has also kindly provided many exercises in the book. I am also grateful to Professor Kang-Zhi Liu and Professor Zheng-Hua Luo, who have made many useful comments and suggestions. I want to thank Professor Glen Vinnicombe for his generous help in the preparation of Chapters 16 and 17. Special thanks go to Professor Jianqing Mao for providing me the opportunity to present much of this material in a series of lectures at Beijing University of Aeronautics and Astronautics in the summer of 1996.
+
+% In addition, I would like to thank all those who have helped in many ways in making this book possible, especially Professor Pramod P. Khargonekar, Professor André Tits, Professor Andrew Packard, Professor Jie Chen, Professor Jakob Stoustrup, Professor Hans Henrik Niemann, Professor Malcolm Smith, Professor Tryphon Georgiou, Professor Tongwen Chen, Professor Hitay Özbay, Professor Gary Balas, Professor Carolyn Beck, Professor Dennis S. Bernstein, Professor Mohamed Darouach, Dr. Bobby Bodenheimer, Professor Guoxiang Gu, Dr. Weimin Lu, Dr. John Morris, Dr. Matt Newlin, Professor Li Qiu, Professor Hector P. Rotstein, Professor Andrew Teel, Professor Jagannathan Ramanujam, Dr. Linda G. Bushnell, Xiang Chen, Greg Salomon, Pablo A. Parrilo, and many other people.
+
+
+
+	La robustez de los sistemas de control frente a perturbaciones e incertidumbres siempre ha sido el tema central en el control por retroalimentación. La retroalimentación no sería necesaria para la mayoría de los sistemas de control si no hubiera perturbaciones e incertidumbres. El desarrollo de métodos de control robusto multivariable ha sido el punto focal en las últimas dos décadas en la comunidad de control. La teoría de control robusto $\mathcal{H}_{\infty}$ es el resultado de este esfuerzo.
+
+	Este libro introduce algunos aspectos esenciales de la teoría de control robusto y $\mathcal{H}_{\infty}$. Creció a partir de otro libro de este autor, John C. Doyle, y Keith Glover, titulado Robust and Optimal Control, que ha sido ampliamente probado en muchas universidades alrededor del mundo. A diferencia de ese libro, que está destinado principalmente como una referencia completa de la teoría de control robusto y $\mathcal{H}_{\infty}$, este libro está destinado a ser un texto para un curso de posgrado en control multivariable. También está destinado a ser una referencia para ingenieros de control practicantes que estén interesados en aplicar las técnicas de control robusto más avanzadas en sus aplicaciones. Con este objetivo en mente, he simplificado la presentación, agregado más de 50 ejemplos ilustrativos, incluido muchos comandos relacionados de MATLAB ${ }^{\text {b }}$ y más de 150 problemas de ejercicio, y agregado algunos desarrollos recientes en el área de control robusto como la métrica de brecha, métrica $\nu$-gap, validación de modelos y problema mixto $\mu$. Además, muchas pruebas se han reescrito completamente y algunos temas avanzados se han eliminado por completo o no reciben un tratamiento en profundidad.
+
+	El requisito previo para leer este libro es algún conocimiento básico de teoría de control clásica y teoría de espacio de estados. El texto contiene más material del que podría cubrirse en detalle en un curso de un semestre o un trimestre. El Capítulo 1 ofrece un resumen capítulo por capítulo de los principales resultados presentados en el libro, que podría usarse como guía para la selección de temas para un curso específico. Los Capítulos 2 y 3 pueden usarse como un repaso de algunos hechos de álgebra lineal y algo de teoría estándar de sistemas lineales. Un curso centrado en el control $\mathcal{H}_{\infty}$ debería cubrir al menos la mayoría de las partes de los Capítulos 4-6, 8, 9, 11-13, y las Secciones 14.1 y 14.2. Un curso avanzado de control $\mathcal{H}_{\infty}$ también debería incluir el resto del Capítulo 14, el Capítulo 16, y posiblemente los Capítulos 10, 7, y 15. Un curso centrado en la robustez e incertidumbre del modelo debería cubrir al menos los Capítulos 4,5, y 8-10. Los Capítulos 17 y 18 pueden agregarse a cualquier curso avanzado de control robusto y $\mathcal{H}_{\infty}$ si el tiempo lo permite.
+
+	% He tratado de eliminar errores obvios. Sin embargo, es imposible para mí hacer el libro perfecto. Se anima a los lectores a enviar correcciones, comentarios y sugerencias a mí, preferiblemente por correo electrónico, a kemin@ee.isu.edu
+
+	% Planeo poner cualquier corrección, modificación y extensión en Internet para que puedan obtenerse ya sea desde el siguiente ftp anónimo: ftp gate.ee.lsu.edu cd pub/kemin/books/essentials/ o desde la página de inicio del autor: http://kilo.ee.lsu.edu/kemin/books/essentials/ Este libro no sería posible sin el trabajo realizado conjuntamente para el libro anterior con el Profesor John C. Doyle y el Profesor Keith Glover. Les agradezco por su influencia en mi investigación y en este libro. Sus actitudes serias hacia la investigación científica han sido modelos de referencia para mí. Estoy especialmente agradecido a John por haberme tenido como investigador en Caltech, donde tuve dos años muy agradables y tuve oportunidades de vislumbrar su "BIG PICTURE" del control.
+
+\end{abstractd}
+
+% DEDICATORIA
+\begin{dedicatory}
+	% Based upon the popular Robust and Optimal Control by Zhou, et al. (PH, 1995), this book offers a streamlined approach to robust control that reflects the most recent topics and developments in the field. It features coverage of state-of-the-art topics, including gap metric, v-gap metric, model validation, and real mu.
+	Este libro ofrece un enfoque simplificado para el control robusto que refleja los temas y desarrollos más recientes en el campo. Presenta cobertura de temas de vanguardia, incluyendo la métrica de brecha, la métrica $\nu$-gap, validación de modelos y $\mu$ real.
+	% Una frase de dedicatoria, \\
+	% pueden ser dos líneas. \\
+
+	Quiero agradecer a mi editor de Prentice Hall, Tom Robbins, quien originalmente propuso la idea para este libro y ha sido una fuente constante de apoyo para mí mientras lo escribía. Sin su apoyo y aliento, este proyecto habría sido difícil. Ha sido un gran placer trabajar con él.
+
+	Me gustaría expresar mi sincera gratitud al Profesor Bruce A. Francis por darme muchos comentarios y sugerencias útiles sobre este libro. El Profesor Francis también ha proporcionado amablemente muchos ejercicios en el libro. También estoy agradecido al Profesor Kang-Zhi Liu y al Profesor Zheng-Hua Luo, quienes han hecho muchos comentarios y sugerencias útiles. Quiero agradecer al Profesor Glen Vinnicombe por su generosa ayuda en la preparación de los Capítulos 16 y 17. Agradecimientos especiales al Profesor Jianqing Mao por brindarme la oportunidad de presentar gran parte de este material en una serie de conferencias en la Universidad de Aeronáutica y Astronáutica de Beijing en el verano de 1996.
+
+	Además, me gustaría agradecer a todos los que han ayudado de muchas maneras para hacer posible este libro, especialmente al Profesor Pramod P. Khargonekar, al Profesor André Tits, al Profesor Andrew Packard, al Profesor Jie Chen, al Profesor Jakob Stoustrup, al Profesor Hans Henrik Niemann, al Profesor Malcolm Smith, al Profesor Tryphon Georgiou, al Profesor Tongwen Chen, al Profesor Hitay Özbay, al Profesor Gary Balas, al Profesor Carolyn Beck, al Profesor Dennis S. Bernstein, al Profesor Mohamed Darouach, al Dr. Bobby Bodenheimer, al Profesor Guoxiang Gu, al Dr. Weimin Lu, al Dr. John Morris, al Dr. Matt Newlin, al Profesor Li Qiu, al Profesor Hector P. Rotstein, al Profesor Andrew Teel, al Profesor Jagannathan Ramanujam, a la Dr. Linda G. Bushnell, a Xiang Chen, a Greg Salomon, a Pablo A. Parrilo y a muchas otras personas.
+
+	% I would also like to thank the following agencies for supporting my research: National Science Foundation, Army Research Office (ARO), Air Force of Scientific Research, and the Board of Regents in the State of Louisiana.
+
+	También quiero agradecer a las siguientes agencias por su apoyo a mi investigación: Fundación Nacional de Ciencia, Oficina de Investigación del Ejército (ARO), Fuerza Aérea de Investigación Científica, y el Consejo de Regentes en el Estado de Louisiana.
+
+	% Finally, I would like to thank my wife, Jing, and my son, Eric, for their generous support, understanding, and patience during the writing of this book.
+
+	Finalmente, me gustaría agradecer a mi esposa, Jing, y a mi hijo, Eric, por su generoso apoyo, comprensión y paciencia durante la escritura de este libro.
+	% ~ \\
+	% \textbf{Saludos
+
+	\textbf{Sapere aude}
+\end{dedicatory}
+
+% AGRADECIMIENTOS
+% \begin{acknowledgments}
+% 	\lipsum[1]
+% \end{acknowledgments}
+
+% TABLA DE CONTENIDOS - ÍNDICE
+\templateIndex
+
+% CONFIGURACIONES FINALES
+\templateFinalcfg
+
+% ======================= INICIO DEL DOCUMENTO =======================
+
+\input{1_Introduccion.tex}
+\input{2_Algebra_Lineal.tex}
+\input{3_Sistemas_Lineales.tex}
+\input{4_Espacios_H2_Hinfinito.tex}
+\input{5_Estabilidad_Interna.tex}
+
+% FIN DEL DOCUMENTO
+\end{document}

@@ -1,0 +1,994 @@
+\documentclass[11pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+
+\begin{document}
+\section*{Capítulo 3}
+
+\section*{Sistemas lineales}
+Este capítulo revisa algunos conceptos básicos de teoría de sistemas. Se definen las nociones de controlabilidad, observabilidad, estabilizabilidad y detectabilidad, y se resumen varias caracterizaciones algebraicas y geométricas de estas nociones. Luego se introduce la teoría de observadores. Se estudian las interconexiones y realizaciones de sistemas. Finalmente, se introducen los conceptos de polos y ceros del sistema.
+
+\subsection*{Descripciones de sistemas dinámicos lineales}
+Sea un sistema dinámico lineal invariante en el tiempo de dimensión finita (FDLTI) descrito por las siguientes ecuaciones diferenciales lineales con coeficientes constantes:
+
+
+\begin{align*}
+\dot{x} & =A x+B u, \quad x\left(t_{0}\right)=x_{0}  \tag{3.1}\\
+y & =C x+D u \tag{3.2}
+\end{align*}
+
+
+donde $x(t) \in \mathbb{R}^{n}$ se llama estado del sistema, $x\left(t_{0}\right)$ se llama condición inicial del sistema, $u(t) \in \mathbb{R}^{m}$ se llama entrada del sistema, y $y(t) \in \mathbb{R}^{p}$ es la salida del sistema. Las matrices $A, B, C$ y $D$ son matrices reales constantes de dimensiones apropiadas. Un sistema dinámico con una sola entrada $(m=1)$ y una sola salida $(p=1)$ se llama sistema SISO (single-input single-output); en caso contrario se llama sistema MIMO (multiple-input multiple-output). La matriz de transferencia correspondiente de $u$ a $y$ se define como
+
+$$
+Y(s)=G(s) U(s)
+$$
+
+donde $U(s)$ y $Y(s)$ son las transformadas de Laplace de $u(t)$ y $y(t)$ con condición inicial nula $(x(0)=0)$. Por tanto,
+
+$$
+G(s)=C(s I-A)^{-1} B+D
+$$
+
+Nótese que las ecuaciones del sistema (3.1) y (3.2) pueden escribirse en una forma matricial más compacta:
+
+$$
+\left[\begin{array}{l}
+\dot{x} \\
+y
+\end{array}\right]=\left[\begin{array}{cc}
+A & B \\
+C & D
+\end{array}\right]\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]
+$$
+
+Para agilizar cálculos con matrices de transferencia, usaremos la siguiente notación:
+
+$$
+\left[\begin{array}{l|l}
+A & B \\
+\hline C & D
+\end{array}\right]:=C(s I-A)^{-1} B+D .
+$$
+
+En Matlab el sistema también puede escribirse en forma empaquetada usando el comando
+
+$\gg \mathbf{G}=\mathbf{p c k}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D})$ \% empaqueta la realización en forma particionada
+
+$\gg$ seesys(G) \% muestra $G$ en formato particionado
+
+$\gg[\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}]=\operatorname{unpck}(\mathbf{G}) \%$ desempaqueta la matriz del sistema
+
+Nótese que
+
+$$
+\left[\begin{array}{ll}
+A & B \\
+C & D
+\end{array}\right]
+$$
+
+es una matriz real por bloques, no una función de transferencia.
+
+\section*{Comandos ilustrativos de MATLAB:}
+$\gg \mathbf{G}=\mathbf{p c k}([],[],[], 10) \%$ crea una matriz de sistema constante
+
+$\gg[\mathbf{y}, \mathbf{x}, \mathbf{t}]=\operatorname{step}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}, \mathbf{Iu}) \% \mathrm{Iu}=i$ (respuesta al escalón del canal $i$)
+
+$\gg[\mathbf{y}, \mathbf{x}, \mathbf{t}]=\operatorname{initial}\left(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}, \mathbf{x}_{0}\right) \%$ respuesta por condición inicial $x_{0}$
+
+$\gg[\mathbf{y}, \mathbf{x}, \mathbf{t}]=$ impulse(A, B, C, D, Iu) \% respuesta al impulso del canal Iu
+
+$\gg[\mathbf{y}, \mathbf{x}]=\operatorname{lsim}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}, \mathbf{U}, \mathbf{T}) \% \mathrm{U}$ es una entrada matricial de tamaño length$(T) \times \operatorname{column}(B)$; $T$ son los puntos de muestreo.
+
+Comandos relacionados de MATLAB: minfo, trsp, cos\_tr, sin\_tr, siggen
+
+\subsection*{Controlabilidad y observabilidad}
+Ahora pasamos a algunos conceptos muy importantes en teoría de sistemas lineales.
+
+Definición 3.1 El sistema dinámico descrito por la ecuación (3.1), o el par $(A, B)$, se dice controlable si, para cualquier estado inicial $x(0)=x_{0}$, cualquier $t_{1}>0$ y cualquier estado final $x_{1}$, existe una entrada (a trozos continua) $u(\cdot)$ tal que la solución de la ecuación (3.1) satisface $x\left(t_{1}\right)=x_{1}$. En caso contrario, el sistema o el par $(A, B)$ se dice no controlable.
+
+La controlabilidad (y la observabilidad introducida después) de un sistema puede verificarse mediante criterios algebraicos o geométricos.
+
+Teorema 3.1 Son equivalentes:
+
+(i) $(A, B)$ es controlable.
+
+(ii) La matriz
+
+$$
+W_{c}(t):=\int_{0}^{t} e^{A \tau} B B^{*} e^{A^{*} \tau} d \tau
+$$
+
+es definida positiva para cualquier $t>0$.
+
+(iii) La matriz de controlabilidad
+
+$$
+\mathcal{C}=\left[\begin{array}{lllll}
+B & A B & A^{2} B & \ldots & A^{n-1} B
+\end{array}\right]
+$$
+
+tiene rango completo por filas o, en otras palabras, $\langle A \mid \operatorname{Im} B\rangle:=\sum_{i=1}^{n} \operatorname{Im}\left(A^{i-1} B\right)=\mathbb{R}^{n}$.
+
+(iv) La matriz $[A-\lambda I, B]$ tiene rango completo por filas para todo $\lambda \in \mathbb{C}$.
+
+(v) Sean $\lambda$ y $x$ cualquier valor propio y cualquier vector propio izquierdo correspondiente de $A$ (es decir, $x^{*} A=x^{*} \lambda$); entonces $x^{*} B \neq 0$.
+
+(vi) Los valores propios de $A+B F$ pueden asignarse libremente (con la restricción de que los complejos vayan en pares conjugados) mediante una elección apropiada de $F$.
+
+Ejemplo 3.1 Sea $A=\left[\begin{array}{ll}2 & 0 \\ 0 & 2\end{array}\right]$ y $B=\left[\begin{array}{l}1 \\ 1\end{array}\right]$. Entonces $x_{1}=\left[\begin{array}{l}1 \\ 0\end{array}\right]$ y $x_{2}=\left[\begin{array}{l}0 \\ 1\end{array}\right]$ son vectores propios independientes de $A$ y $x_{i}^{*} B \neq 0, i=1,2$. Sin embargo, esto no debe llevar a concluir que $(A, B)$ es controlable. De hecho, $x=x_{1}-x_{2}$ también es vector propio de $A$ y $x^{*} B=0$, lo cual implica que $(A, B)$ no es controlable. Por tanto, al usar el criterio (v), se debe verificar para todos los vectores propios posibles.
+
+Definición 3.2 Un sistema dinámico no forzado $\dot{x}=A x$ se dice estable si todos los valores propios de $A$ están en el semiplano izquierdo abierto; es decir, $\operatorname{Re} \lambda(A)<0$. Una matriz $A$ con esta propiedad se dice estable o de Hurwitz.
+
+Definición 3.3 El sistema dinámico de la ecuación (3.1), o el par $(A, B)$, se dice estabilizable si existe una realimentación de estado $u=F x$ tal que el sistema sea estable (es decir, $A+B F$ sea estable).
+
+Es más apropiado llamar a esta estabilizabilidad como estabilizabilidad por realimentación de estado, para diferenciarla de la estabilizabilidad por realimentación de salida definida más adelante.
+
+El siguiente teorema es consecuencia del Teorema 3.1.
+
+Teorema 3.2 Son equivalentes:
+
+(i) $(A, B)$ es estabilizable.
+
+(ii) La matriz $[A-\lambda I, B]$ tiene rango completo por filas para todo $\operatorname{Re} \lambda \geq 0$.
+
+(iii) Para todo $\lambda$ y $x$ tales que $x^{*} A=x^{*} \lambda$ y $\operatorname{Re} \lambda \geq 0$, se cumple $x^{*} B \neq 0$.
+
+(iv) Existe una matriz $F$ tal que $A+B F$ es Hurwitz.
+
+Ahora consideramos las nociones duales: observabilidad y detectabilidad del sistema descrito por las ecuaciones (3.1) y (3.2).
+
+Definición 3.4 El sistema dinámico descrito por las ecuaciones (3.1) y (3.2), o por el par $(C, A)$, se dice observable si, para cualquier $t_{1}>0$, el estado inicial $x(0)=x_{0}$ puede determinarse a partir de la historia temporal de la entrada $u(t)$ y la salida $y(t)$ en el intervalo $\left[0, t_{1}\right]$. En caso contrario, el sistema, o $(C, A)$, se dice no observable.
+
+Teorema 3.3 Son equivalentes:
+
+(i) $(C, A)$ es observable.
+
+(ii) La matriz
+
+$$
+W_{o}(t):=\int_{0}^{t} e^{A^{*} \tau} C^{*} C e^{A \tau} d \tau
+$$
+
+es definida positiva para cualquier $t>0$.
+
+(iii) La matriz de observabilidad
+
+$$
+\mathcal{O}=\left[\begin{array}{c}
+C \\
+C A \\
+C A^{2} \\
+\vdots \\
+C A^{n-1}
+\end{array}\right]
+$$
+
+tiene rango completo por columnas o $\bigcap_{i=1}^{n} \operatorname{Ker}\left(C A^{i-1}\right)=0$.
+
+(iv) La matriz $\left[\begin{array}{c}A-\lambda I \\ C\end{array}\right]$ tiene rango completo por columnas para todo $\lambda \in \mathbb{C}$.
+
+(v) Sean $\lambda$ y $y$ cualquier valor propio y cualquier vector propio derecho correspondiente de $A$ (es decir, $A y=\lambda y$); entonces $C y \neq 0$.
+
+(vi) Los valores propios de $A+L C$ pueden asignarse libremente (con la restricción de pares conjugados para valores propios complejos) mediante una elección apropiada de $L$.
+
+(vii) $\left(A^{*}, C^{*}\right)$ es controlable.
+
+Definición 3.5 El sistema, o el par $(C, A)$, se dice detectable si $A+L C$ es estable para alguna matriz $L$.
+
+Teorema 3.4 Son equivalentes:
+
+(i) $(C, A)$ es detectable.
+
+(ii) La matriz $\left[\begin{array}{c}A-\lambda I \\ C\end{array}\right]$ tiene rango completo por columnas para todo $\operatorname{Re} \lambda \geq 0$.
+
+(iii) Para todo $\lambda$ y $x$ tales que $A x=\lambda x$ y $\operatorname{Re} \lambda \geq 0$, se cumple $C x \neq 0$.
+
+(iv) Existe una matriz $L$ tal que $A+L C$ es Hurwitz.
+
+(v) $\left(A^{*}, C^{*}\right)$ es estabilizable.
+
+Las condiciones (iv) y (v) de los Teoremas 3.1 y 3.3, y las condiciones (ii) y (iii) de los Teoremas 3.2 y 3.4, suelen llamarse pruebas de Popov-Belevitch-Hautus (PBH). En particular, las siguientes definiciones de controlabilidad y observabilidad modal suelen ser útiles.
+
+Definición 3.6 Sea $\lambda$ un valor propio de $A$ o, equivalentemente, un modo del sistema. Entonces se dice que el modo $\lambda$ es controlable (observable) si $x^{*} B \neq 0$ ($C x \neq 0$) para todos los vectores propios izquierdos (derechos) de $A$ asociados con $\lambda$; es decir, $x^{*} A=\lambda x^{*}$ ($A x=\lambda x$) y $0 \neq x \in \mathbb{C}^{n}$. En caso contrario, el modo se dice no controlable (no observable).
+
+De esto se sigue que un sistema es controlable (observable) si y solo si todo modo es controlable (observable). De manera similar, un sistema es estabilizable (detectable) si y solo si todo modo inestable es controlable (observable).
+
+Comandos ilustrativos de MATLAB:
+
+$\gg \mathcal{C}=\operatorname{ctrb}(\mathrm{A}, \mathrm{B}) ; \mathcal{O}=\operatorname{obsv}(\mathrm{A}, \mathrm{C})$
+
+$\gg \mathbf{W}_{\mathbf{c}}(\infty)=\operatorname{gram}(\mathbf{A}, \mathbf{B}) ; \%$ si $A$ es estable.
+
+$\gg \mathbf{F}=-\mathbf{p l a c e}(\mathbf{A}, \mathbf{B}, \mathbf{P}) \quad \% P$ es un vector con valores propios deseados.
+
+Comandos relacionados de MATLAB: ctrbf, obsvf, canon, strans, acker
+
+\subsection*{Observadores y controladores basados en observador}
+Es claro que si un sistema es controlable y los estados del sistema están disponibles para realimentación, entonces los polos en lazo cerrado pueden asignarse arbitrariamente mediante una realimentación constante. Sin embargo, en la mayoría de aplicaciones prácticas, los estados del sistema no son completamente accesibles y el diseñador solo conoce la salida $y$ y la entrada $u$. Por ello, la estimación de los estados del sistema a partir de la información disponible de $y$ y $u$ suele ser necesaria para alcanzar ciertos objetivos de diseño. En esta sección consideramos este problema de estimación de estado y su aplicación al control por realimentación.
+
+Considere una planta modelada por las ecuaciones (3.1) y (3.2). Un observador es un sistema dinámico con entrada $(u, y)$ y salida (digamos, $\hat{x}$), que estima asintóticamente el estado $x$, es decir, $\hat{x}(t)-x(t) \rightarrow 0$ cuando $t \rightarrow \infty$ para cualquier estado inicial y para toda entrada.
+
+Teorema 3.5 Un observador existe si y solo si $(C, A)$ es detectable. Además, si $(C, A)$ es detectable, entonces un observador de Luenberger de orden completo está dado por
+
+
+\begin{align*}
+\dot{q} & =A q+B u+L(C q+D u-y)  \tag{3.3}\\
+\hat{x} & =q \tag{3.4}
+\end{align*}
+
+
+donde $L$ es cualquier matriz tal que $A+L C$ es estable.
+
+Recuerde que, para un sistema dinámico descrito por las ecuaciones (3.1) y (3.2), si $(A, B)$ es controlable y el estado $x$ está disponible para realimentación, entonces existe una realimentación de estado $u=F x$ tal que los polos de lazo cerrado pueden asignarse arbitrariamente. De forma similar, si $(C, A)$ es observable, entonces los polos del observador pueden colocarse arbitrariamente para hacer que el estimador de estado $\hat{x}$ se aproxime a $x$ tan rápido como se desee. Consideremos ahora qué ocurre si los estados del sistema no están disponibles para realimentación y debe usarse el estado estimado. En ese caso, el controlador tiene la siguiente dinámica:
+
+$$
+\begin{aligned}
+\dot{\hat{x}} & =(A+L C) \hat{x}+B u+L D u-L y \\
+u & =F \hat{x}
+\end{aligned}
+$$
+
+Entonces, las ecuaciones de estado del sistema total están dadas por
+
+$$
+\left[\begin{array}{c}
+\dot{x} \\
+\dot{\hat{x}}
+\end{array}\right]=\left[\begin{array}{cc}
+A & B F \\
+-L C & A+B F+L C
+\end{array}\right]\left[\begin{array}{l}
+x \\
+\hat{x}
+\end{array}\right]
+$$
+
+Sea $e:=x-\hat{x}$; entonces la ecuación del sistema queda
+
+$$
+\left[\begin{array}{c}
+\dot{e} \\
+\dot{\hat{x}}
+\end{array}\right]=\left[\begin{array}{cc}
+A+L C & 0 \\
+-L C & A+B F
+\end{array}\right]\left[\begin{array}{l}
+e \\
+\hat{x}
+\end{array}\right]
+$$
+
+y los polos en lazo cerrado constan de dos partes: los polos resultantes de la realimentación de estado $\lambda_{i}(A+B F)$ y los polos resultantes de la estimación de estado $\lambda_{j}(A+L C)$. Si $(A, B)$ es controlable y $(C, A)$ es observable, entonces existen $F$ y $L$ tales que los valores propios de $A+B F$ y $A+L C$ pueden asignarse arbitrariamente. En particular, pueden hacerse estables. Nótese que también puede obtenerse un resultado ligeramente más débil cuando $(A, B)$ y $(C, A)$ son solo estabilizable y detectable, respectivamente.
+
+El controlador anterior se denomina controlador basado en observador y se denota como
+
+$$
+u=K(s) y
+$$
+
+y
+
+$$
+K(s)=\left[\begin{array}{c|c}
+A+B F+L C+L D F & -L \\
+\hline F & 0
+\end{array}\right]
+$$
+
+Ahora denotemos la planta en lazo abierto por
+
+$$
+G=\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right]
+$$
+
+entonces el sistema de realimentación en lazo cerrado es el mostrado a continuación:
+
+\begin{center}
+\includegraphics[max width=\textwidth, alt={}]{2024_06_29_ce7c73b22613114bd4d6g-047_194_478_689_821}
+\end{center}
+
+En general, si un sistema es estabilizable mediante realimentación de la salida $y$, se dice que es estabilizable por realimentación de salida. De la construcción anterior se ve claramente que un sistema es estabilizable por realimentación de salida si y solo si $(A, B)$ es estabilizable y $(C, A)$ es detectable.
+
+Ejemplo 3.2 Sea $A=\left[\begin{array}{ll}1 & 2 \\ 1 & 0\end{array}\right], B=\left[\begin{array}{l}1 \\ 0\end{array}\right]$, y $C=\left[\begin{array}{ll}1 & 0\end{array}\right]$. Diseñaremos una realimentación de estado $u=F x$ tal que los polos en lazo cerrado estén en $\{-2,-3\}$. Esto puede hacerse escogiendo $F=\left[\begin{array}{ll}-6 & -8\end{array}\right]$ usando
+
+$$
+\gg F=-\operatorname{place}(A, B,[-2,-3])
+$$
+
+Ahora suponga que los estados no están disponibles para realimentación y queremos construir un observador de modo que los polos del observador estén en $\{-10,-10\}$. Entonces $L=\left[\begin{array}{l}-21 \\ -51\end{array}\right]$ puede obtenerse usando
+
+$$
+\gg L=-\operatorname{acker}\left(A', C',[-10,-10]\right)'
+$$
+
+y el controlador basado en observador está dado por
+
+$$
+K(s)=\frac{-534(s+0.6966)}{(s+34.6564)(s-8.6564)}
+$$
+
+Nótese que el propio controlador estabilizante es inestable. Por supuesto, esto puede no ser deseable en la práctica.
+
+\subsection*{Operaciones sobre sistemas}
+En esta sección presentamos algunos hechos sobre interconexión de sistemas. Como estas demostraciones son directas, dejaremos los detalles al lector.
+
+Suponga que $G_{1}$ y $G_{2}$ son dos subsistemas con representaciones en espacio de estados:
+
+$$
+G_{1}=\left[\begin{array}{c|c}
+A_{1} & B_{1} \\
+\hline C_{1} & D_{1}
+\end{array}\right], \quad G_{2}=\left[\begin{array}{c|c}
+A_{2} & B_{2} \\
+\hline C_{2} & D_{2}
+\end{array}\right]
+$$
+
+Entonces la conexión en serie o en cascada de estos dos subsistemas es un sistema cuya salida del segundo subsistema es la entrada del primero, como se muestra en el siguiente diagrama:
+
+\begin{center}
+\includegraphics[max width=\textwidth, alt={}]{2024_06_29_ce7c73b22613114bd4d6g-048_101_542_871_781}
+\end{center}
+
+Esta operación, en términos de las matrices de transferencia de ambos subsistemas, es esencialmente el producto de dos matrices de transferencia. Por lo tanto, una representación para el sistema en cascada puede obtenerse como
+
+$$
+\begin{aligned}
+G_{1} G_{2} & =\left[\begin{array}{c|c}
+A_{1} & B_{1} \\
+\hline C_{1} & D_{1}
+\end{array}\right]\left[\begin{array}{c|c}
+A_{2} & B_{2} \\
+\hline C_{2} & D_{2}
+\end{array}\right] \\
+& =\left[\begin{array}{cc|c}
+A_{1} & B_{1} C_{2} & B_{1} D_{2} \\
+0 & A_{2} & B_{2} \\
+\hline C_{1} & D_{1} C_{2} & D_{1} D_{2}
+\end{array}\right]=\left[\begin{array}{cc|c}
+A_{2} & 0 & B_{2} \\
+B_{1} C_{2} & A_{1} & B_{1} D_{2} \\
+\hline D_{1} C_{2} & C_{1} & D_{1} D_{2}
+\end{array}\right] .
+\end{aligned}
+$$
+
+De manera similar, la conexión en paralelo o suma de $G_{1}$ y $G_{2}$ se obtiene como
+
+$$
+G_{1}+G_{2}=\left[\begin{array}{c|c}
+A_{1} & B_{1} \\
+\hline C_{1} & D_{1}
+\end{array}\right]+\left[\begin{array}{c|c}
+A_{2} & B_{2} \\
+\hline C_{2} & D_{2}
+\end{array}\right]=\left[\begin{array}{cc|c}
+A_{1} & 0 & B_{1} \\
+0 & A_{2} & B_{2} \\
+\hline C_{1} & C_{2} & D_{1}+D_{2}
+\end{array}\right]
+$$
+
+Para referencia futura, también introducimos las siguientes definiciones.
+
+Definición 3.7 La transpuesta de una matriz de transferencia $G(s)$, o sistema dual, se define como
+
+$$
+G \longmapsto G^{T}(s)=B^{*}\left(s I-A^{*}\right)^{-1} C^{*}+D^{*}
+$$
+
+o, equivalentemente,
+
+$$
+\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right] \longmapsto\left[\begin{array}{c|c}
+A^{*} & C^{*} \\
+\hline B^{*} & D^{*}
+\end{array}\right]
+$$
+
+Definición 3.8 El sistema conjugado de $G(s)$ se define como
+
+$$
+G \longmapsto G^{\sim}(s):=G^{T}(-s)=B^{*}\left(-s I-A^{*}\right)^{-1} C^{*}+D^{*}
+$$
+
+o, equivalentemente,
+
+$$
+\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right] \longmapsto\left[\begin{array}{c|c}
+-A^{*} & -C^{*} \\
+\hline B^{*} & D^{*}
+\end{array}\right]
+$$
+
+En particular, se cumple $G^{*}(j \omega):=[G(j \omega)]^{*}=G^{\sim}(j \omega)$.
+
+Una matriz racional real $\hat{G}(s)$ se llama inversa de una matriz de transferencia $G(s)$ si $G(s) \hat{G}(s)=\hat{G}(s) G(s)=I$. Suponga que $G(s)$ es cuadrada y $D$ es invertible. Entonces
+
+$$
+G^{-1}=\left[\begin{array}{c|c}
+A-B D^{-1} C & -B D^{-1} \\
+\hline D^{-1} C & D^{-1}
+\end{array}\right]
+$$
+
+Los comandos de MatLAB correspondientes son
+
+$$
+\begin{gathered}
+G_{1} G_{2} \Longleftrightarrow \operatorname{mmult}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right), \quad\left[\begin{array}{ll}
+G_{1} & G_{2}
+\end{array}\right] \Longleftrightarrow \operatorname{sbs}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right) \\
+G_{1}+G_{2} \Longleftrightarrow \operatorname{madd}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right), \quad G_{1}-G_{2} \Longleftrightarrow \operatorname{msub}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right) \\
+{\left[\begin{array}{l}
+G_{1} \\
+G_{2}
+\end{array}\right] \Longleftrightarrow \operatorname{abv}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right), \quad\left[\begin{array}{cc}
+G_{1} & \\
+& G_{2}
+\end{array}\right] \Longleftrightarrow \operatorname{daug}\left(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}\right)} \\
+G^{T}(s) \Longleftrightarrow \operatorname{transp}(\mathbf{G}), \quad G^{\sim}(s) \Longleftrightarrow \operatorname{cjt}(\mathbf{G}), \quad G^{-1}(s) \Longleftrightarrow \operatorname{minv}(\mathbf{G}) \\
+\alpha G(s) \Longleftrightarrow \operatorname{mscl}(\mathbf{G}, \alpha), \alpha \text { es un escalar. }
+\end{gathered}
+$$
+
+Comandos relacionados de MATLAB: append, parallel, feedback, series, cloop, sclin, sclout, sel
+
+\subsection*{Realizaciones en espacio de estados para matrices de transferencia}
+En algunos casos, la descripción natural o conveniente de un sistema dinámico es en términos de su función de transferencia matricial. Esto ocurre, por ejemplo, en sistemas muy complejos para los cuales las ecuaciones diferenciales analíticas son demasiado difíciles o complejas de escribir. Por ello, debe realizarse cierta aproximación o identificación de ingeniería; por ejemplo, se obtienen respuestas en frecuencia de entrada y salida a partir de experimentos para construir una matriz de transferencia que aproxime la dinámica del sistema. Dado que el cálculo en espacio de estados es el más conveniente para implementar en computadora, es necesaria una representación apropiada en espacio de estados para la matriz de transferencia resultante.
+
+En general, suponga que $G(s)$ es una matriz de transferencia racional real y propia. Entonces llamamos realización de $G(s)$ a un modelo en espacio de estados $(A, B, C, D)$ tal que
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right]
+$$
+
+Definición 3.9 Una realización en espacio de estados $(A, B, C, D)$ de $G(s)$ se dice mínima si $A$ tiene la menor dimensión posible.
+
+Teorema 3.6 Una realización en espacio de estados $(A, B, C, D)$ de $G(s)$ es mínima si y solo si $(A, B)$ es controlable y $(C, A)$ es observable.
+
+Ahora describimos varias formas de obtener una realización en espacio de estados para una matriz de transferencia MIMO dada $G(s)$. Primero consideraremos sistemas SIMO (una entrada y múltiples salidas) y MISO (múltiples entradas y una salida).
+
+Sea $G(s)$ un vector columna de funciones de transferencia con $p$ salidas:
+
+$$
+G(s)=\frac{\beta_{1} s^{n-1}+\beta_{2} s^{n-2}+\cdots+\beta_{n-1} s+\beta_{n}}{s^{n}+a_{1} s^{n-1}+\cdots+a_{n-1} s+a_{n}}+d, \beta_{i} \in \mathbb{R}^{p}, d \in \mathbb{R}^{p}
+$$
+
+Entonces $G(s)=\left[\begin{array}{l|l}A & b \\ \hline C & d\end{array}\right]$ con
+
+$$
+\begin{gathered}
+A:=\left[\begin{array}{ccccc}
+-a_{1} & -a_{2} & \cdots & -a_{n-1} & -a_{n} \\
+1 & 0 & \cdots & 0 & 0 \\
+0 & 1 & \cdots & 0 & 0 \\
+\vdots & \vdots & & \vdots & \vdots \\
+0 & 0 & \cdots & 1 & 0
+\end{array}\right] \quad b:=\left[\begin{array}{c}
+1 \\
+0 \\
+0 \\
+\vdots \\
+0
+\end{array}\right] \\
+C=\left[\begin{array}{lllll}
+\beta_{1} & \beta_{2} & \cdots & \beta_{n-1} & \beta_{n}
+\end{array}\right]
+\end{gathered}
+$$
+
+que es la llamada forma canónica controlable o forma canónica del controlador.
+
+De forma dual, considere un sistema de múltiples entradas y una salida:
+
+$$
+G(s)=\frac{\eta_{1} s^{n-1}+\eta_{2} s^{n-2}+\cdots+\eta_{n-1} s+\eta_{n}}{s^{n}+a_{1} s^{n-1}+\cdots+a_{n-1} s+a_{n}}+d, \quad \eta_{i}^{*} \in \mathbb{R}^{m}, d^{*} \in \mathbb{R}^{m}
+$$
+
+Entonces
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline c & d
+\end{array}\right]=\left[\begin{array}{ccccc|c}
+-a_{1} & 1 & 0 & \cdots & 0 & \eta_{1} \\
+-a_{2} & 0 & 1 & \cdots & 0 & \eta_{2} \\
+\vdots & \vdots & \vdots & & \vdots & \vdots \\
+-a_{n-1} & 0 & 0 & \cdots & 1 & \eta_{n-1} \\
+-a_{n} & 0 & 0 & \cdots & 0 & \eta_{n} \\
+\hline 1 & 0 & 0 & \cdots & 0 & d
+\end{array}\right]
+$$
+
+que es una forma canónica observable o forma canónica del observador.
+
+Para un sistema MIMO, la forma más simple y directa de obtener una realización es realizar cada elemento de la matriz $G(s)$ y luego combinar todas esas realizaciones individuales para formar una realización de $G(s)$. Para ilustrar, consideremos una matriz de transferencia (en bloques) de $2 \times 2$ como
+
+$$
+G(s)=\left[\begin{array}{ll}
+G_{1}(s) & G_{2}(s) \\
+G_{3}(s) & G_{4}(s)
+\end{array}\right]
+$$
+
+y supongamos que $G_{i}(s)$ tiene una realización en espacio de estados de la forma
+
+$$
+G_{i}(s)=\left[\begin{array}{c|c}
+A_{i} & B_{i} \\
+\hline C_{i} & D_{i}
+\end{array}\right], \quad i=1, \ldots, 4
+$$
+
+Entonces una realización para $G(s)$ puede obtenerse como $(\mathbf{G}=\mathbf{abv}(\mathbf{sbs}(\mathbf{G}_{\mathbf{1}}, \mathbf{G}_{\mathbf{2}}), \operatorname{sbs}(\mathbf{G}_{\mathbf{3}}, \mathbf{G}_{\mathbf{4}})))$:
+
+$$
+G(s)=\left[\begin{array}{cccc|cc}
+A_{1} & 0 & 0 & 0 & B_{1} & 0 \\
+0 & A_{2} & 0 & 0 & 0 & B_{2} \\
+0 & 0 & A_{3} & 0 & B_{3} & 0 \\
+0 & 0 & 0 & A_{4} & 0 & B_{4} \\
+\hline C_{1} & C_{2} & 0 & 0 & D_{1} & D_{2} \\
+0 & 0 & C_{3} & C_{4} & D_{3} & D_{4}
+\end{array}\right]
+$$
+
+Alternativamente, si la matriz de transferencia $G(s)$ puede factorizarse como producto y/o suma de varias matrices de transferencia con realizaciones simples, entonces una realización para $G$ puede obtenerse usando las fórmulas de cascada o suma dadas en la sección anterior.
+
+Un problema inherente a estos procedimientos de realización es que, en general, la realización obtenida no será mínima. Para obtener una realización mínima, debe realizarse una descomposición de Kalman de controlabilidad y observabilidad para eliminar estados no controlables y/o no observables. (Un método alternativo numéricamente confiable para eliminar estados no controlables y/o no observables es la realización balanceada, que se discutirá más adelante).
+
+Ahora describimos un procedimiento que sí da como resultado una realización mínima mediante expansión en fracciones parciales (la realización resultante se conoce a veces como realización de Gilbert, en honor a E. G. Gilbert).
+
+Sea $G(s)$ una matriz de transferencia de tamaño $p \times m$ y escríbase en la forma
+
+$$
+G(s)=\frac{N(s)}{d(s)}
+$$
+
+con $d(s)$ un polinomio escalar. Para simplificar, supondremos que $d(s)$ tiene solo raíces reales y distintas, $\lambda_{i} \neq \lambda_{j}$ si $i \neq j$, y
+
+$$
+d(s)=\left(s-\lambda_{1}\right)\left(s-\lambda_{2}\right) \cdots\left(s-\lambda_{r}\right)
+$$
+
+Entonces $G(s)$ tiene la siguiente expansión en fracciones parciales:
+
+$$
+G(s)=D+\sum_{i=1}^{r} \frac{W_{i}}{s-\lambda_{i}}
+$$
+
+Suponga
+
+$$
+\operatorname{rank} W_{i}=k_{i}
+$$
+
+y sean $B_{i} \in \mathbb{R}^{k_{i} \times m}$ y $C_{i} \in \mathbb{R}^{p \times k_{i}}$ dos matrices constantes tales que
+
+$$
+W_{i}=C_{i} B_{i}
+$$
+
+Entonces una realización para $G(s)$ está dada por
+
+$$
+G(s)=\left[\begin{array}{ccc|c}
+\lambda_{1} I_{k_{1}} & & & B_{1} \\
+& \ddots & & \vdots \\
+& & \lambda_{r} I_{k_{r}} & B_{r} \\
+\hline C_{1} & \cdots & C_{r} & D
+\end{array}\right]
+$$
+
+Se sigue inmediatamente de las pruebas PBH que esta realización es controlable y observable, y por tanto es mínima.
+
+Una consecuencia inmediata de esta realización mínima es que una matriz de transferencia con denominador polinomial de orden $r$ no necesariamente tiene una realización en espacio de estados de orden $r$, a menos que cada $W_{i}$ sea de rango uno.
+
+Este enfoque, de hecho, puede generalizarse a casos más complejos donde $d(s)$ tenga raíces complejas y/o repetidas. El lector puede convencerse probando algunos ejemplos simples.
+
+\section*{Comandos ilustrativos de MATLAB:}
+$\gg \mathrm{G}=$ nd2sys(num, den, gain); $\mathrm{G}=$ zp2sys(zeros, poles, gain);
+
+Comandos relacionados de MATLAB: ss2tf, ss2zp, zp2ss, tf2ss, residue, minreal
+
+\subsection*{Polos y ceros de sistemas multivariables}
+Se llama matriz polinomial de una variable a una matriz cuyos elementos son polinomios de esa variable.
+
+Definición 3.10 Sea $Q(s)$ una matriz polinomial (o matriz de transferencia) de tamaño $(p \times m)$ en $s$. Entonces el rango normal de $Q(s)$, denotado normalrank$(Q(s))$, es el máximo rango posible de $Q(s)$ para al menos un valor de $s \in \mathbb{C}$.
+
+Para mostrar la diferencia entre el rango normal de una matriz polinomial y el rango de la matriz polinomial evaluada en un punto específico, considere
+
+$$
+Q(s)=\left[\begin{array}{cc}
+s & 1 \\
+s^{2} & 1 \\
+s & 1
+\end{array}\right]
+$$
+
+Entonces $Q(s)$ tiene rango normal 2 porque rank $Q(3)=2$. Sin embargo, $Q(0)$ tiene rango 1.
+
+Los polos y ceros de una matriz de transferencia pueden caracterizarse en términos de sus realizaciones en espacio de estados. Sea
+
+$$
+\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right]
+$$
+
+una realización en espacio de estados de $G(s)$.
+
+Definición 3.11 Los valores propios de $A$ se llaman polos de la realización de $G(s)$.
+
+Para definir ceros, consideremos la siguiente matriz del sistema:
+
+$$
+Q(s)=\left[\begin{array}{cc}
+A-s I & B \\
+C & D
+\end{array}\right]
+$$
+
+Definición 3.12 Un número complejo $z_{0} \in \mathbb{C}$ se llama cero invariante de la realización del sistema si satisface
+
+$$
+\operatorname{rank}\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]<\text { normalrank }\left[\begin{array}{cc}
+A-s I & B \\
+C & D
+\end{array}\right]
+$$
+
+Los ceros invariantes no cambian bajo realimentación de estado constante, ya que
+
+$$
+\begin{aligned}
+\operatorname{rank}\left[\begin{array}{cc}
+A+B F-z_{0} I & B \\
+C+D F & D
+\end{array}\right] & =\operatorname{rank}\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]\left[\begin{array}{cc}
+I & 0 \\
+F & I
+\end{array}\right] \\
+& =\operatorname{rank}\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]
+\end{aligned}
+$$
+
+También es claro que los ceros invariantes no cambian bajo transformación de similitud.
+
+El siguiente lema es evidente.
+
+Lema 3.7 Suponga que $\left[\begin{array}{cc}A-s I & B \\ C & D\end{array}\right]$ tiene rango normal completo por columnas. Entonces $z_{0} \in \mathbb{C}$ es un cero invariante de una realización $(A, B, C, D)$ si y solo si existen $0 \neq x \in \mathbb{C}^{n}$ y $u \in \mathbb{C}^{m}$ tales que
+
+$$
+\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]=0
+$$
+
+Además, si $u=0$, entonces $z_{0}$ también es un modo no observable.
+
+Prueba. Por definición, $z_{0}$ es un cero invariante si existe un vector $\left[\begin{array}{l}x \\ u\end{array}\right] \neq 0$ tal que
+
+$$
+\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]=0
+$$
+
+ya que $\left[\begin{array}{cc}A-s I & B \\ C & D\end{array}\right]$ tiene rango normal completo por columnas.
+
+Por otro lado, suponga que $z_{0}$ es un cero invariante; entonces existe un vector $\left[\begin{array}{l}x \\ u\end{array}\right] \neq 0$ tal que
+
+$$
+\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]=0
+$$
+
+Afirmamos que $x \neq 0$. De lo contrario, $\left[\begin{array}{l}B \\ D\end{array}\right] u=0$ o $u=0$, ya que $\left[\begin{array}{cc}A-s I & B \\ C & D\end{array}\right]$ tiene rango normal completo por columnas (es decir, $\left[\begin{array}{l}x \\ u\end{array}\right]=0$), lo cual es una contradicción.
+
+Finalmente, nótese que si $u=0$, entonces
+
+$$
+\left[\begin{array}{c}
+A-z_{0} I \\
+C
+\end{array}\right] x=0
+$$
+
+y $z_{0}$ es un modo no observable por la prueba PBH.
+
+Cuando el sistema es cuadrado, los ceros invariantes pueden calcularse resolviendo un problema de valores propios generalizado:
+
+$$
+\underbrace{\left[\begin{array}{ll}
+A & B \\
+C & D
+\end{array}\right]}_{M}\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]=z_{0} \underbrace{\left[\begin{array}{ll}
+I & 0 \\
+0 & 0
+\end{array}\right]}_{N}\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]
+$$
+
+usando el comando de Matlab: $\operatorname{eig}(\mathrm{M}, \mathbf{N})$.
+
+Lema 3.8 Suponga que $\left[\begin{array}{cc}A-s I & B \\ C & D\end{array}\right]$ tiene rango normal completo por filas. Entonces $z_{0} \in \mathbb{C}$ es un cero invariante de una realización $(A, B, C, D)$ si y solo si existen $0 \neq y \in \mathbb{C}^{n}$ y $v \in \mathbb{C}^{p}$ tales que
+
+$$
+\left[\begin{array}{ll}
+y^{*} & v^{*}
+\end{array}\right]\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]=0
+$$
+
+Además, si $v=0$, entonces $z_{0}$ también es un modo no controlable.
+
+Lema 3.9 $G(s)$ tiene rango normal completo por columnas (filas) si y solo si $\left[\begin{array}{cc}A-s I & B \\ C & D\end{array}\right]$ tiene rango normal completo por columnas (filas).
+
+Prueba. Esto se sigue al notar que
+
+$$
+\left[\begin{array}{cc}
+A-s I & B \\
+C & D
+\end{array}\right]=\left[\begin{array}{cc}
+I & 0 \\
+C(A-s I)^{-1} & I
+\end{array}\right]\left[\begin{array}{cc}
+A-s I & B \\
+0 & G(s)
+\end{array}\right]
+$$
+
+y
+
+$$
+\text { normalrank }\left[\begin{array}{cc}
+A-s I & B \\
+C & D
+\end{array}\right]=n+\operatorname{normalrank}(G(s)) \text {. }
+$$
+
+Lema 3.10 Sea $G(s) \in \mathcal{R}_{p}(s)$ una matriz de transferencia de tamaño $p \times m$ y sea $(A, B, C, D)$ una realización mínima. Si la entrada del sistema es de la forma $u(t)=u_{0} e^{\lambda t}$, donde $\lambda \in \mathbb{C}$ no es un polo de $G(s)$ y $u_{0} \in \mathbb{C}^{m}$ es un vector constante arbitrario, entonces la salida debida a la entrada $u(t)$ y al estado inicial $x(0)=(\lambda I-A)^{-1} B u_{0}$ es $y(t)=G(\lambda) u_{0} e^{\lambda t}, \forall t \geq 0$. En particular, si $\lambda$ es un cero de $G(s)$, entonces $y(t)=0$.
+
+Prueba. La respuesta del sistema con respecto a la entrada $u(t)=u_{0} e^{\lambda t}$ y la condición inicial $x(0)=(\lambda I-A)^{-1} B u_{0}$ es (en términos de la transformada de Laplace)
+
+$$
+\begin{aligned}
+Y(s)= & C(s I-A)^{-1} x(0)+C(s I-A)^{-1} B U(s)+D U(s) \\
+= & C(s I-A)^{-1} x(0)+C(s I-A)^{-1} B u_{0}(s-\lambda)^{-1}+D u_{0}(s-\lambda)^{-1} \\
+= & C(s I-A)^{-1} x(0)+C\left[(s I-A)^{-1}-(\lambda I-A)^{-1}\right] B u_{0}(s-\lambda)^{-1} \\
+& \quad+C(\lambda I-A)^{-1} B u_{0}(s-\lambda)^{-1}+D u_{0}(s-\lambda)^{-1} \\
+= & C(s I-A)^{-1}\left(x(0)-(\lambda I-A)^{-1} B u_{0}\right)+G(\lambda) u_{0}(s-\lambda)^{-1} \\
+= & G(\lambda) u_{0}(s-\lambda)^{-1}
+\end{aligned}
+$$
+
+Por lo tanto, $y(t)=G(\lambda) u_{0} e^{\lambda t}$.
+
+Ejemplo 3.3 Sea
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline C & D
+\end{array}\right]=\left[\begin{array}{ccc|ccc}
+-1 & -2 & 1 & 1 & 2 & 3 \\
+0 & 2 & -1 & 3 & 2 & 1 \\
+-4 & -3 & -2 & 1 & 1 & 1 \\
+\hline 1 & 1 & 1 & 0 & 0 & 0 \\
+2 & 3 & 4 & 0 & 0 & 0
+\end{array}\right]
+$$
+
+Entonces los ceros invariantes del sistema pueden encontrarse usando el comando de Matlab
+
+$$
+\begin{aligned}
+& \gg \mathbf{G}=\operatorname{pck}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}), \quad \mathrm{z}_{0}=\operatorname{szeros}(\mathbf{G}), \% \text { o } \\
+& \gg \mathbf{z}_{0}=\operatorname{tzero}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D})
+\end{aligned}
+$$
+
+que da $z_{0}=0.2$. Como $G(s)$ es de rango completo por filas, podemos encontrar $y$ y $v$ tales que
+
+$$
+\left[\begin{array}{ll}
+y^{*} & v^{*}
+\end{array}\right]\left[\begin{array}{cc}
+A-z_{0} I & B \\
+C & D
+\end{array}\right]=0
+$$
+
+lo cual también puede calcularse con un comando de MATLAB:
+
+$$
+\gg \operatorname{null}\left(\left[\mathbf{A}-\mathbf{z}_{\mathbf{0}} * \operatorname{eye}(\mathbf{3}), \mathbf{B} ; \mathbf{C}, \mathbf{D}\right]'\right) \Longrightarrow\left[\begin{array}{l}
+y \\
+v
+\end{array}\right]=\left[\begin{array}{c}
+0.0466 \\
+0.0466 \\
+-0.1866 \\
+--0.9702 \\
+0.1399
+\end{array}\right]
+$$
+
+Comandos relacionados de MATLAB: spoles, rifd
+
+\subsection*{Notas y referencias}
+Se remite al lector a Brogan [1991], Chen [1984], Kailath [1980] y Wonham [1985] para un tratamiento amplio de la teoría estándar de sistemas lineales.
+
+\subsection*{Problemas}
+Problema 3.1 Sean $A \in \mathbb{C}^{n \times n}$ y $B \in \mathbb{C}^{m \times m}$. Demuestre que $X(t)=e^{A t} X(0) e^{B t}$ es la solución de
+
+$$
+\dot{X}=A X+X B
+$$
+
+Problema 3.2 Dada la respuesta al impulso, $h_{1}(t)$, de un sistema lineal invariante en el tiempo con modelo
+
+$$
+\ddot{y}+a_{1} \dot{y}+a_{2} y=u
+$$
+
+encuentre la respuesta al impulso, $h(t)$, del sistema
+
+$$
+\ddot{y}+a_{1} \dot{y}+a_{2} y=b_{0} \ddot{u}+b_{1} \dot{u}+b_{2} u
+$$
+
+Justifique su respuesta y generalice su resultado a sistemas de orden $n$.
+
+Problema 3.3 Suponga que un sistema de segundo orden está dado por $\dot{x}=A x$. Suponga que se conoce que $x(1)=\left[\begin{array}{c}4 \\ -2\end{array}\right]$ para $x(0)=\left[\begin{array}{l}1 \\ 1\end{array}\right]$ y $x(1)=\left[\begin{array}{c}5 \\ -2\end{array}\right]$ para $x(0)=\left[\begin{array}{l}1 \\ 2\end{array}\right]$. Encuentre $x(n)$ para $x(0)=\left[\begin{array}{l}1 \\ 0\end{array}\right]$. ¿Puede determinar $A$?
+
+Problema 3.4 Suponga que $(A, B)$ es controlable. Demuestre que $(F, G)$ con
+
+$$
+F=\left[\begin{array}{ll}
+A & 0 \\
+C & 0
+\end{array}\right], \quad G=\left[\begin{array}{l}
+B \\
+0
+\end{array}\right]
+$$
+
+es controlable si y solo si
+
+$$
+\left[\begin{array}{ll}
+A & B \\
+C & 0
+\end{array}\right]
+$$
+
+es una matriz de rango completo por filas.
+
+Problema 3.5 Sean $\lambda_{i}, i=1,2, \ldots, n$ los $n$ valores propios distintos de una matriz $A \in \mathbb{C}^{n \times n}$ y sean $x_{i}$ y $y_{i}$ los vectores propios unitarios derecho e izquierdo correspondientes, tales que $y_{i}^{*} x_{i}=1$. Demuestre que
+
+$$
+y_{i}^{*} x_{j}=\delta_{i j}, \quad A=\sum_{i=1}^{n} \lambda_{i} x_{i} y_{i}^{*}
+$$
+
+y
+
+$$
+C(s I-A)^{-1} B=\sum_{i=1}^{n} \frac{\left(C x_{i}\right)\left(y_{i}^{*} B\right)}{s-\lambda_{i}}
+$$
+
+Además, demuestre que el modo $\lambda_{i}$ es controlable si y solo si $y_{i}^{*} B \neq 0$, y el modo $\lambda_{i}$ es observable si y solo si $C x_{i} \neq 0$.
+
+Problema 3.6 Sea $(A, b, c)$ una realización con $A \in \mathbb{R}^{n \times n}, b \in R^{n}$ y $c^{*} \in \mathbb{R}^{n}$. Suponga que $\lambda_{i}(A)+\lambda_{j}(A) \neq 0$ para todo $i, j$. Esta hipótesis garantiza la existencia de $X \in \mathbb{R}^{n \times n}$ tal que
+
+$$
+A X+X A+b c=0
+$$
+
+Demuestre que $X$ es no singular si y solo si $(A, b)$ es controlable y $(c, A)$ es observable.
+
+Problema 3.7 Calcule los ceros del sistema y las direcciones de cero correspondientes de las siguientes funciones de transferencia
+
+$$
+\begin{gathered}
+G_{1}(s)=\left[\begin{array}{ll|ll}
+1 & 2 & 2 & 2 \\
+1 & 0 & 3 & 4 \\
+\hline 0 & 1 & 1 & 2 \\
+1 & 0 & 2 & 0
+\end{array}\right], \quad G_{2}(s)=\left[\begin{array}{cc|cc}
+-1 & -2 & 1 & 2 \\
+0 & 1 & 2 & 1 \\
+\hline 1 & 1 & 0 & 0 \\
+1 & 1 & 0 & 0
+\end{array}\right], \\
+G_{3}(s)=\left[\begin{array}{ll}
+\frac{2(s+1)(s+2)}{s(s+3)(s+4)} & \frac{s+2}{(s+1)(s+3)}
+\end{array}\right], \quad G_{4}(s)=\left[\begin{array}{cc}
+\frac{1}{s+1} & \frac{s+3}{(s+1)(s-2)} \\
+\frac{10}{s-2} & \frac{5}{s+3}
+\end{array}\right]
+\end{gathered}
+$$
+
+También encuentre los vectores $x$ y $u$ cuando corresponda, de modo que se cumpla
+
+$$
+\left[\begin{array}{cc}
+A-z I & B \\
+C & D
+\end{array}\right]\left[\begin{array}{l}
+x \\
+u
+\end{array}\right]=0 \text { o }\left[\begin{array}{ll}
+x^{*} & u^{*}
+\end{array}\right]\left[\begin{array}{cc}
+A-z I & B \\
+C & D
+\end{array}\right]=0
+$$
+
+
+\end{document}

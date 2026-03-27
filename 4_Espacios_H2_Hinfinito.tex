@@ -1,0 +1,870 @@
+\chapter{Espacios $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$}
+El objetivo más importante de un sistema de control es cumplir ciertas especificaciones de desempeño, además de proporcionar estabilidad interna. Una forma de describir las especificaciones de desempeño de un sistema de control es en términos del tamaño de ciertas señales de interés. Por ejemplo, el desempeño de un sistema de seguimiento podría medirse mediante el tamaño de la señal de error de seguimiento. En este capítulo analizamos varias formas de definir el tamaño de una señal (es decir, varias normas para señales). Por supuesto, la norma más apropiada depende de la situación concreta. Con ese propósito, primero introduciremos los espacios de Hardy $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$. También se presentan algunos métodos en espacio de estados para calcular normas de matrices de transferencia racionales reales en $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$.
+
+\section{Espacios de Hilbert}
+Recordemos el producto interno de vectores definido en un espacio euclidiano $\mathbb{C}^{n}$:
+
+$$
+\langle x, y\rangle:=x^{*} y=\sum_{i=1}^{n} \bar{x}_{i} y_{i} \quad \forall x=\left[\begin{array}{c}
+x_{1} \\
+\vdots \\
+x_{n}
+\end{array}\right], y=\left[\begin{array}{c}
+y_{1} \\
+\vdots \\
+y_{n}
+\end{array}\right] \in \mathbb{C}^{n}
+$$
+
+Nótese que muchas nociones métricas importantes y propiedades geométricas, como longitud, distancia, ángulo y energía de sistemas físicos, pueden deducirse de este producto interno. Por ejemplo, la longitud de un vector $x \in \mathbb{C}^{n}$ se define como
+
+$$
+\|x\|:=\sqrt{\langle x, x\rangle}
+$$
+
+y el ángulo entre dos vectores $x, y \in \mathbb{C}^{n}$ puede calcularse mediante
+
+$$
+\cos \angle(x, y)=\frac{\langle x, y\rangle}{\|x\|\|y\|}, \quad \angle(x, y) \in[0, \pi]
+$$
+
+Se dice que dos vectores son ortogonales si $\angle(x, y)=\frac{\pi}{2}$.
+
+Ahora consideramos una generalización natural del producto interno en $\mathbb{C}^{n}$ hacia espacios vectoriales más generales (posiblemente de dimensión infinita).
+
+Definición 4.1 Sea $V$ un espacio vectorial sobre $\mathbb{C}$. Un producto interno ${ }^{1}$ en $V$ es una función de valores complejos,
+
+$$
+\langle\cdot, \cdot\rangle: V \times V \longmapsto \mathbb{C}
+$$
+
+tal que para cualesquiera $x, y, z \in V$ y $\alpha, \beta \in \mathbb{C}$
+
+(i) $\langle x, \alpha y+\beta z\rangle=\alpha\langle x, y\rangle+\beta\langle x, z\rangle$
+
+(ii) $\langle x, y\rangle=\overline{\langle y, x\rangle}$
+
+(iii) $\langle x, x\rangle>0$ si $x \neq 0$.
+
+Un espacio vectorial $V$ con un producto interno se llama espacio con producto interno.
+
+Es claro que el producto interno definido arriba induce una norma $\|x\|:=\sqrt{\langle x, x\rangle}$, por lo que se satisfacen las condiciones de norma del Capítulo 2. En particular, la distancia entre vectores $x$ y $y$ es $d(x, y)=\|x-y\|$.
+
+Dos vectores $x$ y $y$ en un espacio con producto interno $V$ se dicen ortogonales si $\langle x, y\rangle=0$, denotado $x \perp y$. Más generalmente, un vector $x$ se dice ortogonal a un conjunto $S \subset V$, denotado por $x \perp S$, si $x \perp y$ para todo $y \in S$.
+
+El producto interno y la norma inducida por el producto interno tienen las siguientes propiedades familiares.
+
+Teorema 4.1 Sea $V$ un espacio con producto interno y sean $x, y \in V$. Entonces
+
+(i) $|\langle x, y\rangle| \leq\|x\|\|y\|$ (desigualdad de Cauchy-Schwarz). Además, la igualdad se cumple si y solo si $x=\alpha y$ para alguna constante $\alpha$ o $y=0$.
+
+(ii) $\|x+y\|^{2}+\|x-y\|^{2}=2\|x\|^{2}+2\|y\|^{2}$ (ley del paralelogramo).
+
+(iii) $\|x+y\|^{2}=\|x\|^{2}+\|y\|^{2}$ si $x \perp y$.
+
+Un espacio de Hilbert es un espacio con producto interno completo con la norma inducida por su producto interno. Por ejemplo, $\mathbb{C}^{n}$ con el producto interno usual es un espacio de Hilbert (de dimensión finita). Más generalmente, es directo verificar que $\mathbb{C}^{n \times m}$ con el producto interno definido como
+
+$$
+\langle A, B\rangle:=\operatorname{trace} A^{*} B=\sum_{i=1}^{n} \sum_{j=1}^{m} \bar{a}_{i j} b_{i j} \quad \forall A, B \in \mathbb{C}^{n \times m}
+$$
+
+también es un espacio de Hilbert (de dimensión finita).
+
+Un conocido espacio de Hilbert de dimensión infinita es $\mathcal{L}_{2}[a, b]$, que consiste en todas las funciones cuadrado integrables y medibles de Lebesgue definidas en un intervalo $[a, b]$, con producto interno definido como
+
+$$
+\langle f, g\rangle:=\int_{a}^{b} f(t)^{*} g(t) d t
+$$
+
+[\^{}3]para $f, g \in \mathcal{L}_{2}[a, b]$. De forma similar, si las funciones son vectoriales o matriciales, el producto interno se define correspondientemente como
+
+$$
+\langle f, g\rangle:=\int_{a}^{b} \operatorname{trace}\left[f(t)^{*} g(t)\right] d t
+$$
+
+Algunos espacios usados frecuentemente en este libro son $\mathcal{L}_{2}[0, \infty), \mathcal{L}_{2}(-\infty, 0], \mathcal{L}_{2}(-\infty, \infty)$. Más precisamente, se definen como
+
+$\mathcal{L}_{2}=\mathcal{L}_{2}(-\infty, \infty)$: espacio de Hilbert de funciones matriciales sobre $\mathbb{R}$, con producto interno
+
+$$
+\langle f, g\rangle:=\int_{-\infty}^{\infty} \operatorname{trace}\left[f(t)^{*} g(t)\right] d t
+$$
+
+$\mathcal{L}_{2+}=\mathcal{L}_{2}[0, \infty)$: subespacio de $\mathcal{L}_{2}(-\infty, \infty)$ con funciones nulas para $t<0$.
+
+$\mathcal{L}_{2-}=\mathcal{L}_{2}(-\infty, 0]$: subespacio de $\mathcal{L}_{2}(-\infty, \infty)$ con funciones nulas para $t>0$.
+
+\section{Espacios $\mathcal{H}_{2}$ y $\mathcal{H}_{\infty}$}
+Sea $S \subset \mathbb{C}$ un conjunto abierto, y sea $f(s)$ una función compleja definida en $S$:
+
+$$
+f(s): S \longmapsto \mathbb{C}
+$$
+
+Entonces se dice que $f(s)$ es analítica en un punto $z_{0}$ de $S$ si es derivable en $z_{0}$ y también en cada punto de algún entorno de $z_{0}$. Es un hecho que, si $f(s)$ es analítica en $z_{0}$, entonces $f$ tiene derivadas continuas de todos los órdenes en $z_{0}$. Por lo tanto, una función analítica en $z_{0}$ tiene una representación en serie de potencias en $z_{0}$. El recíproco también es cierto (es decir, si una función tiene una serie de potencias en $z_{0}$, entonces es analítica en $z_{0}$). Se dice que una función $f(s)$ es analítica en $S$ si tiene derivada o es analítica en cada punto de $S$. Una función matricial es analítica en $S$ si cada elemento de la matriz es analítico en $S$. Por ejemplo, todas las matrices de transferencia racionales reales estables son analíticas en el semiplano derecho y $e^{-s}$ es analítica en todo el plano.
+
+Una propiedad bien conocida de las funciones analíticas es el llamado teorema del módulo máximo.
+
+Teorema 4.2 Si $f(s)$ está definida y es continua en un conjunto cerrado y acotado $S$, y es analítica en el interior de $S$, entonces $|f(s)|$ no puede alcanzar su máximo en el interior de $S$ a menos que $f(s)$ sea constante.
+
+El teorema implica que $|f(s)|$ solo puede alcanzar su máximo en la frontera de $S$; es decir,
+
+$$
+\max _{s \in S}|f(s)|=\max _{s \in \partial S}|f(s)|
+$$
+
+donde $\partial S$ denota la frontera de $S$. A continuación consideramos algunos espacios de funciones complejas (matriciales) de uso frecuente.
+
+\subsection*{Espacio $\mathcal{L}_{2}(j \mathbb{R})$}
+$\mathcal{L}_{2}(j \mathbb{R})$, o simplemente $\mathcal{L}_{2}$, es un espacio de Hilbert de funciones matriciales (o escalares) sobre $j \mathbb{R}$ y consiste en todas las funciones matriciales complejas $F$ tales que la siguiente integral está acotada:
+
+$$
+\int_{-\infty}^{\infty} \operatorname{trace}\left[F^{*}(j \omega) F(j \omega)\right] d \omega<\infty
+$$
+
+El producto interno para este espacio de Hilbert se define como
+
+$$
+\langle F, G\rangle:=\frac{1}{2 \pi} \int_{-\infty}^{\infty} \operatorname{trace}\left[F^{*}(j \omega) G(j \omega)\right] d \omega
+$$
+
+para $F, G \in \mathcal{L}_{2}$, y la norma inducida por este producto interno está dada por
+
+$$
+\|F\|_{2}:=\sqrt{\langle F, F\rangle}
+$$
+
+Por ejemplo, todas las matrices de transferencia racionales reales estrictamente propias sin polos sobre el eje imaginario forman un subespacio (no cerrado) de $\mathcal{L}_{2}(j \mathbb{R})$ que se denota por $\mathcal{R} \mathcal{L}_{2}(j \mathbb{R})$ o simplemente $\mathcal{R} \mathcal{L}_{2}$.
+
+\subsection*{Espacio $\mathcal{H}_{2}$ ${ }^{2}$}
+$\mathcal{H}_{2}$ es un subespacio (cerrado) de $\mathcal{L}_{2}(j \mathbb{R})$ con funciones matriciales $F(s)$ analíticas en $\operatorname{Re}(s)>0$ (semiplano derecho abierto). La norma correspondiente se define como
+
+$$
+\|F\|_{2}^{2}:=\sup _{\sigma>0}\left\{\frac{1}{2 \pi} \int_{-\infty}^{\infty} \operatorname{trace}\left[F^{*}(\sigma+j \omega) F(\sigma+j \omega)\right] d \omega\right\}
+$$
+
+Puede demostrarse ${ }^{3}$ que
+
+$$
+\|F\|_{2}^{2}=\frac{1}{2 \pi} \int_{-\infty}^{\infty} \operatorname{trace}\left[F^{*}(j \omega) F(j \omega)\right] d \omega
+$$
+
+Por lo tanto, podemos calcular la norma en $\mathcal{H}_{2}$ igual que en $\mathcal{L}_{2}$. El subespacio racional real de $\mathcal{H}_{2}$, que consiste en todas las matrices de transferencia racionales reales estables y estrictamente propias, se denota por $\mathcal{R H}_{2}$.
+
+\subsection*{Espacio $\mathcal{H}_{2}^{\perp}$}
+$\mathcal{H}_{2}^{\perp}$ es el complemento ortogonal de $\mathcal{H}_{2}$ en $\mathcal{L}_{2}$; es decir, el subespacio (cerrado) de funciones en $\mathcal{L}_{2}$ que son analíticas en el semiplano izquierdo abierto. El subespacio racional real de $\mathcal{H}_{2}^{\perp}$, que consiste en todas las matrices de transferencia racionales estrictamente propias con todos sus polos en el semiplano derecho abierto, se denotará por $\mathcal{R} \mathcal{H}_{2}^{\perp}$. Es fácil ver que si $G$ es una matriz de transferencia racional real, estable y estrictamente propia, entonces $G \in \mathcal{H}_{2}$ y $G^{\sim} \in \mathcal{H}_{2}^{\perp}$. La mayor parte de nuestro estudio en este libro se centrará en el caso racional real.[\^{}4]
+
+Los espacios $\mathcal{L}_{2}$ definidos previamente en el dominio de la frecuencia pueden relacionarse con los espacios $\mathcal{L}_{2}$ definidos en el dominio del tiempo. Recordemos que una función en el espacio $\mathcal{L}_{2}$ del dominio del tiempo admite transformada bilateral de Laplace (o de Fourier). De hecho, puede demostrarse que esta transformada bilateral de Laplace produce un isomorfismo isométrico entre los espacios $\mathcal{L}_{2}$ en el dominio del tiempo y los espacios $\mathcal{L}_{2}$ en el dominio de la frecuencia (esto es lo que se conoce como relaciones de Parseval):
+
+$$
+\begin{aligned}
+\mathcal{L}_{2}(-\infty, \infty) & \cong \mathcal{L}_{2}(j \mathbb{R}) \\
+\mathcal{L}_{2}[0, \infty) & \cong \mathcal{H}_{2} \\
+\mathcal{L}_{2}(-\infty, 0] & \cong \mathcal{H}_{2}^{\perp}
+\end{aligned}
+$$
+
+Como resultado, si $g(t) \in \mathcal{L}_{2}(-\infty, \infty)$ y su transformada bilateral de Laplace es $G(s) \in \mathcal{L}_{2}(j \mathbb{R})$, entonces
+
+$$
+\|G\|_{2}=\|g\|_{2}
+$$
+
+Por lo tanto, cuando no haya confusión, la notación para funciones en el dominio del tiempo y en el dominio de la frecuencia se usará indistintamente.
+
+\insertimage[\label{img:espacios-relaciones-funciones}]{2024_06_29_ce7c73b22613114bd4d6g-063_765_822_1065_627}{width=0.45\textwidth}{Relaciones entre espacios de funciones.}
+
+Defina una proyección ortogonal
+
+$$
+P_{+}: \mathcal{L}_{2}(-\infty, \infty) \longmapsto \mathcal{L}_{2}[0, \infty)
+$$
+
+tal que, para cualquier función $f(t) \in \mathcal{L}_{2}(-\infty, \infty)$, tenemos $g(t)=P_{+} f(t)$ con
+
+$$
+g(t):=\left\{\begin{array}{cl}
+f(t), & \text { para } t \geq 0 \\
+0, & \text { para } t<0
+\end{array}\right.
+$$
+
+En este libro, $P_{+}$ también se usará para denotar la proyección de $\mathcal{L}_{2}(j \mathbb{R})$ sobre $\mathcal{H}_{2}$. De forma similar, definimos $P_{-}$ como otra proyección ortogonal de $\mathcal{L}_{2}(-\infty, \infty)$ sobre $\mathcal{L}_{2}(-\infty, 0]$ (o de $\mathcal{L}_{2}(j \mathbb{R})$ sobre $\mathcal{H}_{2}^{\perp}$). Entonces, las relaciones entre espacios $\mathcal{L}_{2}$ y espacios $\mathcal{H}_{2}$ se muestran en la Figura 4.1.
+
+Otra clase importante de funciones matriciales complejas usadas en este libro son las funciones acotadas en el eje imaginario.
+
+\subsection*{Espacio $\mathcal{L}_{\infty}(j \mathbb{R})$}
+$\mathcal{L}_{\infty}(j \mathbb{R})$, o simplemente $\mathcal{L}_{\infty}$, es un espacio de Banach de funciones matriciales (o escalares) que están (esencialmente) acotadas en $j \mathbb{R}$, con norma
+
+$$
+\|F\|_{\infty}:=\underset{\omega \in \mathbb{R}}{\operatorname{ess} \sup } \bar{\sigma}[F(j \omega)] .
+$$
+
+El subespacio racional de $\mathcal{L}_{\infty}$, denotado por $\mathcal{R} \mathcal{L}_{\infty}(j \mathbb{R})$ o simplemente $\mathcal{R} \mathcal{L}_{\infty}$, consiste en todas las matrices de transferencia racionales reales propias sin polos en el eje imaginario.
+
+\subsection*{Espacio $\mathcal{H}_{\infty}$}
+$\mathcal{H}_{\infty}$ es un subespacio (cerrado) de $\mathcal{L}_{\infty}$ con funciones que son analíticas y acotadas en el semiplano derecho abierto. La norma $\mathcal{H}_{\infty}$ se define como
+
+$$
+\|F\|_{\infty}:=\sup _{\operatorname{Re}(s)>0} \bar{\sigma}[F(s)]=\sup _{\omega \in \mathbb{R}} \bar{\sigma}[F(j \omega)] .
+$$
+
+La segunda igualdad puede verse como una generalización del teorema del módulo máximo para funciones matriciales. (Véase Boyd y Desoer [1985] para una demostración.) El subespacio racional real de $\mathcal{H}_{\infty}$ se denota por $\mathcal{R} \mathcal{H}_{\infty}$, y consiste en todas las matrices de transferencia racionales reales propias y estables.
+
+\subsection*{Espacio $\mathcal{H}_{\infty}^{-}$}
+$\mathcal{H}_{\infty}^{-}$ es un subespacio (cerrado) de $\mathcal{L}_{\infty}$ con funciones que son analíticas y acotadas en el semiplano izquierdo abierto. La norma $\mathcal{H}_{\infty}^{-}$ se define como
+
+$$
+\|F\|_{\infty}:=\sup _{\operatorname{Re}(s)<0} \bar{\sigma}[F(s)]=\sup _{\omega \in \mathbb{R}} \bar{\sigma}[F(j \omega)] .
+$$
+
+El subespacio racional real de $\mathcal{H}_{\infty}^{-}$ se denota por $\mathcal{R H}_{\infty}^{-}$, y consiste en todas las matrices de transferencia propias, racionales reales y antiestables (es decir, funciones con todos los polos en el semiplano derecho abierto).
+
+Sea $G(s) \in \mathcal{L}_{\infty}$ una matriz de transferencia $p \times q$. Entonces se define un operador de multiplicación como
+
+$$
+\begin{aligned}
+M_{G}: \mathcal{L}_{2} \longmapsto \mathcal{L}_{2} \\
+M_{G} f:=G f .
+\end{aligned}
+$$
+
+Al escribir el mapeo anterior, hemos supuesto que $f$ tiene dimensión compatible. Una descripción más precisa del operador anterior sería
+
+$$
+M_{G}: \mathcal{L}_{2}^{q} \longmapsto \mathcal{L}_{2}^{p}
+$$
+
+Es decir, $f$ es una función vectorial de dimensión $q$, con cada componente en $\mathcal{L}_{2}$. Sin embargo, en este libro suprimiremos todas las dimensiones y asumiremos que todos los objetos tienen dimensiones compatibles.
+
+Un hecho útil sobre el operador de multiplicación es que la norma de una matriz $G$ en $\mathcal{L}_{\infty}$ es igual a la norma del operador de multiplicación correspondiente.
+
+Teorema 4.3 Sea $G \in \mathcal{L}_{\infty}$ una matriz de transferencia $p \times q$. Entonces $\left\|M_{G}\right\|=\|G\|_{\infty}$.
+
+Observación 4.1 También es cierto que esta norma de operador es igual a la norma del operador restringido a $\mathcal{H}_{2}$ (o $\mathcal{H}_{2}^{\perp}$); es decir,
+
+$$
+\left\|M_{G}\right\|=\left\|M_{G} \mid \mathcal{H}_{2}\right\|:=\sup \left\{\|G f\|_{2}: f \in \mathcal{H}_{2},\|f\|_{2} \leq 1\right\}
+$$
+
+Esto quedará claro en la prueba, donde se construye un $f \in \mathcal{H}_{2}$.
+
+Prueba. Por definición,
+
+$$
+\left\|M_{G}\right\|=\sup \left\{\|G f\|_{2}: f \in \mathcal{L}_{2},\|f\|_{2} \leq 1\right\}
+$$
+
+Primero vemos que $\|G\|_{\infty}$ es una cota superior para la norma del operador:
+
+$$
+\begin{aligned}
+\|G f\|_{2}^{2} & =\frac{1}{2 \pi} \int_{-\infty}^{\infty} f^{*}(j \omega) G^{*}(j \omega) G(j \omega) f(j \omega) d \omega \\
+& \leq\|G\|_{\infty}^{2} \frac{1}{2 \pi} \int_{-\infty}^{\infty}\|f(j \omega)\|^{2} d \omega \\
+& =\|G\|_{\infty}^{2}\|f\|_{2}^{2}
+\end{aligned}
+$$
+
+Para mostrar que $\|G\|_{\infty}$ es la menor cota superior, primero elegimos una frecuencia $\omega_{0}$ donde $\bar{\sigma}[G(j \omega)]$ sea máxima; es decir,
+
+$$
+\bar{\sigma}\left[G\left(j \omega_{0}\right)\right]=\|G\|_{\infty}
+$$
+
+y denotamos la descomposición en valores singulares de $G\left(j \omega_{0}\right)$ por
+
+$$
+G\left(j \omega_{0}\right)=\bar{\sigma} u_{1}\left(j \omega_{0}\right) v_{1}^{*}\left(j \omega_{0}\right)+\sum_{i=2}^{r} \sigma_{i} u_{i}\left(j \omega_{0}\right) v_{i}^{*}\left(j \omega_{0}\right)
+$$
+
+donde $r$ es el rango de $G\left(j \omega_{0}\right)$ y $u_{i}, v_{i}$ tienen norma unitaria.
+
+Luego suponemos que $G(s)$ tiene coeficientes reales y construiremos una función $f(s) \in \mathcal{H}_{2}$ con coeficientes reales de modo que la norma se alcance aproximadamente. [Quedará claro a continuación que la prueba es mucho más simple si se permite que $f$ tenga coeficientes complejos, lo cual es necesario cuando $G(s)$ tiene coeficientes complejos.]
+
+Si $\omega_{0}<\infty$, escribimos $v_{1}\left(j \omega_{0}\right)$ como
+
+$$
+v_{1}\left(j \omega_{0}\right)=\left[\begin{array}{c}
+\alpha_{1} e^{j \theta_{1}} \\
+\alpha_{2} e^{j \theta_{2}} \\
+\vdots \\
+\alpha_{q} e^{j \theta_{q}}
+\end{array}\right]
+$$
+
+donde $\alpha_{i} \in \mathbb{R}$ y $\theta_{i} \in(-\pi, 0]$, y $q$ es la dimensión de columna de $G$. Ahora sea $0 \leq \beta_{i} \leq \infty$ tal que
+
+$$
+\theta_{i}=\angle\left(\frac{\beta_{i}-j \omega_{0}}{\beta_{i}+j \omega_{0}}\right)
+$$
+
+(con $\beta_{i} \rightarrow \infty$ si $\theta_{i}=0$) y sea $f$ dada por
+
+$$
+f(s)=\left[\begin{array}{c}
+\alpha_{1} \frac{\beta_{1}-s}{\beta_{1}+s} \\
+\alpha_{2} \frac{\beta_{2}-s}{\beta_{2}+s} \\
+\vdots \\
+\alpha_{q} \frac{\beta_{q}-s}{\beta_{q}+s}
+\end{array}\right] \hat{f}(s)
+$$
+
+(con 1 en lugar de $\frac{\beta_{i}-s}{\beta_{i}+s}$ si $\theta_{i}=0$), donde una función escalar $\hat{f}$ se elige de forma que
+
+$$
+|\hat{f}(j \omega)|= \begin{cases}c & \text { si }\left|\omega-\omega_{0}\right|<\epsilon \text { o }\left|\omega+\omega_{0}\right|<\epsilon \\
+0 & \text { en otro caso }\end{cases}
+$$
+
+donde $\epsilon$ es un número positivo pequeño y $c$ se elige para que $\hat{f}$ tenga norma 2 unitaria (es decir, $c=\sqrt{\pi / 2 \epsilon}$). Esto, a su vez, implica que $f$ tiene norma 2 unitaria. Entonces
+
+$$
+\begin{aligned}
+\|G f\|_{2}^{2} & \approx \frac{1}{2 \pi}\left[\bar{\sigma}\left[G\left(-j \omega_{0}\right)\right]^{2} \pi+\bar{\sigma}\left[G\left(j \omega_{0}\right)\right]^{2} \pi\right] \\
+& =\bar{\sigma}\left[G\left(j \omega_{0}\right)\right]^{2}=\|G\|_{\infty}^{2}
+\end{aligned}
+$$
+
+De manera similar, si $\omega_{0}=\infty$, la conclusión se obtiene haciendo $\omega_{0} \rightarrow \infty$ en lo anterior.
+
+\textbf{Comandos ilustrativos de MATLAB:}
+$\gg[\mathbf{s v}, \mathbf{w}]=\operatorname{sigma}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}) ; \quad \%$ respuesta en frecuencia de los valores singulares; o
+
+$\gg \mathbf{w}=\operatorname{logspace}(\mathbf{l}, \mathbf{h}, \mathbf{n}) ; \mathbf{s v}=\operatorname{sigma}(\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}, \mathbf{w}) ; \% n$ puntos entre $10^{l}$ y $10^{h}$.
+
+Comandos relacionados de MATLAB: semilogx, semilogy, bode, freqs, nichols, frsp, vsvd, vplot, pkvnorm
+
+\section{Cálculo de normas $\mathcal{L}_{2}$ y $\mathcal{H}_{2}$}
+Sea $G(s) \in \mathcal{L}_{2}$ y recordemos que la norma $\mathcal{L}_{2}$ de $G$ se define como
+
+$$
+\begin{aligned}
+\|G\|_{2} & :=\sqrt{\frac{1}{2 \pi} \int_{-\infty}^{\infty} \operatorname{trace}\left\{G^{*}(j \omega) G(j \omega)\right\} d \omega} \\
+& =\|g\|_{2} \\
+& =\sqrt{\int_{-\infty}^{\infty} \operatorname{trace}\left\{g^{*}(t) g(t)\right\} d t}
+\end{aligned}
+$$
+
+donde $g(t)$ denota el núcleo de convolución de $G$.
+
+Es fácil ver que la norma $\mathcal{L}_{2}$ definida anteriormente es finita si y solo si la matriz de transferencia $G$ es estrictamente propia; es decir, $G(\infty)=0$. Por lo tanto, en general asumiremos que la matriz de transferencia es estrictamente propia cada vez que nos refiramos a la norma $\mathcal{L}_{2}$ de $G$ (por supuesto, esto también aplica a normas $\mathcal{H}_{2}$). Una forma directa de calcular la norma $\mathcal{L}_{2}$ es usar integral de contorno. Suponga que $G$ es estrictamente propia; entonces
+
+$$
+\begin{aligned}
+\|G\|_{2}^{2} & =\frac{1}{2 \pi} \int_{-\infty}^{\infty} \operatorname{trace}\left\{G^{*}(j \omega) G(j \omega)\right\} d \omega \\
+& =\frac{1}{2 \pi j} \oint \operatorname{trace}\left\{G^{\sim}(s) G(s)\right\} d s
+\end{aligned}
+$$
+
+La última integral es una integral de contorno a lo largo del eje imaginario y alrededor de un semicírculo infinito en el semiplano izquierdo; la contribución de este semicírculo es cero porque $G$ es estrictamente propia. Por el teorema del residuo, $\|G\|_{2}^{2}$ es igual a la suma de los residuos de $\operatorname{trace}\left\{G^{\sim}(s) G(s)\right\}$ en sus polos del semiplano izquierdo.
+
+Aunque $\|G\|_{2}$ puede, en principio, calcularse por su definición o por el método recién sugerido, en muchas aplicaciones es útil disponer de caracterizaciones alternativas y aprovechar representaciones en espacio de estados de $G$. El cálculo de la norma de una matriz de transferencia en $\mathcal{R H}_{2}$ es particularmente simple.
+
+Lema 4.4 Considere una matriz de transferencia
+
+$$
+G(s)=\left[\begin{array}{c|c}
+A & B \\
+\hline C & 0
+\end{array}\right]
+$$
+
+con $A$ estable. Entonces
+
+
+\begin{equation*}
+\|G\|_{2}^{2}=\operatorname{trace}\left(B^{*} Q B\right)=\operatorname{trace}\left(C P C^{*}\right) \tag{4.1}
+\end{equation*}
+
+
+donde $Q$ y $P$ son los Gramianos de observabilidad y controlabilidad, que pueden obtenerse de las siguientes ecuaciones de Lyapunov:
+
+$$
+A P+P A^{*}+B B^{*}=0 \quad A^{*} Q+Q A+C^{*} C=0
+$$
+
+Prueba. Como $G$ es estable, tenemos
+
+$$
+g(t)=\mathcal{L}^{-1}(G)= \begin{cases}C e^{A t} B, & t \geq 0 \\
+0, & t<0\end{cases}
+$$
+
+y
+
+$$
+\begin{aligned}
+\|G\|_{2}^{2} & =\int_{0}^{\infty} \operatorname{trace}\left\{g^{*}(t) g(t)\right\} d t=\int_{0}^{\infty} \operatorname{trace}\left\{g(t) g(t)^{*}\right\} d t \\
+& =\int_{0}^{\infty} \operatorname{trace}\left\{B^{*} e^{A^{*} t} C^{*} C e^{A t} B\right\} d t=\int_{0}^{\infty} \operatorname{trace}\left\{C e^{A t} B B^{*} e^{A^{*} t} C^{*}\right\} d t
+\end{aligned}
+$$
+
+El lema se sigue del hecho de que el Gramiano de controlabilidad de $(A, B)$ y el Gramiano de observabilidad de $(C, A)$ pueden representarse como
+
+$$
+Q=\int_{0}^{\infty} e^{A^{*} t} C^{*} C e^{A t} d t, \quad P=\int_{0}^{\infty} e^{A t} B B^{*} e^{A^{*} t} d t
+$$
+
+que también pueden obtenerse de
+
+$$
+A P+P A^{*}+B B^{*}=0 \quad A^{*} Q+Q A+C^{*} C=0
+$$
+
+Para calcular la norma $\mathcal{L}_{2}$ de una función de transferencia racional, $G(s) \in \mathcal{R} \mathcal{L}_{2}$, usando el enfoque de espacio de estados, escriba $G(s)=[G(s)]_{+}+[G(s)]_{-}$ con $G_{+} \in \mathcal{R} \mathcal{H}_{2}$ y $G_{-} \in \mathcal{R} \mathcal{H}_{2}^{\perp}$; entonces
+
+$$
+\|G\|_{2}^{2}=\left\|[G(s)]_{+}\right\|_{2}^{2}+\left\|[G(s)]_{-}\right\|_{2}^{2}
+$$
+
+donde $\left\|[G(s)]_{+}\right\|_{2}$ y $\left\|[G(s)]_{-}\right\|_{2}=\left\|[G(-s)]_{+}\right\|_{2}=\left\|\left([G(s)]_{-}\right)^{\sim}\right\|_{2}$ pueden calcularse con el lema anterior.
+
+Otra caracterización útil de la norma $\mathcal{H}_{2}$ de $G$ es en términos de experimentos hipotéticos de entrada-salida. Sea $e_{i}$ el $i$-ésimo vector de la base estándar de $\mathbb{R}^{m}$, donde $m$ es la dimensión de entrada del sistema. Aplique la entrada impulsiva $\delta(t) e_{i}$ [$\delta(t)$ es el impulso unitario] y denote la salida por $z_{i}(t)$ ($=g(t) e_{i}$). Suponga $D=0$; entonces $z_{i} \in \mathcal{L}_{2+}$ y
+
+$$
+\|G\|_{2}^{2}=\sum_{i=1}^{m}\left\|z_{i}\right\|_{2}^{2}
+$$
+
+Nótese que esta caracterización de la norma $\mathcal{H}_{2}$ puede generalizarse adecuadamente para sistemas no lineales variante en el tiempo; véase Chen y Francis [1992] para una aplicación de esta norma en control muestreado.
+
+Ejemplo 4.1 Considere una matriz de transferencia
+
+$$
+G=\left[\begin{array}{ll}
+\frac{3(s+3)}{(s-1)(s+2)} & \frac{2}{s-1} \\
+\frac{s+1}{(s+2)(s+3)} & \frac{1}{s-4}
+\end{array}\right]=G_{s}+G_{u}
+$$
+
+con
+
+$$
+G_{s}=\left[\begin{array}{cc|cc}
+-2 & 0 & -1 & 0 \\
+0 & -3 & 2 & 0 \\
+\hline 1 & 0 & 0 & 0 \\
+1 & 1 & 0 & 0
+\end{array}\right], \quad G_{u}=\left[\begin{array}{cc|cc}
+1 & 0 & 4 & 2 \\
+0 & 4 & 0 & 1 \\
+\hline 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0
+\end{array}\right]
+$$
+
+Entonces el comando $\mathbf{h} 2 \operatorname{norm}\left(\mathbf{G}_{\mathbf{s}}\right)$ da $\left\|G_{s}\right\|_{2}=0.6055$, y $\mathbf{h} 2 \operatorname{norm}\left(\mathbf{cjt}\left(\mathbf{G}_{\mathbf{u}}\right)\right)$ da $\left\|G_{u}\right\|_{2}=3.182$. Por tanto,\\
+$\|G\|_{2}=\sqrt{\left\|G_{s}\right\|_{2}^{2}+\left\|G_{u}\right\|_{2}^{2}}=3.2393$.
+
+\textbf{Comandos ilustrativos de MATLAB:}
+$\gg \mathbf{P}=\operatorname{gram}(\mathbf{A}, \mathbf{B}) ; \mathbf{Q}=\operatorname{gram}\left(\mathbf{A}', \mathbf{C}'\right) ;$ o $\mathbf{P}=\operatorname{lyap}\left(\mathbf{A}, \mathbf{B} * \mathbf{B}'\right) ;$
+
+$\gg\left[\mathbf{G}_{\mathbf{s}}, \mathbf{G}_{\mathbf{u}}\right]=\operatorname{sdecomp}(\mathbf{G}) ; \%$ descompone en partes estable y antiestable.
+
+\section{Cálculo de normas $\mathcal{L}_{\infty}$ y $\mathcal{H}_{\infty}$}
+Consideraremos primero, como en el caso de $\mathcal{L}_{2}$, cómo calcular la norma infinito de una matriz de transferencia en $\mathcal{R} \mathcal{L}_{\infty}$. Sea $G(s) \in \mathcal{R} \mathcal{L}_{\infty}$ y recordemos que la norma $\mathcal{L}_{\infty}$ de una función de transferencia matricial racional $G$ se define como
+
+$$
+\|G\|_{\infty}:=\sup _{\omega} \bar{\sigma}\{G(j \omega)\}
+$$
+
+El cálculo de la norma $\mathcal{L}_{\infty}$ de $G$ es complicado y requiere una búsqueda. Una interpretación en ingeniería de control de la norma infinito de una función de transferencia escalar $G$ es la distancia en el plano complejo desde el origen hasta el punto más lejano de la gráfica de Nyquist de $G$; también aparece como el valor pico en el diagrama de magnitud de Bode de $|G(j \omega)|$. Por lo tanto, la norma infinito de una función de transferencia puede, en principio, obtenerse gráficamente.
+
+Para obtener una estimación, defina una malla fina de frecuencias:
+
+$$
+\left\{\omega_{1}, \cdots, \omega_{N}\right\}
+$$
+
+Entonces una estimación de $\|G\|_{\infty}$ es
+
+$$
+\max _{1 \leq k \leq N} \bar{\sigma}\left\{G\left(j \omega_{k}\right)\right\}
+$$
+
+Este valor suele leerse directamente de un diagrama de valores singulares de Bode. La norma $\mathcal{R} \mathcal{L}_{\infty}$ también puede calcularse en espacio de estados.
+
+Lema 4.5 Sea $\gamma>0$ y
+
+\[
+G(s)=\left[\begin{array}{c|c}
+A & B  \tag{4.2}\\
+\hline C & D
+\end{array}\right] \in \mathcal{R} \mathcal{L}_{\infty}
+\]
+
+Entonces $\|G\|_{\infty}<\gamma$ si y solo si $\bar{\sigma}(D)<\gamma$ y la matriz Hamiltoniana $H$ no tiene valores propios sobre el eje imaginario, donde
+
+\[
+H:=\left[\begin{array}{cc}
+A+B R^{-1} D^{*} C & B R^{-1} B^{*}  \tag{4.3}\\
+-C^{*}\left(I+D R^{-1} D^{*}\right) C & -\left(A+B R^{-1} D^{*} C\right)^{*}
+\end{array}\right]
+\]
+
+y $R=\gamma^{2} I-D^{*} D$.
+
+Prueba. Sea $\Phi(s)=\gamma^{2} I-G^{\sim}(s) G(s)$. Entonces es claro que $\|G\|_{\infty}<\gamma$ si y solo si $\Phi(j \omega)>0$ para todo $\omega \in \mathbb{R}$. Como $\Phi(\infty)=R>0$ y $\Phi(j \omega)$ es continua en $\omega$, se tiene que $\Phi(j \omega)>0$ para todo $\omega \in \mathbb{R}$ si y solo si $\Phi(j \omega)$ es no singular para todo $\omega \in \mathbb{R} \cup\{\infty\}$; es decir, $\Phi(s)$ no tiene ceros sobre el eje imaginario. Equivalentemente, $\Phi^{-1}(s)$ no tiene polos sobre el eje imaginario. Mediante álgebra simple se obtiene
+
+% \insertimage[\label{img:calculo-hinfinito-realizacion-phi-inversa}]{2024_06_29_ce7c73b22613114bd4d6g-070_166_884_1004_615}{width=0.35\textwidth}{Realización empleada para el análisis de polos de $\Phi^{-1}(s)$ en la prueba del Lema 4.5.}
+
+$$
+\Phi^{-1}(s)=\left[\begin{array}{c|c}
+H & {\left[\begin{array}{c}
+B R^{-1} \\
+-C^* D R^{-1}
+\end{array}\right]} \\
+\hline\left[\begin{array}{ll}
+R^{-1} D^* C & R^{-1} B^*
+\end{array}\right] & R^{-1}
+\end{array}\right] .
+$$
+
+Por tanto, la conclusión se sigue si la realización anterior no tiene modos no controlables ni no observables sobre el eje imaginario. Suponga que $j \omega_{0}$ es un valor propio de $H$, pero no un polo de $\Phi^{-1}(s)$. Entonces $j \omega_{0}$ debe ser un modo no observable de $\left(\left[\begin{array}{ll}R^{-1} D^{*} C & R^{-1} B^{*}\end{array}\right], H\right)$ o un modo no controlable de $\left(H,\left[\begin{array}{c}B R^{-1} \\ -C^{*} D R^{-1}\end{array}\right]\right)$. Suponga ahora que $j \omega_{0}$ es un modo no observable de $\left(\left[\begin{array}{ll}R^{-1} D^{*} C & R^{-1} B^{*}\end{array}\right], H\right)$. Entonces existe un $x_{0}=\left[\begin{array}{l}x_{1} \\ x_{2}\end{array}\right] \neq 0$ tal que
+
+$$
+H x_{0}=j \omega_{0} x_{0},\left[\begin{array}{ll}
+R^{-1} D^{*} C & R^{-1} B^{*}
+\end{array}\right] x_{0}=0
+$$
+
+Estas ecuaciones se simplifican a
+
+$$
+\begin{aligned}
+\left(j \omega_{0} I-A\right) x_{1} & =0 \\
+\left(j \omega_{0} I+A^{*}\right) x_{2} & =-C^{*} C x_{1} \\
+D^{*} C x_{1}+B^{*} x_{2} & =0 .
+\end{aligned}
+$$
+
+Como $A$ no tiene valores propios sobre el eje imaginario, tenemos $x_{1}=0$ y $x_{2}=0$. Esto contradice nuestra suposición, y por tanto la realización no tiene modos no observables sobre el eje imaginario.
+
+De forma similar, también se llega a contradicción si se supone que $j \omega_{0}$ es un modo no controlable de $\left(H,\left[\begin{array}{c}B R^{-1} \\ -C^{*} D R^{-1}\end{array}\right]\right)$.
+
+\subsection*{Algoritmo de bisección}
+El Lema 4.5 sugiere el siguiente algoritmo de bisección para calcular la norma en $\mathcal{R} \mathcal{L}_{\infty}$:
+
+(a) Seleccione una cota superior $\gamma_{u}$ y una cota inferior $\gamma_{l}$ tales que $\gamma_{l} \leq\|G\|_{\infty} \leq \gamma_{u}$;
+
+(b) Si $\left(\gamma_{u}-\gamma_{l}\right) / \gamma_{l} \leq$ el nivel especificado, detenga; $\|G\| \approx\left(\gamma_{u}+\gamma_{l}\right) / 2$. De lo contrario, vaya al siguiente paso;
+
+(c) Fije $\gamma=\left(\gamma_{l}+\gamma_{u}\right) / 2$;
+
+(d) Pruebe si $\|G\|_{\infty}<\gamma$ calculando los valores propios de $H$ para el $\gamma$ dado;
+
+(e) Si $H$ tiene un valor propio en $j \mathbb{R}$, fije $\gamma_{l}=\gamma$; en caso contrario, fije $\gamma_{u}=\gamma$; vuelva al paso (b).
+
+Por supuesto, el algoritmo anterior aplica también al cálculo de la norma $\mathcal{H}_{\infty}$. Por tanto, el cálculo de la norma $\mathcal{L}_{\infty}$ requiere una búsqueda, ya sea sobre $\gamma$ o sobre $\omega$, en contraste con el cálculo de la norma en $\mathcal{L}_{2}$ ($\mathcal{H}_{2}$), que no la requiere. Una situación algo análoga ocurre para matrices constantes con las normas $\|M\|_{2}^{2}=\operatorname{trace}\left(M^{*} M\right)$ y $\|M\|_{\infty}=\bar{\sigma}[M]$. En principio, $\|M\|_{2}^{2}$ puede calcularse exactamente con un número finito de operaciones, al igual que la prueba de si $\bar{\sigma}(M)<\gamma$ (por ejemplo, $\gamma^{2} I-M^{*} M>0$), pero el valor de $\bar{\sigma}(M)$ no. Para calcular $\bar{\sigma}(M)$, debemos usar algún tipo de algoritmo iterativo.
+
+Observación 4.2 Es claro que $\|G\|_{\infty}<\gamma$ si y solo si $\left\|\gamma^{-1} G\right\|_{\infty}<1$. Por ello, no hay pérdida de generalidad al suponer $\gamma=1$. Esta suposición se hará con frecuencia en el resto del libro. También se observa que existen otros algoritmos rápidos para realizar el cálculo de norma anterior; no obstante, este algoritmo de bisección es el más simple.
+
+Pueden darse interpretaciones adicionales para la norma $\mathcal{H}_{\infty}$ de una matriz de transferencia estable. Cuando $G(s)$ es un sistema SISO, la norma $\mathcal{H}_{\infty}$ de $G(s)$ puede verse como el mayor factor posible de amplificación de la respuesta en régimen permanente del sistema ante excitaciones sinusoidales. Por ejemplo, la respuesta en régimen permanente del sistema ante una entrada sinusoidal $u(t)=U \sin \left(\omega_{0} t+\phi\right)$ es
+
+$$
+y(t)=U\left|G\left(j \omega_{0}\right)\right| \sin \left(\omega_{0} t+\phi+\angle G\left(j \omega_{0}\right)\right)
+$$
+
+y así, el mayor factor posible de amplificación es $\sup \left|G\left(j \omega_{0}\right)\right|$, que es precisamente la norma $\mathcal{H}_{\infty}$ de la función de transferencia.
+
+En el caso MIMO, la norma $\mathcal{H}_{\infty}$ de una matriz de transferencia $G \in \mathcal{R} \mathcal{H}_{\infty}$ también puede interpretarse como el mayor factor posible de amplificación de la respuesta en régimen permanente ante excitaciones sinusoidales en el siguiente sentido: sean las entradas sinusoidales
+
+$$
+u(t)=\left[\begin{array}{c}
+u_{1} \sin \left(\omega_{0} t+\phi_{1}\right) \\
+u_{2} \sin \left(\omega_{0} t+\phi_{2}\right) \\
+\vdots \\
+u_{q} \sin \left(\omega_{0} t+\phi_{q}\right)
+\end{array}\right], \quad \hat{u}=\left[\begin{array}{c}
+u_{1} \\
+u_{2} \\
+\vdots \\
+u_{q}
+\end{array}\right]
+$$
+
+Entonces la respuesta en régimen permanente del sistema puede escribirse como
+
+$$
+y(t)=\left[\begin{array}{c}
+y_{1} \sin \left(\omega_{0} t+\theta_{1}\right) \\
+y_{2} \sin \left(\omega_{0} t+\theta_{2}\right) \\
+\vdots \\
+y_{p} \sin \left(\omega_{0} t+\theta_{p}\right)
+\end{array}\right], \quad \hat{y}=\left[\begin{array}{c}
+y_{1} \\
+y_{2} \\
+\vdots \\
+y_{p}
+\end{array}\right]
+$$
+
+para algunos $y_{i}, \theta_{i}, i=1,2, \ldots, p$, y además
+
+$$
+\|G\|_{\infty}=\sup _{\phi_{i}, \omega_{o}, \hat{u}} \frac{\|\hat{y}\|}{\|\hat{u}\|}
+$$
+
+donde $\|\cdot\|$ es la norma euclidiana. Los detalles se dejan como ejercicio.
+
+Ejemplo 4.2 Considere un sistema masa-resorte-amortiguador como se muestra en la Figura 4.2.
+
+\insertimage[\label{img:dos-masas-resortes-amortiguadores}]{2024_06_29_ce7c73b22613114bd4d6g-072_626_650_1232_735}{width=0.35\textwidth}{Un sistema de dos masas-resortes-amortiguadores.}
+
+El sistema dinámico puede describirse mediante las siguientes ecuaciones diferenciales:
+
+$$
+\left[\begin{array}{c}
+\dot{x}_{1} \\
+\dot{x}_{2} \\
+\dot{x}_{3} \\
+\dot{x}_{4}
+\end{array}\right]=A\left[\begin{array}{l}
+x_{1} \\
+x_{2} \\
+x_{3} \\
+x_{4}
+\end{array}\right]+B\left[\begin{array}{l}
+F_{1} \\
+F_{2}
+\end{array}\right]
+$$
+
+\insertimage[\label{img:hinfinito-pico-valor-singular}]{2024_06_29_ce7c73b22613114bd4d6g-073_656_1016_412_541}{width=0.65\textwidth}{$\|G\|_{\infty}$ es el pico del mayor valor singular de $G(j \omega)$.}
+
+con
+
+$$
+A=\left[\begin{array}{cccc}
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+-\frac{k_{1}}{m_{1}} & \frac{k_{1}}{m_{1}} & -\frac{b_{1}}{m_{1}} & \frac{b_{1}}{m_{1}} \\
+\frac{k_{1}}{m_{2}} & -\frac{k_{1}+k_{2}}{m_{2}} & \frac{b_{1}}{m_{2}} & -\frac{b_{1}+b_{2}}{m_{2}}
+\end{array}\right], \quad B=\left[\begin{array}{cc}
+0 & 0 \\
+0 & 0 \\
+\frac{1}{m_{1}} & 0 \\
+0 & \frac{1}{m_{2}}
+\end{array}\right]
+$$
+
+Suponga que $G(s)$ es la matriz de transferencia de $\left(F_{1}, F_{2}\right)$ a $\left(x_{1}, x_{2}\right)$; es decir,
+
+$$
+C=\left[\begin{array}{llll}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0
+\end{array}\right], \quad D=0
+$$
+
+y suponga $k_{1}=1, k_{2}=4, b_{1}=0.2, b_{2}=0.1, m_{1}=1$ y $m_{2}=2$, con unidades apropiadas. Los siguientes comandos de MATLAB generan el diagrama de Bode de valores singulares del sistema anterior, como se muestra en la Figura 4.3.
+
+$\gg \mathrm{G}=\operatorname{pck}(\mathrm{A}, \mathrm{B}, \mathrm{C}, \mathrm{D})$;
+
+$\gg \operatorname{hinfnorm}(\mathrm{G}, \mathbf{0.0001})$ o $\operatorname{linfnorm}(\mathrm{G}, \mathbf{0.0001}) \%$ error relativo $\leq 0.0001$
+
+$\gg \mathbf{w}=\operatorname{logspace}(-\mathbf{1}, \mathbf{1}, \mathbf{200}) ; \% \mathbf{200}$ puntos entre $1=10^{-\mathbf{1}}$ y $10=10^{\mathbf{1}}$;
+
+$\gg \mathbf{Gf}=\mathbf{frsp}(\mathbf{G}, \mathbf{w}) ; \%$ cálculo de respuesta en frecuencia;
+
+$\gg[\mathbf{u}, \mathbf{s}, \mathbf{v}]=\operatorname{vsvd}(\mathbf{Gf}) ; \%$ SVD en cada frecuencia;
+
+$\gg$ vplot('liv, lm', \textbackslash mathbf\{s\}), grid \% grafica ambos valores singulares y la cuadrícula.
+
+Entonces la norma $\mathcal{H}_{\infty}$ de esta matriz de transferencia es $\|G(s)\|_{\infty}=11.47$, lo cual se muestra como el pico del diagrama de Bode del mayor valor singular en la Figura 4.3. Como el pico se alcanza en $\omega_{\max }=0.8483$, excitar el sistema con la siguiente entrada sinusoidal
+
+$$
+\left[\begin{array}{l}
+F_{1} \\
+F_{2}
+\end{array}\right]=\left[\begin{array}{l}
+0.9614 \sin (0.8483 t) \\
+0.2753 \sin (0.8483 t-0.12)
+\end{array}\right]
+$$
+
+da la respuesta en régimen permanente del sistema como
+
+$$
+\left[\begin{array}{l}
+x_{1} \\
+x_{2}
+\end{array}\right]=\left[\begin{array}{l}
+11.47 \times 0.9614 \sin (0.8483 t-1.5483) \\
+11.47 \times 0.2753 \sin (0.8483 t-1.4283)
+\end{array}\right]
+$$
+
+Esto muestra que la respuesta del sistema se amplifica 11.47 veces para una señal de entrada en la frecuencia $\omega_{\max }$, lo cual podría ser indeseable si $F_{1}$ y $F_{2}$ son fuerzas de perturbación y $x_{1}$ y $x_{2}$ son posiciones que deben mantenerse estables.
+
+Ejemplo 4.3 Considere una matriz de transferencia de dos por dos
+
+$$
+G(s)=\left[\begin{array}{cc}
+\frac{10(s+1)}{s^{2}+0.2 s+100} & \frac{1}{s+1} \\
+\frac{s+2}{s^{2}+0.1 s+10} & \frac{5(s+1)}{(s+2)(s+3)}
+\end{array}\right]
+$$
+
+Una realización en espacio de estados de $G$ puede obtenerse usando los siguientes comandos de MATLAB:
+
+$$
+\begin{aligned}
+& \gg \mathrm{G}11=\operatorname{nd}2\operatorname{sys}([10,10],[1,0.2,100]) \\
+& \gg \mathrm{G}12=\operatorname{nd}2\operatorname{sys}(1,[1,1]) \\
+& \gg \mathrm{G}21=\operatorname{nd}2\operatorname{sys}([1,2],[1,0.1,10]) \\
+& \gg \mathrm{G}22=\operatorname{nd}2\operatorname{sys}([5,5],[1,5,6]) \\
+& \gg \mathrm{G}=\operatorname{sbs}(\operatorname{abv}(\mathrm{G}11, \mathrm{G}21), \operatorname{abv}(\mathrm{G}12, \mathrm{G}22))
+\end{aligned}
+$$
+
+A continuación, definimos una malla de frecuencias para calcular la respuesta en frecuencia de $G$ y los valores singulares de $G(j \omega)$ sobre un rango de frecuencias adecuado.
+
+$\gg \mathbf{w}=\operatorname{logspace}(\mathbf{0},\mathbf{2},\mathbf{200}) ; \% \mathbf{200}$ puntos entre $1=10^{\mathbf{0}}$ y $100=10^{\mathbf{2}}$;
+
+$\gg \mathbf{Gf}=\mathbf{frsp}(\mathbf{G}, \mathbf{w}) ; \%$ cálculo de respuesta en frecuencia;
+
+$\gg[\mathbf{u}, \mathbf{s}, \mathbf{v}]=\mathbf{vsvd}(\mathbf{Gf}) ; \%$ SVD en cada frecuencia;\\
+$\gg$ vplot(' \$\textbackslash mathbf\{liv\}, \textbackslash mathbf\{lm\}', \textbackslash mathbf\{s\}), grid \% grafica ambos valores singulares y la cuadrícula;
+
+$\gg$ pkvnorm(s) \% obtiene la norma a partir de la respuesta en frecuencia de los valores singulares.
+
+Los valores singulares de $G(j \omega)$ se grafican en la Figura 4.4, lo cual da una estimación de $\|G\|_{\infty} \approx 32.861$. El algoritmo de bisección en espacio de estados descrito previamente conduce a $\|G\|_{\infty}=50.25 \pm 0.01$, y el comando correspondiente de MATLAB es
+
+$\gg \operatorname{hinfnorm}(\mathbf{G}, \mathbf{0.0001})$ o $\operatorname{linfnorm}(\mathbf{G}, \mathbf{0.0001}) \%$ error relativo $\leq 0.0001$.
+
+\insertimage[\label{img:mayor-menor-valor-singular-gjw}]{2024_06_29_ce7c73b22613114bd4d6g-075_653_1014_828_542}{width=0.65\textwidth}{El mayor y el menor valor singular de $G(j \omega)$.}
+
+Los resultados computacionales anteriores muestran claramente que el método gráfico puede llevar a una respuesta incorrecta para un sistema ligeramente amortiguado si la malla de frecuencias no es suficientemente densa. En efecto, obtendríamos $\|G\|_{\infty} \approx 43.525, 48.286$ y 49.737 con el método gráfico si se usan 400, 800 y 1600 puntos de frecuencia, respectivamente.
+
+Comandos relacionados de MATLAB: linfnorm, vnorm, getiv, scliv, var2con, xtract, xtracti
+
+\section{Notas y referencias}
+El concepto básico de espacios de funciones presentado en este capítulo puede encontrarse en cualquier texto estándar de análisis funcional, por ejemplo, Naylor y Sell [1982] y Gohberg y Goldberg [1981]. Las interpretaciones en teoría de sistemas de normas y espacios de funciones pueden encontrarse en Desoer y Vidyasagar [1975]. El algoritmo de bisección para el cálculo de la norma en $\mathcal{L}_{\infty}$ fue desarrollado por primera vez en Boyd, Balakrishnan y Kabamba [1989]. Un algoritmo más eficiente para calcular la norma en $\mathcal{L}_{\infty}$ se presenta en Bruinsma y Steinbuch [1990].
+
+\section{Problemas}
+Problema 4.1 Sea $G(s)$ una matriz en $\mathcal{R} \mathcal{H}_{\infty}$. Demuestre que
+
+$$
+\left\|\left[\begin{array}{c}
+G \\
+I
+\end{array}\right]\right\|_{\infty}^{2}=\|G\|_{\infty}^{2}+1
+$$
+
+Problema 4.2 (relación de Parseval) Sean $f(t), g(t) \in \mathcal{L}_{2}, F(j \omega)=\mathcal{F}\{f(t)\}$, y $G(j \omega)=\mathcal{F}\{g(t)\}$. Demuestre que
+
+$$
+\int_{-\infty}^{\infty} f(t) g(t) d t=\frac{1}{2 \pi} \int_{-\infty}^{\infty} F(j \omega) G^{*}(j \omega) d \omega
+$$
+
+y
+
+$$
+\int_{-\infty}^{\infty}|f(t)|^{2} d t=\frac{1}{2 \pi} \int_{-\infty}^{\infty}|F(j \omega)|^{2} d \omega
+$$
+
+Nótese que
+
+$$
+F(j \omega)=\int_{-\infty}^{\infty} f(t) e^{-j \omega t} d t, \quad f(t)=\mathcal{F}^{-1}(F(j \omega))=\frac{1}{2 \pi} \int_{-\infty}^{\infty} F(j \omega) e^{j \omega t} d \omega
+$$
+
+donde $\mathcal{F}^{-1}$ denota la transformada inversa de Fourier.
+
+Problema 4.3 Suponga que $A$ es estable. Demuestre
+
+$$
+\int_{-\infty}^{\infty}(j \omega I-A)^{-1} d \omega=\pi I
+$$
+
+Suponga $G(s)=\left[\begin{array}{c|c}A & B \\ \hline C & 0\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}$ y sea $Q=Q^{*}$ el Gramiano de observabilidad. Use la fórmula anterior para demostrar que
+
+$$
+\frac{1}{2 \pi} \int_{-\infty}^{\infty} G^{\sim}(j \omega) G(j \omega) d \omega=B^{*} Q B
+$$
+
+[Pista: Use el hecho de que $G^{\sim}(s) G(s)=F^{\sim}(s)+F(s)$ y $F(s)=B^{*} Q(s I-A)^{-1} B$.]
+
+Problema 4.4 Calcule la norma 2 y la norma infinito de los siguientes sistemas:
+
+$$
+G_{1}(s)=\left[\begin{array}{cc}
+\frac{1}{s+1} & \frac{s+3}{(s+1)(s-2)} \\
+\frac{10}{s-2} & \frac{5}{s+3}
+\end{array}\right], \quad G_{2}(s)=\left[\begin{array}{ll|l}
+1 & 0 & 1 \\
+2 & 3 & 1 \\
+\hline 1 & 2 & 0
+\end{array}\right]
+$$
+
+$$
+G_{3}(s)=\left[\begin{array}{cc|c}
+-1 & -2 & 1 \\
+1 & 0 & 0 \\
+\hline 2 & 3 & 0
+\end{array}\right], \quad G_{4}(s)=\left[\begin{array}{ccc|cc}
+-1 & -2 & -3 & 1 & 2 \\
+1 & 0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 2 & 0 \\
+\hline 1 & 0 & 0 & 1 & 0 \\
+0 & 1 & 1 & 0 & 2
+\end{array}\right]
+$$
+
+Problema 4.5 Sea $r(t)=\sin \omega t$ la señal de entrada de una planta
+
+$$
+G(s)=\frac{\omega_{n}^{2}}{s^{2}+2 \xi \omega_{n} s+\omega_{n}^{2}}
+$$
+
+con $0<\xi<1 / \sqrt{2}$. Encuentre la respuesta en régimen permanente del sistema $y(t)$. Encuentre también la frecuencia $\omega$ que produce la mayor magnitud de la respuesta en régimen permanente de $y(t)$.
+
+Problema 4.6 Sea $G(s) \in \mathcal{R} \mathcal{H}_{\infty}$ una matriz de transferencia $p \times q$ y $y=G(s) u$. Suponga
+
+$$
+u(t)=\left[\begin{array}{c}
+u_{1} \sin \left(\omega_{0} t+\phi_{1}\right) \\
+u_{2} \sin \left(\omega_{0} t+\phi_{2}\right) \\
+\vdots \\
+u_{q} \sin \left(\omega_{0} t+\phi_{q}\right)
+\end{array}\right], \quad \hat{u}=\left[\begin{array}{c}
+u_{1} \\
+u_{2} \\
+\vdots \\
+u_{q}
+\end{array}\right]
+$$
+
+Demuestre que la respuesta en régimen permanente del sistema está dada por
+
+$$
+y(t)=\left[\begin{array}{c}
+y_{1} \sin \left(\omega_{0} t+\theta_{1}\right) \\
+y_{2} \sin \left(\omega_{0} t+\theta_{2}\right) \\
+\vdots \\
+y_{p} \sin \left(\omega_{0} t+\theta_{p}\right)
+\end{array}\right], \quad \hat{y}=\left[\begin{array}{c}
+y_{1} \\
+y_{2} \\
+\vdots \\
+y_{p}
+\end{array}\right]
+$$
+
+para ciertos $y_{i}$ y $\theta_{i}, i=1,2, \ldots, p$. Demuestre que
+
+$\sup _{\phi_{i}, \omega_{o},\|\hat{u}\|_{2} \leq 1}\|\hat{y}\|_{2}=\|G\|_{\infty}$.
+
+Problema 4.7 Escriba un programa en MATLAB para graficar, en función de $\gamma$, la distancia desde el eje imaginario hasta el valor propio más cercano de la matriz Hamiltoniana para un modelo en espacio de estados dado con $A$ estable. Pruébelo en
+
+$$
+\left[\begin{array}{cc}
+\frac{s+1}{(s+2)(s+3)} & \frac{s}{s+1} \\
+\frac{s^{2}-2}{(s+3)(s+4)} & \frac{s+4}{(s+1)(s+2)}
+\end{array}\right]
+$$
+
+Lea el valor de la norma $\mathcal{H}_{\infty}$. Compárelo con la función \texttt{hinfnorm} de MATLAB.
+
+Problema 4.8 Sea $G(s)=\frac{1}{\left(s^{2}+2 \xi s+1\right)(s+1)}$. Calcule $\|G(s)\|_{\infty}$ usando el diagrama de Bode y el algoritmo en espacio de estados, respectivamente, para $\xi=1,0.1,0.01,0.001$, y compare los resultados.

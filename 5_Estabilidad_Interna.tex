@@ -1,0 +1,760 @@
+\chapter{Estabilidad interna}
+Este capítulo introduce la estructura de realimentación y discute su estabilidad, junto con diversas pruebas de estabilidad. La organización de este capítulo es la siguiente: la Sección 5.1 discute la necesidad de introducir una estructura de realimentación y describe la configuración general de realimentación. La Sección 5.2 define el buen planteamiento del lazo de realimentación. La Sección 5.3 introduce la noción de estabilidad interna y varias pruebas de estabilidad. La Sección 5.4 introduce las factorizaciones coprimas estables de matrices racionales. En esta sección también se consideran las condiciones de estabilidad en términos de distintas factorizaciones coprimas.
+
+\section{Estructura de retroalimentación}
+Al diseñar sistemas de control, existen varios temas fundamentales que trascienden los límites de aplicaciones específicas. Aunque pueden diferir para cada aplicación y tener distintos niveles de importancia, estos temas son generales en su relación con los objetivos y procedimientos del diseño de control. Un punto central en estos temas es el requisito de proporcionar un desempeño satisfactorio frente a errores de modelado, variaciones del sistema e incertidumbre. De hecho, este requisito fue la motivación original para el desarrollo de sistemas de realimentación. La realimentación solo se requiere cuando el desempeño del sistema no puede lograrse debido a la incertidumbre en las características del sistema. Un tratamiento más detallado de las incertidumbres de modelo y sus representaciones se discutirá en el Capítulo 8.
+
+Por el momento, suponiendo que se nos da un modelo que incluye una representación de incertidumbre que creemos captura adecuadamente las características esenciales de la planta, el siguiente paso en el proceso de diseño del controlador es determinar qué estructura es necesaria para lograr el desempeño deseado. El prefiltrado de señales de entrada (o control en lazo abierto) puede cambiar la respuesta dinámica del conjunto de modelos, pero no puede reducir el efecto de la incertidumbre. Si la incertidumbre es demasiado grande para lograr la precisión de respuesta deseada, entonces se requiere una estructura de realimentación. Sin embargo, el mero hecho de asumir una estructura de realimentación no garantiza una reducción de la incertidumbre, y existen muchos obstáculos para lograr los beneficios de reducción de incertidumbre que aporta la realimentación. En particular, dado que para cualquier conjunto de modelos razonable que represente la incertidumbre de un sistema físico esta incertidumbre se vuelve grande y la fase es completamente desconocida a frecuencias suficientemente altas, la ganancia de lazo debe ser pequeña en esas frecuencias para evitar desestabilizar la dinámica de alta frecuencia del sistema. Aún peor, el sistema con realimentación en realidad incrementa la incertidumbre y la sensibilidad en los rangos de frecuencia donde la incertidumbre es significativamente grande. En otras palabras, debido al tipo de conjuntos requeridos para modelar razonablemente sistemas físicos y a la restricción de que nuestros controladores sean causales, no podemos usar realimentación (ni ninguna otra estructura de control) para hacer que nuestro conjunto de modelos en lazo cerrado sea un subconjunto propio del conjunto de modelos en lazo abierto. A menudo, lo que sí puede lograrse con un uso inteligente de la realimentación es una reducción significativa de incertidumbre para ciertas señales importantes, con un pequeño incremento distribuido en otras señales. Por tanto, el problema de diseño por realimentación se centra en el compromiso involucrado en reducir el impacto global de la incertidumbre. Este compromiso también aparece, por ejemplo, cuando se usa realimentación para reducir el error de mando/perturbación minimizando al mismo tiempo la degradación de respuesta debida al ruido de medición. Para tener valor práctico, una técnica de diseño debe proporcionar medios para realizar estos compromisos. Discutiremos estos compromisos con mayor detalle en el capítulo siguiente.
+
+Para enfocar la discusión, consideraremos la configuración estándar de realimentación mostrada en la Figura 5.1. Esta consiste en la interconexión de la planta $P$ y el controlador $K$, excitada por la referencia $r$, el ruido del sensor $n$, la perturbación de entrada de planta $d_{i}$ y la perturbación de salida de planta $d$. En general, todas las señales se suponen multivariables y todas las matrices de transferencia se suponen de dimensiones apropiadas.
+
+\insertimage[\label{img:configuracion-estandar-retroalimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-080_293_879_1363_604}{width=0.35\textwidth}{Configuración estándar de realimentación.}
+
+\section{Bien posicionamiento del lazo de retroalimentación}
+Suponga que la planta $P$ y el controlador $K$ de la Figura 5.1 son matrices de transferencia racionales reales propias y fijas. Entonces, la primera pregunta natural es si la interconexión en realimentación tiene sentido o es físicamente realizable. Para ser más específicos, considere el siguiente ejemplo simple donde
+
+$$
+P=-\frac{s-1}{s+2}, \quad K=1
+$$
+
+son ambas funciones de transferencia propias. Sin embargo,
+
+$$
+u=\frac{(s+2)}{3}(r-n-d)+\frac{s-1}{3} d_{i}
+$$
+
+Es decir, las funciones de transferencia desde las señales externas $r-n-d$ y $d_{i}$ hacia $u$ no son propias. Por tanto, el sistema de realimentación no es físicamente realizable.
+
+Definición 5.1 Se dice que un sistema de realimentación está bien planteado si todas las matrices de transferencia en lazo cerrado están bien definidas y son propias.
+
+Ahora suponga que todas las señales externas $r, n, d$ y $d_{i}$ están especificadas y que las matrices de transferencia en lazo cerrado desde ellas hasta $u$ están, respectivamente, bien definidas y son propias. Entonces $y$ y todas las demás señales también están bien definidas, y las matrices de transferencia relacionadas son propias. Además, dado que las matrices de transferencia desde $d$ y $n$ hacia $u$ son las mismas y difieren de la matriz de transferencia desde $r$ hacia $u$ solo por un signo, el sistema está bien planteado si y solo si la matriz de transferencia desde $\left[\begin{array}{c}d_{i} \\ d\end{array}\right]$ hacia $u$ existe y es propia.
+
+Para ser consistentes con la notación usada en el resto del libro, denotaremos
+
+
+\begin{equation*}
+\hat{K}:=-K \tag{5.1}
+\end{equation*}
+
+
+y reagruparamos las señales de entrada externas en el lazo de realimentación como $w_{1}$ y $w_{2}$, y reagruparamos las señales de entrada de la planta y del controlador como $e_{1}$ y $e_{2}$. Entonces el lazo de realimentación con la planta y el controlador puede representarse de manera simple como en la Figura 5.2, y el sistema está bien planteado si y solo si la matriz de transferencia desde $\left[\begin{array}{l}w_{1} \\ w_{2}\end{array}\right]$ hacia $e_{1}$ existe y es propia.
+
+\insertimage[\label{img:diagrama-analisis-estabilidad-interna}]{2024_06_29_ce7c73b22613114bd4d6g-081_262_680_1601_709}{width=0.35\textwidth}{Diagrama para análisis de estabilidad interna.}
+
+Lema 5.1 El sistema de realimentación de la Figura 5.2 está bien planteado si y solo si
+
+
+\begin{equation*}
+I-\hat{K}(\infty) P(\infty) \tag{5.2}
+\end{equation*}
+
+
+es invertible.
+
+Prueba. El sistema de la Figura 5.2 puede representarse en forma de ecuaciones como
+
+$$
+\begin{aligned}
+& e_{1}=w_{1}+\hat{K} e_{2} \\
+& e_{2}=w_{2}+P e_{1}
+\end{aligned}
+$$
+
+Entonces se obtiene para $e_{1}$ la expresión
+
+$$
+(I-\hat{K} P) e_{1}=w_{1}+\hat{K} w_{2}
+$$
+
+Así, el buen planteamiento es equivalente a la condición de que $(I-\hat{K} P)^{-1}$ exista y sea propia. Pero esto es equivalente a que el término constante de la función de transferencia $I-\hat{K} P$ sea invertible.
+
+Es directo mostrar que la ecuación (5.2) es equivalente a cualquiera de las dos condiciones siguientes:
+
+
+\begin{gather*}
+{\left[\begin{array}{cc}
+I & -\hat{K}(\infty) \\
+-P(\infty) & I
+\end{array}\right] \text { es invertible; }}  \tag{5.3}\\
+I-P(\infty) \hat{K}(\infty) \text { es invertible. }
+\end{gather*}
+
+
+La condición de buen planteamiento se expresa de forma simple en términos de realizaciones en espacio de estados. Introduzca realizaciones de $P$ y $\hat{K}$:
+
+$$
+P=\left[\begin{array}{l|l}
+A & B \\
+\hline C & D
+\end{array}\right], \quad \hat{K}=\left[\begin{array}{c|c}
+\hat{A} & \hat{B} \\
+\hline \hat{C} & \hat{D}
+\end{array}\right]
+$$
+
+Entonces $P(\infty)=D, \hat{K}(\infty)=\hat{D}$ y la condición de buen planteamiento en la ecuación (5.3) es equivalente a la invertibilidad de $\left[\begin{array}{cc}I & -\hat{D} \\ -D & I\end{array}\right]$. Afortunadamente, en la mayoría de casos prácticos se tiene $D=0$, y por tanto el buen planteamiento para la mayoría de sistemas de control prácticos está garantizado.
+
+\section{Estabilidad interna}
+Considere un sistema descrito por el diagrama de bloques estándar de la Figura 5.2 y suponga que está bien planteado.
+
+Definición 5.2 Se dice que el sistema de la Figura 5.2 es internamente estable si la matriz de transferencia
+
+
+\begin{align*}
+{\left[\begin{array}{cc}
+I & -\hat{K} \\
+-P & I
+\end{array}\right]^{-1} } & =\left[\begin{array}{cc}
+(I-\hat{K} P)^{-1} & \hat{K}(I-P \hat{K})^{-1} \\
+P(I-\hat{K} P)^{-1} & (I-P \hat{K})^{-1}
+\end{array}\right]  \tag{5.4}\\
+& =\left[\begin{array}{cc}
+I+\hat{K}(I-P \hat{K})^{-1} P & \hat{K}(I-P \hat{K})^{-1} \\
+(I-P \hat{K})^{-1} P & (I-P \hat{K})^{-1}
+\end{array}\right]
+\end{align*}
+
+
+desde $\left(w_{1}, w_{2}\right)$ hacia $\left(e_{1}, e_{2}\right)$ pertenece a $\mathcal{R} \mathcal{H}_{\infty}$.
+
+Nótese que, para verificar estabilidad interna, es necesario (y suficiente) comprobar si cada una de las cuatro matrices de transferencia de la ecuación (5.4) está en $\mathcal{H}_{\infty}$. No puede concluirse estabilidad aunque tres de las cuatro matrices de transferencia en (5.4) estén en $\mathcal{H}_{\infty}$. Por ejemplo, sea la función de transferencia del sistema interconectado
+
+$$
+P=\frac{s-1}{s+1}, \quad \hat{K}=-\frac{1}{s-1}
+$$
+
+Entonces es fácil calcular
+
+$$
+\left[\begin{array}{l}
+e_{1} \\
+e_{2}
+\end{array}\right]=\left[\begin{array}{cc}
+\frac{s+1}{s+2} & -\frac{s+1}{(s-1)(s+2)} \\
+\frac{s-1}{s+2} & \frac{s+1}{s+2}
+\end{array}\right]\left[\begin{array}{l}
+w_{1} \\
+w_{2}
+\end{array}\right]
+$$
+
+lo cual muestra que el sistema no es internamente estable aunque tres de las cuatro funciones de transferencia sean estables.
+
+Observación 5.1 La estabilidad interna es un requisito básico para un sistema práctico de realimentación. Esto se debe a que todos los sistemas interconectados pueden estar inevitablemente sujetos a condiciones iniciales no nulas y a ciertos errores (posiblemente pequeños), y en la práctica no puede tolerarse que esos errores en algunas ubicaciones produzcan señales no acotadas en otras ubicaciones del sistema en lazo cerrado. La estabilidad interna garantiza que todas las señales de un sistema estén acotadas siempre que las señales inyectadas (en cualquier ubicación) estén acotadas.
+
+Sin embargo, existen algunos casos especiales bajo los cuales determinar la estabilidad del sistema es simple.
+
+Corolario 5.2 Suponga que $\hat{K} \in \mathcal{R H}_{\infty}$. Entonces el sistema de la Figura 5.2 es internamente estable si y solo si está bien planteado y $P(I-\hat{K} P)^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$.
+
+Prueba. La necesidad es obvia. Para demostrar suficiencia, basta mostrar que $(I-P \hat{K})^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$. Pero esto se sigue de
+
+$$
+(I-P \hat{K})^{-1}=I+(I-P \hat{K})^{-1} P \hat{K}
+$$
+
+y de que $(I-P \hat{K})^{-1} P, \hat{K} \in \mathcal{R} \mathcal{H}_{\infty}$.
+
+También tenemos lo siguiente:
+
+Corolario 5.3 Suponga que $P \in \mathcal{R} \mathcal{H}_{\infty}$. Entonces el sistema de la Figura 5.2 es internamente estable si y solo si está bien planteado y $\hat{K}(I-P \hat{K})^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$.
+
+Corolario 5.4 Suponga que $P \in \mathcal{R} \mathcal{H}_{\infty}$ y $\hat{K} \in \mathcal{R} \mathcal{H}_{\infty}$. Entonces el sistema de la Figura 5.2 es internamente estable si y solo si $(I-P \hat{K})^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ o, equivalentemente, si $\operatorname{det}(I-P(s) \hat{K}(s))$ no tiene ceros en el semiplano derecho cerrado.
+
+Nótese que toda la discusión y conclusiones previas aplican por igual a plantas y controladores de dimensión infinita. Para estudiar el caso más general, limitaremos nuestra discusión a sistemas de dimensión finita y definimos
+
+$$
+\begin{aligned}
+& n_{k}:=\text { número de polos en semiplano derecho abierto (rhp) de } \hat{K}(s) \\
+& n_{p}:=\text { número de polos en semiplano derecho abierto (rhp) de } P(s) .
+\end{aligned}
+$$
+
+Teorema 5.5 El sistema es internamente estable si y solo si está bien planteado y
+
+(i) el número de polos rhp abiertos de $P(s) \hat{K}(s)$ es $n_{k}+n_{p}$;
+
+(ii) $(I-P(s) \hat{K}(s))^{-1}$ es estable.
+
+Prueba. Es fácil mostrar que $P \hat{K}$ y $(I-P \hat{K})^{-1}$ tienen las siguientes realizaciones:
+
+$$
+P \hat{K}=\left[\begin{array}{cc|c}
+A & B \hat{C} & B \hat{D} \\
+0 & \hat{A} & \hat{B} \\
+\hline C & D \hat{C} & D \hat{D}
+\end{array}\right], \quad(I-P \hat{K})^{-1}=\left[\begin{array}{c|c}
+\bar{A} & \bar{B} \\
+\hline \bar{C} & \bar{D}
+\end{array}\right]
+$$
+
+donde
+
+$$
+\begin{aligned}
+\bar{A} & =\left[\begin{array}{cc}
+A & B \hat{C} \\
+0 & \hat{A}
+\end{array}\right]+\left[\begin{array}{c}
+B \hat{D} \\
+\hat{B}
+\end{array}\right](I-D \hat{D})^{-1}\left[\begin{array}{ll}
+C & D \hat{C}
+\end{array}\right] \\
+\bar{B} & =\left[\begin{array}{c}
+B \hat{D} \\
+\hat{B}
+\end{array}\right](I-D \hat{D})^{-1} \\
+\bar{C} & =(I-D \hat{D})^{-1}\left[\begin{array}{ll}
+C & D \hat{C}
+\end{array}\right] \\
+\bar{D} & =(I-D \hat{D})^{-1}
+\end{aligned}
+$$
+
+Por lo tanto, el sistema es internamente estable si y solo si $\bar{A}$ es estable (véase Problema 5.2).
+
+Ahora suponga que el sistema es internamente estable; entonces $(I-P \hat{K})^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$. Así, solo necesitamos mostrar que, dada la condición (ii), la condición (i) es necesaria y suficiente para la estabilidad interna. Esto se sigue al notar que $(\bar{A}, \bar{B})$ es estabilizable si y solo si
+
+\[
+\left(\left[\begin{array}{cc}
+A & B \hat{C}  \tag{5.5}\\
+0 & \hat{A}
+\end{array}\right],\left[\begin{array}{c}
+B \hat{D} \\
+\hat{B}
+\end{array}\right]\right)
+\]
+
+es estabilizable; y $(\bar{C}, \bar{A})$ es detectable si y solo si
+
+\[
+\left(\left[\begin{array}{ll}
+C & D \hat{C}
+\end{array}\right],\left[\begin{array}{cc}
+A & B \hat{C}  \tag{5.6}\\
+0 & \hat{A}
+\end{array}\right]\right)
+\]
+
+es detectable. Pero las condiciones (5.5) y (5.6) son equivalentes a la condición (i).
+
+La condición (i) del teorema anterior implica que no hay cancelación inestable polo/cero al formar el producto $P \hat{K}$.
+
+De hecho, el teorema anterior es la base de la teoría clásica de control, donde la estabilidad se verifica solo en una función de transferencia de lazo cerrado, con la suposición implícita de que el controlador mismo es estable (y probablemente también de fase mínima; o al menos marginalmente estable y de fase mínima, con la condición de que cualquier polo sobre el eje imaginario del controlador no esté en la misma ubicación que algún cero de la planta).
+
+Ejemplo 5.1 Sean $P$ y $\hat{K}$ matrices de transferencia de dos por dos
+
+$$
+P=\left[\begin{array}{cc}
+\frac{1}{s-1} & 0 \\
+0 & \frac{1}{s+1}
+\end{array}\right], \quad \hat{K}=\left[\begin{array}{cc}
+\frac{1-s}{s+1} & -1 \\
+0 & -1
+\end{array}\right]
+$$
+
+Entonces
+
+$$
+P \hat{K}=\left[\begin{array}{cc}
+\frac{-1}{s+1} & \frac{-1}{s-1} \\
+0 & \frac{-1}{s+1}
+\end{array}\right], \quad(I-P \hat{K})^{-1}=\left[\begin{array}{cc}
+\frac{s+1}{s+2} & -\frac{(s+1)^{2}}{(s+2)^{2}(s-1)} \\
+0 & \frac{s+1}{s+2}
+\end{array}\right]
+$$
+
+Así, el sistema en lazo cerrado no es estable, aunque
+
+$$
+\operatorname{det}(I-P \hat{K})=\frac{(s+2)^{2}}{(s+1)^{2}}
+$$
+
+no tiene ceros en el semiplano derecho cerrado y el número de polos inestables de $P \hat{K}$ es $n_{k}+n_{p}=1$. Por tanto, en general, que $\operatorname{det}(I-P \hat{K})$ no tenga ceros en el semiplano derecho cerrado no implica necesariamente que $(I-P \hat{K})^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$.
+
+\section{Factorización coprima sobre $\mathcal{R} \mathcal{H}_{\infty}$}
+Recuerde que dos polinomios $m(s)$ y $n(s)$, con coeficientes reales por ejemplo, se dicen coprimos si su máximo común divisor es 1 (equivalentemente, no tienen ceros en común). De acuerdo con el algoritmo de Euclides ${ }^{1}$, dos polinomios $m$ y $n$ son coprimos si y solo si existen polinomios $x(s)$ y $y(s)$ tales que $x m+y n=1$; a esta ecuación se le llama identidad de Bezout. De manera similar, dos funciones de transferencia $m(s)$ y $n(s)$ en $\mathcal{R H}_{\infty}$ se dicen coprimas sobre $\mathcal{R} \mathcal{H}_{\infty}$ si existen $x, y \in \mathcal{R} \mathcal{H}_{\infty}$ tales que
+
+$$
+x m+y n=1
+$$
+
+La definición más primitiva, pero equivalente, es que $m$ y $n$ son coprimos si todo divisor común de $m$ y $n$ es invertible en $\mathcal{R} \mathcal{H}_{\infty}$; es decir,
+
+$$
+h, m h^{-1}, n h^{-1} \in \mathcal{R} \mathcal{H}_{\infty} \Longrightarrow h^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Más generalmente, tenemos lo siguiente:
+
+Definición 5.3 Dos matrices $M$ y $N$ en $\mathcal{R} \mathcal{H}_{\infty}$ son coprimas derechas sobre $\mathcal{R} \mathcal{H}_{\infty}$ si tienen el mismo número de columnas y si existen matrices $X_{r}$ y $Y_{r}$ en $\mathcal{R} \mathcal{H}_{\infty}$ tales que
+
+$$
+\left[\begin{array}{ll}
+X_{r} & Y_{r}
+\end{array}\right]\left[\begin{array}{l}
+M \\
+N
+\end{array}\right]=X_{r} M+Y_{r} N=I
+$$
+
+De forma similar, dos matrices $\tilde{M}$ y $\tilde{N}$ en $\mathcal{R} \mathcal{H}_{\infty}$ son coprimas izquierdas sobre $\mathcal{R} \mathcal{H}_{\infty}$ si tienen el mismo número de filas y si existen matrices $X_{l}$ y $Y_{l}$ en $\mathcal{R} \mathcal{H}_{\infty}$ tales que
+
+$$
+\left[\begin{array}{ll}
+\tilde{M} & \tilde{N}
+\end{array}\right]\left[\begin{array}{c}
+X_{l} \\
+Y_{l}
+\end{array}\right]=\tilde{M} X_{l}+\tilde{N} Y_{l}=I
+$$
+
+Nótese que estas definiciones son equivalentes a decir que la matriz $\left[\begin{array}{c}M \\ N\end{array}\right]$ es invertible por la izquierda en $\mathcal{R} \mathcal{H}_{\infty}$ y que la matriz $\left[\begin{array}{cc}\tilde{M} & \tilde{N}\end{array}\right]$ es invertible por la derecha en $\mathcal{R} \mathcal{H}_{\infty}$. Estas dos ecuaciones suelen llamarse identidades de Bezout.
+
+Ahora sea $P$ una matriz racional real propia. Una factorización coprima derecha (rcf) de $P$ es una factorización $P=N M^{-1}$, donde $N$ y $M$ son coprimas derechas sobre $\mathcal{R} \mathcal{H}_{\infty}$. De manera similar, una factorización coprima izquierda (lcf) tiene la forma $P=\tilde{M}^{-1} \tilde{N}$, donde $\tilde{N}$ y $\tilde{M}$ son coprimas izquierdas sobre $\mathcal{R} \mathcal{H}_{\infty}$. Se dice que una matriz $P(s) \in \mathcal{R}_{p}(s)$ tiene factorización coprima doble si existen una factorización coprima derecha $P=N M^{-1}$, una factorización coprima izquierda $P=\tilde{M}^{-1} \tilde{N}$, y $X_{r}, Y_{r}, X_{l}, Y_{l} \in \mathcal{R} \mathcal{H}_{\infty}$ tales que
+
+\[
+\left[\begin{array}{cc}
+X_{r} & Y_{r}  \tag{5.7}\\
+-\tilde{N} & \tilde{M}
+\end{array}\right]\left[\begin{array}{cc}
+M & -Y_{l} \\
+N & X_{l}
+\end{array}\right]=I
+\]
+
+Por supuesto, implícito en estas definiciones está el requisito de que $M$ y $\tilde{M}$ sean cuadradas y no singulares.
+
+Teorema 5.6 Suponga que $P(s)$ es una matriz racional real propia y
+
+$$
+P=\left[\begin{array}{l|l}
+A & B \\
+\hline C & D
+\end{array}\right]
+$$
+
+es una realización estabilizable y detectable. Sean $F$ y $L$ tales que $A+B F$ y $A+L C$ sean ambos estables, y defina
+
+\[
+\left[\begin{array}{cc}
+M & -Y_{l}  \tag{5.8}\\
+N & X_{l}
+\end{array}\right]=\left[\begin{array}{c|cc}
+A+B F & B & -L \\
+\hline F & I & 0 \\
+C+D F & D & I
+\end{array}\right]
+\]
+
+\[
+\left[\begin{array}{cc}
+X_{r} & Y_{r}  \tag{5.9}\\
+-\tilde{N} & \tilde{M}
+\end{array}\right]=\left[\begin{array}{c|cc}
+A+L C & -(B+L D) & L \\
+\hline F & I & 0 \\
+C & -D & I
+\end{array}\right]
+\]
+
+Entonces $P=N M^{-1}=\tilde{M}^{-1} \tilde{N}$ son, respectivamente, rcf y lcf y, además, se satisface la ecuación (5.7).
+
+Prueba. El teorema se sigue verificando la ecuación (5.7).
+
+Observación 5.2 Nótese que si $P$ es estable, entonces podemos tomar $X_{r}=X_{l}=I, Y_{r}=Y_{l}=0$, $N=\tilde{N}=P, M=\tilde{M}=I$.
+
+Observación 5.3 La factorización coprima de una matriz de transferencia puede interpretarse desde el punto de vista de control por realimentación. Por ejemplo, la factorización coprima derecha surge naturalmente al cambiar la variable de control mediante realimentación de estado. Considere las ecuaciones en espacio de estados de una planta $P$:
+
+$$
+\begin{aligned}
+\dot{x} & =A x+B u \\
+y & =C x+D u
+\end{aligned}
+$$
+
+A continuación, introduzca una realimentación de estado y cambie la variable
+
+$$
+v:=u-F x
+$$
+
+donde $F$ es tal que $A+B F$ es estable. Entonces obtenemos
+
+$$
+\begin{aligned}
+\dot{x} & =(A+B F) x+B v \\
+u & =F x+v \\
+y & =(C+D F) x+D v
+\end{aligned}
+$$
+
+Evidentemente, de estas ecuaciones, la matriz de transferencia de $v$ a $u$ es
+
+$$
+M(s)=\left[\begin{array}{c|c}
+A+B F & B \\
+\hline F & I
+\end{array}\right]
+$$
+
+y la de $v$ a $y$ es
+
+$$
+N(s)=\left[\begin{array}{c|c}
+A+B F & B \\
+\hline C+D F & D
+\end{array}\right]
+$$
+
+Por lo tanto,
+
+$$
+u=M v, \quad y=N v
+$$
+
+de modo que $y=N M^{-1} u$; es decir, $P=N M^{-1}$.
+
+Ahora veremos cómo las factorizaciones coprimas pueden usarse para obtener caracterizaciones alternativas de las condiciones de estabilidad interna. Considere de nuevo el diagrama estándar de análisis de estabilidad de la Figura 5.2. Comenzamos con cualquier rcf y lcf de $P$ y $\hat{K}$:
+
+
+\begin{gather*}
+P=N M^{-1}=\tilde{M}^{-1} \tilde{N}  \tag{5.10}\\
+\hat{K}=U V^{-1}=\tilde{V}^{-1} \tilde{U} \tag{5.11}
+\end{gather*}
+
+
+Lema 5.7 Considere el sistema en la Figura 5.2. Las siguientes condiciones son equivalentes:
+
+\begin{enumerate}
+  \item El sistema de realimentación es internamente estable.
+  \item $\left[\begin{array}{cc}M & U \\ N & V\end{array}\right]$ es invertible en $\mathcal{R} \mathcal{H}_{\infty}$.
+  \item $\left[\begin{array}{cc}\tilde{V} & -\tilde{U} \\ -\tilde{N} & \tilde{M}\end{array}\right]$ es invertible en $\mathcal{R} \mathcal{H}_{\infty}$.
+  \item $\tilde{M} V-\tilde{N} U$ es invertible en $\mathcal{R} \mathcal{H}_{\infty}$.
+  \item $\tilde{V} M-\tilde{U} N$ es invertible en $\mathcal{R} \mathcal{H}_{\infty}$.
+\end{enumerate}
+
+Prueba. Nótese que el sistema es internamente estable si
+
+$$
+\left[\begin{array}{cc}
+I & -\hat{K} \\
+-P & I
+\end{array}\right]^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+o, equivalentemente,
+
+\[
+\left[\begin{array}{cc}
+I & \hat{K}  \tag{5.12}\\
+P & I
+\end{array}\right]^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+\]
+
+Ahora
+
+$$
+\left[\begin{array}{cc}
+I & \hat{K} \\
+P & I
+\end{array}\right]=\left[\begin{array}{cc}
+I & U V^{-1} \\
+N M^{-1} & I
+\end{array}\right]=\left[\begin{array}{cc}
+M & U \\
+N & V
+\end{array}\right]\left[\begin{array}{cc}
+M^{-1} & 0 \\
+0 & V^{-1}
+\end{array}\right]
+$$
+
+por lo que
+
+$$
+\left[\begin{array}{cc}
+I & \hat{K} \\
+P & I
+\end{array}\right]^{-1}=\left[\begin{array}{cc}
+M & 0 \\
+0 & V
+\end{array}\right]\left[\begin{array}{ll}
+M & U \\
+N & V
+\end{array}\right]^{-1}
+$$
+
+Como las matrices
+
+$$
+\left[\begin{array}{cc}
+M & 0 \\
+0 & V
+\end{array}\right],\left[\begin{array}{cc}
+M & U \\
+N & V
+\end{array}\right]
+$$
+
+son coprimas derechas (este hecho se deja como ejercicio), la ecuación (5.12) se cumple si y solo si
+
+$$
+\left[\begin{array}{ll}
+M & U \\
+N & V
+\end{array}\right]^{-1} \in \mathcal{R} \mathcal{H}_{\infty}
+$$
+
+Esto prueba la equivalencia de las condiciones 1 y 2. La equivalencia entre 1 y 3 se prueba de forma similar.
+
+Las condiciones 4 y 5 se deducen de 2 y 3 a partir de la ecuación
+
+$$
+\left[\begin{array}{cc}
+\tilde{V} & -\tilde{U} \\
+-\tilde{N} & \tilde{M}
+\end{array}\right]\left[\begin{array}{cc}
+M & U \\
+N & V
+\end{array}\right]=\left[\begin{array}{cc}
+\tilde{V} M-\tilde{U} N & 0 \\
+0 & \tilde{M} V-\tilde{N} U
+\end{array}\right]
+$$
+
+Como el lado izquierdo de la ecuación anterior es invertible en $\mathcal{R} \mathcal{H}_{\infty}$, el lado derecho también lo es. Por tanto, se satisfacen las condiciones 4 y 5. Solo falta mostrar que cualquiera de 4 o 5 implica 1. Mostremos que 5 implica 1; esto es obvio pues
+
+$$
+\begin{aligned}
+{\left[\begin{array}{cc}
+I & \hat{K} \\
+P & I
+\end{array}\right]^{-1} } & =\left[\begin{array}{cc}
+I & \tilde{V}^{-1} \tilde{U} \\
+N M^{-1} & I
+\end{array}\right]^{-1} \\
+& =\left[\begin{array}{cc}
+M & 0 \\
+0 & I
+\end{array}\right]\left[\begin{array}{cc}
+\tilde{V} M & \tilde{U} \\
+N & I
+\end{array}\right]^{-1}\left[\begin{array}{cc}
+\tilde{V} & 0 \\
+0 & I
+\end{array}\right] \in \mathcal{R} \mathcal{H}_{\infty}
+\end{aligned}
+$$
+
+si $\left[\begin{array}{cc}\tilde{V} M & \tilde{U} \\ N & I\end{array}\right]^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ o si se satisface la condición 5.
+
+Combinando el Lema 5.7 y el Teorema 5.6, obtenemos el siguiente corolario.
+
+Corolario 5.8 Sea $P$ una matriz racional real propia y sea $P=N M^{-1}=\tilde{M}^{-1} \tilde{N}$ la correspondiente rcf y lcf sobre $\mathcal{R} \mathcal{H}_{\infty}$. Entonces existe un controlador
+
+$$
+\hat{K}_{0}=U_{0} V_{0}^{-1}=\tilde{V}_{0}^{-1} \tilde{U}_{0}
+$$
+
+con $U_{0}, V_{0}, \tilde{U}_{0}$ y $\tilde{V}_{0}$ en $\mathcal{R} \mathcal{H}_{\infty}$ tal que
+
+\[
+\left[\begin{array}{cc}
+\tilde{V}_{0} & -\tilde{U}_{0}  \tag{5.13}\\
+-\tilde{N} & \tilde{M}
+\end{array}\right]\left[\begin{array}{cc}
+M & U_{0} \\
+N & V_{0}
+\end{array}\right]=\left[\begin{array}{ll}
+I & 0 \\
+0 & I
+\end{array}\right]
+\]
+
+Además, sean $F$ y $L$ tales que $A+B F$ y $A+L C$ sean estables. Entonces un conjunto particular de realizaciones en espacio de estados para estas matrices puede darse por
+
+
+\begin{gather*}
+{\left[\begin{array}{cc}
+M & U_{0} \\
+N & V_{0}
+\end{array}\right]=\left[\begin{array}{c|cc}
+A+B F & B & -L \\
+\hline F & I & 0 \\
+C+D F & D & I
+\end{array}\right]}  \tag{5.14}\\
+{\left[\begin{array}{cc}
+\tilde{V}_{0} & -\tilde{U}_{0} \\
+-\tilde{N} & \tilde{M}
+\end{array}\right]=\left[\begin{array}{c|cc}
+A+L C & -(B+L D) & L \\
+\hline F & I & 0 \\
+C & -D & I
+\end{array}\right]} \tag{5.15}
+\end{gather*}
+
+
+Prueba. La idea detrás de la elección de estas matrices es la siguiente. Usando teoría de observadores, encuentre un controlador $\hat{K}_{0}$ que logre estabilidad interna; por ejemplo,
+
+\[
+\hat{K}_{0}:=\left[\begin{array}{c|c}
+A+B F+L C+L D F & -L  \tag{5.16}\\
+\hline F & 0
+\end{array}\right]
+\]
+
+Realice las factorizaciones
+
+$$
+\hat{K}_{0}=U_{0} V_{0}^{-1}=\tilde{V}_{0}^{-1} \tilde{U}_{0}
+$$
+
+que son análogas a las realizadas sobre $P$. Entonces el Lema 5.7 implica que cada una de las dos matrices por bloques del lado izquierdo de la ecuación (5.13) debe ser invertible en $\mathcal{R H}_{\infty}$. De hecho, la ecuación (5.13) se satisface comparándola con la ecuación (5.7).
+
+Encontrar una factorización coprima para una función de transferencia escalar es relativamente fácil. Sea $P(s)=\operatorname{num}(s) / \operatorname{den}(s)$, donde $\operatorname{num}(s)$ y $\operatorname{den}(s)$ son los polinomios numerador y denominador de $P(s)$, y sea $\alpha(s)$ un polinomio estable del mismo orden que $\operatorname{den}(s)$. Entonces $P(s)=n(s) / m(s)$ con $n(s)=\operatorname{num}(s) / \alpha(s)$ y $m(s)=\operatorname{den}(s) / \alpha(s)$ es una factorización coprima. Sin embargo, encontrar $x(s) \in \mathcal{H}_{\infty}$ y $y(s) \in \mathcal{H}_{\infty}$ tales que $x(s) n(s)+y(s) m(s)=1$ requiere mucho más trabajo.
+
+Ejemplo 5.2 Sea $P(s)=\frac{s-2}{s(s+3)}$ y $\alpha=(s+1)(s+3)$. Entonces $P(s)=n(s) / m(s)$ con $n(s)=\frac{s-2}{(s+1)(s+3)}$ y $m(s)=\frac{s}{s+1}$ forma una factorización coprima. Para encontrar $x(s) \in \mathcal{H}_{\infty}$ y $y(s) \in \mathcal{H}_{\infty}$ tales que $x(s) n(s)+y(s) m(s)=1$, considere un controlador estabilizante para $P$: $\hat{K}=-\frac{s-1}{s+10}$. Entonces $\hat{K}=u / v$ con $u=\hat{K}$ y $v=1$ es una factorización coprima y
+
+$$
+m(s) v(s)-n(s) u(s)=\frac{(s+11.7085)(s+2.214)(s+0.077)}{(s+1)(s+3)(s+10)}=: \beta(s)
+$$
+
+Entonces podemos tomar
+
+$$
+\begin{aligned}
+& x(s)=-u(s) / \beta(s)=\frac{(s-1)(s+1)(s+3)}{(s+11.7085)(s+2.214)(s+0.077)} \\
+& y(s)=v(s) / \beta(s)=\frac{(s+1)(s+3)(s+10)}{(s+11.7085)(s+2.214)(s+0.077)}
+\end{aligned}
+$$
+
+Pueden usarse programas de MATLAB para encontrar las matrices adecuadas $F$ y $L$ en espacio de estados, de modo que se obtenga la factorización coprima deseada. Sea $A \in \mathbb{R}^{n \times n}, B \in \mathbb{R}^{n \times m}$ y $C \in \mathbb{R}^{p \times n}$. Entonces $F$ y $L$ pueden obtenerse mediante
+
+$\gg \mathrm{F}=-\operatorname{lqr}(\mathrm{A}, \mathrm{B}, \text{eye}(n), \text{eye}(m)); \%$ o
+
+$\gg \mathbf{F}=-\operatorname{place}(A, B, Pf); \% Pf =$ polos de $\mathrm{A}+\mathrm{BF}$
+
+$\gg \mathbf{L}=-\operatorname{lqr}\left(\mathbf{A}^{\prime}, \mathbf{C}^{\prime}, \text{eye}(\mathbf{n}), \text{eye}(\mathbf{p})\right)^{\prime} ; \%$ o
+
+$\gg \mathbf{L}=-\operatorname{place}\left(\mathbf{A}^{\prime}, \mathbf{C}^{\prime}, \mathbf{Pl}\right)^{\prime} ; \% \mathrm{Pl}=$ polos de $\mathrm{A}+\mathrm{LC}$.
+
+\section{Notas y referencias}
+La presentación de este capítulo se basa principalmente en Doyle [1984]. La discusión sobre estabilidad interna y factorización coprima también puede encontrarse en Francis [1987], Vidyasagar [1985], y Nett, Jacobson y Balas [1984].
+
+\section{Problemas}
+Problema 5.1 Recuerde que un sistema de realimentación se dice internamente estable si todas las funciones de transferencia en lazo cerrado son estables. Describa las condiciones de estabilidad interna del siguiente sistema de realimentación:
+
+\insertimage[\label{img:problema-5-1-esquema-realimentacion}]{2024_06_29_ce7c73b22613114bd4d6g-091_268_605_1151_760}{width=0.35\textwidth}{Esquema del sistema de realimentación para el Problema 5.1.}
+
+¿Cómo pueden simplificarse las condiciones de estabilidad si $H(s)$ y $G_{1}(s)$ son ambos estables?
+
+Problema 5.2 Demuestre que $\left[\begin{array}{cc}I & -\hat{K} \\ -P & I\end{array}\right]^{-1} \in \mathcal{R} \mathcal{H}_{\infty}$ si y solo si
+
+$$
+\bar{A}:=\left[\begin{array}{cc}
+A & B \hat{C} \\
+0 & \hat{A}
+\end{array}\right]+\left[\begin{array}{c}
+B \hat{D} \\
+\hat{B}
+\end{array}\right](I-D \hat{D})^{-1}\left[\begin{array}{ll}
+C & D \hat{C}
+\end{array}\right]
+$$
+
+es estable.
+
+Problema 5.3 Suponga que $N, M, U, V \in \mathcal{R} \mathcal{H}_{\infty}$ y que $N M^{-1}$ y $U V^{-1}$ son factorizaciones coprimas derechas, respectivamente. Demuestre que
+
+$$
+\left[\begin{array}{cc}
+M & 0 \\
+0 & V
+\end{array}\right]\left[\begin{array}{ll}
+M & U \\
+N & V
+\end{array}\right]^{-1}
+$$
+
+también es una factorización coprima derecha.
+
+Problema 5.4 Sea $G(s)=\frac{s-1}{(s+2)(s-3)}$. Encuentre una factorización coprima estable $G=n(s)/m(s)$ y $x, y \in \mathcal{R} \mathcal{H}_{\infty}$ tales que $x n+y m=1$.
+
+Problema 5.5 Sea $N(s)=\frac{(s-1)(s+\alpha)}{(s+2)(s+3)(s+\beta)}$ y $M(s)=\frac{(s-3)(s+\alpha)}{(s+3)(s+\beta)}$. Demuestre que $(N, M)$ también es una factorización coprima de $G$ del Problema 5.4 para cualquier $\alpha>0$ y $\beta>0$.
+
+Problema 5.6 Sea $G=N M^{-1}$ una factorización coprima derecha sobre $\mathcal{R} \mathcal{H}_{\infty}$. Se llama factorización coprima normalizada si $N^{\sim} N+M^{\sim} M=I$. Ahora considere una función de transferencia escalar $G$. Entonces puede usarse el siguiente procedimiento para encontrar una factorización coprima normalizada: (a) Sea $G=n/m$ cualquier factorización coprima sobre $\mathcal{R} \mathcal{H}_{\infty}$. (b) Encuentre un factor espectral $w$ estable y de fase mínima tal que $w^{\sim} w=n^{\sim} n+m^{\sim} m$. Sea $N=n/w$ y $M=m/w$; entonces $G=N/M$ es una factorización coprima normalizada. Encuentre una factorización coprima normalizada para el Problema 5.4.
+
+Problema 5.7 El siguiente procedimiento construye una factorización coprima derecha normalizada cuando $G$ es estrictamente propia:
+
+\begin{enumerate}
+  \item Obtenga una realización estabilizable y detectable $A, B, C$.
+  \item Ejecute en MATLAB el comando $F=-\operatorname{lqr}\left(A, B, C^{\prime} C, I\right)$.
+  \item Defina
+\end{enumerate}
+
+$$
+\left[\begin{array}{c}
+N \\
+M
+\end{array}\right](s)=\left[\begin{array}{c|c}
+A+B F & B \\
+\hline C & 0 \\
+F & I
+\end{array}\right]
+$$
+
+Verifique que el procedimiento produce factores que satisfacen $G=N M^{-1}$. Ahora aplique el procedimiento a
+
+$$
+G(s)=\left[\begin{array}{cc}
+\frac{1}{s-1} & \frac{1}{s-2} \\
+\frac{2}{s} & \frac{1}{s+2}
+\end{array}\right]
+$$
+
+Verifique numéricamente que
+
+
+\begin{equation*}
+N(j \omega)^{*} N(j \omega)+M(j \omega)^{*} M(j \omega)=I, \quad \forall \omega \tag{5.17}
+\end{equation*}
+
+
+Problema 5.8 Use el procedimiento del Problema 5.7 para encontrar la factorización coprima derecha normalizada de
+
+$$
+\begin{gathered}
+G_{1}(s)=\left[\begin{array}{cc}
+\frac{1}{s+1} & \frac{s+3}{(s+1)(s-2)} \\
+\frac{10}{s-2} & \frac{5}{s+3}
+\end{array}\right] \\
+G_{2}(s)=\left[\begin{array}{ll}
+\frac{2(s+1)(s+2)}{s(s+3)(s+4)} & \frac{s+2}{(s+1)(s+3)}
+\end{array}\right]
+\end{gathered}
+$$
+
+$$
+\begin{gathered}
+G_{3}(s)=\left[\begin{array}{ccc|ccc}
+-1 & -2 & 1 & 1 & 2 & 3 \\
+0 & 2 & -1 & 3 & 2 & 1 \\
+-4 & -3 & -2 & 1 & 1 & 1 \\
+\hline 1 & 1 & 1 & 0 & 0 & 0 \\
+2 & 3 & 4 & 0 & 0 & 0
+\end{array}\right] \\
+G_{4}(s)=\left[\begin{array}{cc|cc}
+-1 & -2 & 1 & 2 \\
+0 & 1 & 2 & 1 \\
+\hline 1 & 1 & 0 & 0 \\
+1 & 1 & 0 & 0
+\end{array}\right]
+\end{gathered}
+$$
+
+Problema 5.9 Defina la factorización coprima izquierda normalizada y describa un procedimiento para encontrar tales factorizaciones en matrices de transferencia estrictamente propias.
+
